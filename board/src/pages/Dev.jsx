@@ -1,7 +1,7 @@
 import React from "react";
 import LessonList from "../components/common/LessonList/LessonList";
 import type {LessonVO} from "../vo/vo";
-import SearchCourse from "../components/student/SearchCourse";
+import SearchCourse from "../components/Student/SearchCourse/SearchCourse";
 
 export default class Dev extends React.Component {
   lessons: LessonVO[] = [

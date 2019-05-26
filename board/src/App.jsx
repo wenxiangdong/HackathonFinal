@@ -6,6 +6,7 @@ import {HashRouter, Switch, Route} from "react-router-dom";
 import Dev from "./pages/Dev";
 import {blue, red, yellow} from "@material-ui/core/colors";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import {SnackbarProvider} from "notistack";
 
 
 // 引入页面
@@ -35,6 +36,7 @@ function App() {
   });
 
   return (
+    <SnackbarProvider maxSnack={4}>
     <ThemeProvider theme={theme}>
       <HashRouter>
         <Switch>
@@ -50,6 +52,7 @@ function App() {
         </Switch>
       </HashRouter>
     </ThemeProvider>
+    </SnackbarProvider>
   );
 }
 
