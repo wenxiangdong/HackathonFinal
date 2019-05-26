@@ -39,6 +39,7 @@ export default class Ongoing extends React.Component<any, IState> {
                   width={this.canvasWidth + "px"}
                   height={this.canvasHeight + "px"}/>
         </div>
+        {/*<button onClick={() => this.click()}>looo</button>*/}
       </div>
     );
 
@@ -50,17 +51,39 @@ export default class Ongoing extends React.Component<any, IState> {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.onWindowResize.bind(this))
+    document.body.addEventListener('resize', this.onWindowResize)
     this.onWindowResize();
     this.initCanvas();
+    document.body.addEventListener('touchmove', this.stopScroll , {
+      passive: false
+    });
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.onWindowResize.bind(this))
+    document.body.removeEventListener('resize', this.onWindowResize);
+    document.body.removeEventListener('touchmove', this.stopScroll ,{
+      passive: true
+    })
+  }
+
+  stopScroll (e) {
+    if(e._isScroller) return;
+    e.preventDefault();
+  }
+
+  click () {
+    var de = document.documentElement;
+    if (de.requestFullscreen) {
+      de.requestFullscreen();
+    } else if (de.mozRequestFullScreen) {
+      de.mozRequestFullScreen();
+    } else if (de.webkitRequestFullScreen) {
+      de.webkitRequestFullScreen();
+    }
   }
 
 
-  onWindowResize() {
+  onWindowResize = () => {
     const clientWidth = document.getElementById("canvas").clientWidth;
     this.setState({actualSettingWidthRate: clientWidth / this.canvasWidth});
   }
@@ -117,11 +140,22 @@ export default class Ongoing extends React.Component<any, IState> {
   }
 
   touchDraw(ev) {
+
+    var de = document.documentElement;
+    if (de.requestFullscreen) {
+      de.requestFullscreen();
+    } else if (de.mozRequestFullScreen) {
+      de.mozRequestFullScreen();
+    } else if (de.webkitRequestFullScreen) {
+      de.webkitRequestFullScreen();
+    }
+
     this.logger.info(ev);
     ev.persist();
     ev.cancelBubble = true;
     ev.defaultPrevented = true;
     ev.stopPropagation();
+    ev.preventDefault();
     this.ctx.beginPath();
     let {x, y} = this.getTouchLocation(ev);
     this.ctx.moveTo(x, y);
@@ -129,6 +163,7 @@ export default class Ongoing extends React.Component<any, IState> {
     document.ontouchmove = (e) => {
       e.cancelBubble = true;
       e.stopPropagation();
+      e.preventDefault();
       ev.defaultPrevented = true;
       let {x, y} = this.getTouchLocation(e);
       this.logger.info(x, y);
@@ -144,7 +179,5 @@ export default class Ongoing extends React.Component<any, IState> {
     }
   }
 
-  renderPointList() {
 
-  }
 }
