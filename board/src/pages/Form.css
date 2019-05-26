@@ -1,0 +1,29 @@
+.main-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-card {
+  padding: 24px 40px;
+  max-width: 400px;
+  margin: 0 16px;
+  text-align: center;
+  -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, .15);
+  -moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0, .15);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .15);
+}
+
+.remember-password {
+  display: flex;
+  text-align: left;
+}
+
+.to-register {
+  margin-top: 16px;
+}
+
+.form-control-label {
+  text-align: left;
+}
