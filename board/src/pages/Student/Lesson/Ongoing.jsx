@@ -239,6 +239,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
   }
 
   finishDraw(paint) {
+    // todo
     this.teacherNoteVOList.push({
       id: 0,
       page: 1,
@@ -307,7 +308,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
   checkIsNearBy(x1, y1, x2, y2) {
     const distance = 40;
     const actual = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    this.logger.info(actual);
+    // this.logger.info(actual);
     return actual < distance;
   }
 }
