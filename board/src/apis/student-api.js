@@ -1,4 +1,4 @@
-import type {CourseVO, LessonVO, StudentNoteBookVO, StudentNoteItemVO, TeacherNoteBookVO} from "../vo/vo";
+import type {CourseVO, StudentNoteBookVO, StudentNoteItemVO, TeacherNoteBookVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 
 export interface IStudentApi {
@@ -21,10 +21,6 @@ export interface IStudentApi {
   // 学生加入课程
   // post:
   joinCourse(courseId: Number): Promise<void>;
-
-  // 学生根据课程拿所有的课
-  // get:
-  getLessonsByCourseId(courseId: Number): Promise<LessonVO[]>;
 
   // 学生根据lessonId拿自己的笔记
   // get:
@@ -71,10 +67,6 @@ export class StudentApi implements IStudentApi {
 
   joinCourse(courseId: Number): Promise<void> {
     return Http.post("/studentGetOnGoingCourses", {courseId});
-  }
-
-  getLessonsByCourseId(courseId: Number): Promise<LessonVO[]> {
-    return Http.get("/getLessonsByCourseId", {courseId});
   }
 
   getStudentNoteBookByLessonId(lessonId: Number): Promise<StudentNoteBookVO> {
@@ -127,7 +119,8 @@ export class MockStudentApi implements IStudentApi {
   }
 
   studentGetFinishedCourses(): Promise<CourseVO[]> {
-    return HttpMock.success(MockStudentApi.createCourses(true));
+    // return HttpMock.success(MockStudentApi.createCourses(true));
+    return HttpMock.success([]);
   }
 
   studentGetOnGoingCourses(): Promise<CourseVO[]> {
@@ -135,10 +128,6 @@ export class MockStudentApi implements IStudentApi {
   }
 
   joinCourse(courseId: Number): Promise<void> {
-
-  }
-
-  getLessonsByCourseId(courseId: Number): Promise<LessonVO[]> {
 
   }
 

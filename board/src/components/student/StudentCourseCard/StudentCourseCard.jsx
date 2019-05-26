@@ -1,5 +1,5 @@
 import React from "react";
-import type {CourseVO} from "../../vo/vo";
+import type {CourseVO} from "../../../vo/vo";
 
 import './StudentCourseCard.css'
 import Card from "@material-ui/core/Card/Card";
@@ -11,7 +11,7 @@ interface IProp {
 }
 
 /**
- * StudentCourseCard
+ * EmptyCourseCard
  * @create 2019/5/26 16:28
  */
 export default class StudentCourseCard extends React.Component<IProp> {

@@ -23,11 +23,15 @@ function LessonItem(props: { lesson: LessonVO, onSelect: (lesson: LessonVO) => v
 }
 
 interface IProp {
-  title: String;
+  title?: String;
   lessons: LessonVO[];
   onSelectLesson?: (lesson: LessonVO) => void;
 }
 
+/**
+ * 课列表
+ * TODO 正在上课的课程显示
+ */
 class LessonList extends React.Component<IProp> {
   render(): React.ReactNode {
     const {lessons, onSelectLesson = () => null, title} = this.props;
@@ -36,12 +40,18 @@ class LessonList extends React.Component<IProp> {
     );
     return (
       <>
-        <div className={"LL__title"}>
-          <FolderIcon/>
-          <Typography variant="h6">
-            {title}
-          </Typography>
-        </div>
+        {
+          title
+            ? (
+              <div className={"LL__title"}>
+                <FolderIcon/>
+                <Typography variant="h6">
+                  {title}
+                </Typography>
+              </div>
+            )
+            : null
+        }
         <List>
           {lessonComponents}
         </List>

@@ -1,6 +1,7 @@
 .courses-wrapper {
     /*max-width: 100%;*/
     /*overflow: scroll;*/
+  margin-bottom: 20px;
 }
 
 .my-courses {
