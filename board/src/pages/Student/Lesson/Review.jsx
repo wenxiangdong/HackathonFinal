@@ -1,32 +1,24 @@
 import React from "react";
 
-/**
- * Review
- * @create 2019/5/26 14:22
- */
-import React from "react";
-
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
-import type {LiveLessonData, TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
-import {Point} from "../../../vo/vo";
-import type {ITeacherApi} from "../../../apis/teacher-api";
+import type {TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
-import WebsocketPublisher from "../../../utils/websocket-publisher";
 import type {ICommonApi} from "../../../apis/common-api";
 
-
 interface IState {
+  lessonEnded: boolean
 }
 
 interface IProp {
   initTeacherNoteItemVOs?: TeacherNoteItemVO[];
 }
 
+
 /**
- * Ongoing
- * @create 2019/5/26 14:21
+ * Review
+ * @create 2019/5/26 14:22
  */
 export default class Review extends React.Component<IProp, IState> {
 
@@ -48,7 +40,7 @@ export default class Review extends React.Component<IProp, IState> {
     super(props);
     this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
-    this._commonApi = apiHub.commonApi
+    this._commonApi = apiHub.commonApi;
   }
 
   render(): React.ReactNode {
@@ -89,7 +81,7 @@ export default class Review extends React.Component<IProp, IState> {
     document.body.removeEventListener('resize', this.onWindowResize);
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
-    })
+    });
 
     this.webSocketPublisher.unsubscribe(this.messageHandler);
   }

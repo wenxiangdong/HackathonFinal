@@ -51,6 +51,7 @@ class Search extends React.Component<IProp, IState> {
         error(e.message, this);
         this.setState({loading: false});
       })
+    ;
   }
 
   joinCourse = (id: number) => {

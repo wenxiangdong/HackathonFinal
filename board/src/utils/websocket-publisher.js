@@ -19,7 +19,8 @@ export interface Subscriber {
 export default class WebsocketPublisher {
 
   constructor(url) {
-    this.url = url;
+    console.log(url);
+    this.url = `ws://${url}`;
     this.subscribers = [];
     this._init();
   }
