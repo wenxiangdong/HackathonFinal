@@ -6,7 +6,7 @@ import type {CourseVO} from "../../vo/vo";
 import Container from "@material-ui/core/Container/Container";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
 import Grid from "@material-ui/core/Grid/Grid";
-import StudentCourseCard from "../../components/student/StudentCourseCard";
+import StudentCourseCard from "../../components/student/StudentCourseCard/StudentCourseCard";
 import SimpleLoading from "../../components/common/SimpleLoading";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";

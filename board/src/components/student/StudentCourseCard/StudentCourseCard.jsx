@@ -1,5 +1,5 @@
 import React from "react";
-import type {CourseVO} from "../../vo/vo";
+import type {CourseVO} from "../../../vo/vo";
 
 import './StudentCourseCard.css'
 import Card from "@material-ui/core/Card/Card";
@@ -11,7 +11,7 @@ interface IProp {
 }
 
 /**
- * StudentCourseCard
+ * EmptyCourseCard
  * @create 2019/5/26 16:28
  */
 export default class StudentCourseCard extends React.Component<IProp> {
@@ -23,21 +23,21 @@ export default class StudentCourseCard extends React.Component<IProp> {
     if (this.props.ongoing) {
       title = "正在授课";
       subTitle = "点击进入课程";
-      baseClass = "ongoing base-box";
+      baseClass = "ongoing";
     } else {
       subTitle = "点击查看课程历史";
       if (course.finished) {
         title = "已结束";
-        baseClass = "finished base-box";
+        baseClass = "finished";
       } else {
         title = "点击查看课程历史";
-        baseClass = "unfinished base-box";
+        baseClass = "unfinished";
       }
     }
 
     return (
       <Card>
-        <div className={baseClass} onClick={this.props.onClick}>
+        <div className={baseClass + " base-box"} onClick={this.props.onClick}>
           <div className={"top-div"}>
             <div>
               <div className={"title"}>

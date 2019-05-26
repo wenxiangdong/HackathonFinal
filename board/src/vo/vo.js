@@ -6,6 +6,11 @@ export interface UserVO {
   type: Number;	// 0 老师 1 学生
 }
 
+export const UserType = {
+  TEACHER: 0,
+  STUDENT: 1
+};
+
 export interface CourseVO {
   id: Number;
   name: String;
