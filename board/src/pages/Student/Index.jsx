@@ -3,7 +3,7 @@ import type {CourseVO, UserVO} from "../../vo/vo";
 import Logger from "../../utils/logger";
 import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
-import StudentCourseCard from "../../components/student/StudentCourseCard";
+import StudentCourseCard from "../../components/Student/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
 

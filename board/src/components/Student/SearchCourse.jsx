@@ -12,6 +12,10 @@ import MoreIcon from "@material-ui/icons/ArrowDropDown";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Logger from "../../utils/logger";
 import debounce from "../../utils/debounce";
+import {apiHub} from "../../apis/ApiHub";
+import {HttpCodes} from "../../apis/http";
+
+import {withSnackbar} from "notistack";
 
 
 interface IState {
@@ -49,8 +53,28 @@ class SearchCourse extends React.Component<IProp, IState> {
     });
   };
 
-  searchCourses = (keyword) => {
+  searchCourses = async (keyword) => {
     this._logger.info("查找" + keyword);
+    try {
+      this.setState({
+        loading: true
+      });
+      const courseList = await apiHub.studentApi.searchCourses(keyword);
+      this.setState({
+        courseList
+      });
+    } catch (e) {
+      switch (e.code) {
+        case HttpCodes.ERROR:
+        default:
+
+          break;
+      }
+    } finally {
+      this.setState({
+        loading: false
+      })
+    }
   };
 
   render(): React.ReactNode {
@@ -96,4 +120,4 @@ class SearchCourse extends React.Component<IProp, IState> {
   }
 }
 
-export default SearchCourse;
+export default withSnackbar(SearchCourse);
