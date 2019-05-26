@@ -5,7 +5,7 @@
   height: 100vh;
 }
 
-.login-card {
+.main-card {
   padding: 24px 40px;
   max-width: 400px;
   margin: 0 16px;
@@ -15,13 +15,16 @@
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, .15);
 }
 
-.remember-password {
-  display: flex;
-  text-align: left;
+.main-card button {
+  margin-top: 20px;
 }
 
 .to-register {
   margin-top: 16px;
+}
+
+.form-button {
+  margin-top: 20px;
 }
 
 .form-control-label {

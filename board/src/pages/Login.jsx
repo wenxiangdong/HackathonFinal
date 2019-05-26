@@ -14,12 +14,13 @@ import {apiHub} from "../apis/ApiHub";
 import {withSnackbar} from "notistack";
 import {UserType} from "../vo/vo";
 import type {HttpResponse} from "../apis/http";
-import error from "../utils/snackbar-helper";
-import type {UserVO as UserVO} from "../vo/vo";
+import {error} from "../utils/snackbar-helper";
+import type {UserVO} from "../vo/vo";
+import updateState from "../utils/state-helper";
 
 interface IState {
-  username: String;
-  password: String;
+  username: string;
+  password: string;
   loading: boolean;
 }
 
@@ -50,7 +51,6 @@ class Login extends React.Component<IProp, IState> {
 
   login(e:Event) {
     e.preventDefault();
-    this._logger.info(this.state);
     this.setState({loading: true});
     let user:UserVO = {
       id: -1,
@@ -66,6 +66,9 @@ class Login extends React.Component<IProp, IState> {
           this.props.history.push(`/Student/${user.id}`);
         } else if (user.type === UserType.TEACHER) {
           this.props.history.push(`/Teacher/${user.id}`);
+        } else {
+          this.setState({loading: false});
+          error("无法识别的用户类型", this);
         }
       })
       .catch((e:HttpResponse) => {
@@ -77,14 +80,8 @@ class Login extends React.Component<IProp, IState> {
   };
 
   render(): React.ReactNode {
-    let updateState = (name, data) => {
-      let state = {};
-      state[name] = data;
-      this.setState(state);
-    };
-
     const loginForm = (
-      <div className={"login-card"}>
+      <div className={"main-card"}>
         <CssBaseline/>
         {this.state.loading? <FullScreenLoading/>: null}
         <div>
@@ -97,7 +94,7 @@ class Login extends React.Component<IProp, IState> {
               required
               fullWidth
               value={this.state.username}
-              onChange={(e) => updateState("username", e.target.value)}
+              onChange={(e) => updateState("username", e.target.value, this)}
               id="username"
               label="账号"
               name="username"
@@ -108,7 +105,7 @@ class Login extends React.Component<IProp, IState> {
               required
               fullWidth
               value={this.state.password}
-              onChange={(e) => updateState("password", e.target.value)}
+              onChange={(e) => updateState("password", e.target.value, this)}
               name="password"
               label="密码"
               type="password"
@@ -126,7 +123,6 @@ class Login extends React.Component<IProp, IState> {
               fullWidth
               variant="contained"
               color="primary"
-              className={"login-button"}
             >
               登录
             </Button>
