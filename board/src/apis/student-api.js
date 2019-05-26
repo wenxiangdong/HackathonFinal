@@ -22,22 +22,26 @@ export interface IStudentApi {
   // post:
   joinCourse(courseId: Number): Promise<void>;
 
-  // 学生根据lessonId拿自己的笔记
-  // get:
-  getStudentNoteBookByLessonId(lessonId: Number): Promise<StudentNoteBookVO>;
-
-  // 学生根据lessonId拿老师的板书
-  // get:
-  getTeacherNoteBookByLessonId(lessonId: Number): Promise<TeacherNoteBookVO>;
-
   // 学生上课
   // 学生可以接收消息的 websocket 地址
   // post:
-  joinLesson(lessonid: Number): Promise<String>;
+  joinLesson(lessonId: Number): Promise<String>;
+
+  // 学生根据lessonId拿自己的笔记
+  // get:
+  getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO>;
 
   // 学生记笔记
   // post:
-  writeStudentNote(studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO>;
+  writeStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO>;
+
+  // 学生修改笔记
+  // post:
+  updateStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO>;
+
+  // 学生删除笔记
+  // post:
+  deleteStudentNote(bookId:number, studentNoteId:number): Promise<void>;
 
   // 学生拿这节课所有的分享笔记
   // get:
@@ -45,7 +49,7 @@ export interface IStudentApi {
 
   // 学生clone笔记
   // post:
-  cloneNoteBook(noteBook: StudentNoteBookVO): Promise<void>;
+  cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void>;
 }
 
 export class StudentApi implements IStudentApi {
@@ -69,28 +73,38 @@ export class StudentApi implements IStudentApi {
     return Http.post("/studentGetOnGoingCourses", {courseId});
   }
 
-  getStudentNoteBookByLessonId(lessonId: Number): Promise<StudentNoteBookVO> {
-    return Http.get("/getStudentNoteBookByLessonId", {lessonId});
-  }
-
-  getTeacherNoteBookByLessonId(lessonId: Number): Promise<TeacherNoteBookVO> {
-    return Http.get("/getTeacherNoteBookByLessonId", {lessonId});
-  }
-
   joinLesson(lessonId: Number): Promise<String> {
     return Http.post("/joinLesson", {lessonId});
   }
 
-  writeStudentNote(studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
-    return Http.post("/writeStudentNote", {studentNoteItem});
+  getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO> {
+    return Http.get("/getStudentNoteBook", {lessonId});
   }
 
+  writeStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
+    return Http.post("/writeStudentNote", {bookId, studentNoteItem});
+  }
+
+  updateStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
+    return Http.post("/updateStudentNote", {bookId, studentNoteItem});
+  }
+
+  // 学生删除笔记
+  // post:
+  deleteStudentNote(bookId:number, studentNoteId:number): Promise<void> {
+    return Http.post("/deleteStudentNote", {bookId, studentNoteId});
+  }
+
+  // 学生拿这节课所有的分享笔记
+  // get:
   getSharedNoteBook(lessonId: Number): Promise<StudentNoteBookVO[]> {
-    return Http.get("/getSharedNoteBook", {lessonId});
+    return Http.post("/getSharedNoteBook", {lessonId});
   }
 
-  cloneNoteBook(noteBook: StudentNoteBookVO): Promise<void> {
-    return Http.post("/cloneNoteBook", {noteBook});
+  // 学生clone笔记
+  // post:
+  cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void> {
+    return Http.post("/cloneNoteBook", {bookId, cloneNoteBookId});
   }
 }
 
@@ -131,19 +145,23 @@ export class MockStudentApi implements IStudentApi {
 
   }
 
-  getStudentNoteBookByLessonId(lessonId: Number): Promise<StudentNoteBookVO> {
+  joinLesson(lessonId: Number): Promise<String> {
 
   }
 
-  getTeacherNoteBookByLessonId(lessonId: Number): Promise<TeacherNoteBookVO> {
+  getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO> {
 
   }
 
-  joinLesson(lessonid: Number): Promise<String> {
+  writeStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
 
   }
 
-  writeStudentNote(studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
+  updateStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
+
+  }
+
+  deleteStudentNote(bookId:number, studentNoteId:number): Promise<void> {
 
   }
 
@@ -151,7 +169,7 @@ export class MockStudentApi implements IStudentApi {
 
   }
 
-  cloneNoteBook(noteBook: StudentNoteBookVO): Promise<void> {
+  cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void> {
 
   }
 }

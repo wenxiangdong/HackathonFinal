@@ -28,6 +28,10 @@ export interface ITeacherApi {
   // post
   sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO>;
 
+  // 老师修改板书
+  // post
+  updateTeacherNote(teacherNoteId: Number): Promise<void>;
+
   // 老师删除板书
   // post
   deleteTeacherNote(teacherNoteId: Number): Promise<void>;
@@ -62,6 +66,10 @@ export class TeacherApi implements ITeacherApi {
     return Http.post("/sendTeacherNote", {teacherNote});
   }
 
+  updateTeacherNote(teacherNoteId: Number): Promise<void> {
+    return Http.post("/updateTeacherNote", {teacherNoteId});
+  }
+
   deleteTeacherNote(teacherNoteId: Number): Promise<void> {
     return Http.post("/deleteTeacherNote", {teacherNoteId});
   }
@@ -93,6 +101,10 @@ export class MockTeacherApi implements ITeacherApi {
   }
 
   sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
+
+  }
+
+  updateTeacherNote(teacherNoteId: Number): Promise<void> {
 
   }
 

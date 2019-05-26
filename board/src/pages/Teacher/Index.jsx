@@ -2,29 +2,27 @@ import React from "react";
 import Logger from "../../utils/logger";
 import type {ITeacherApi} from "../../apis/teacher-api";
 import {apiHub} from "../../apis/ApiHub";
-import type {CourseVO} from "../../vo/vo";
+import type {CourseVO, LessonVO} from "../../vo/vo";
 import Container from "@material-ui/core/Container/Container";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
 import Grid from "@material-ui/core/Grid/Grid";
 import StudentCourseCard from "../../components/student/StudentCourseCard/StudentCourseCard";
 import SimpleLoading from "../../components/common/SimpleLoading";
-import Dialog from "@material-ui/core/Dialog/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions/DialogActions";
-import Button from "@material-ui/core/Button/Button";
 
 import "./../Student/index.css"
 import EmptyCourseCard from "../../components/common/EmptyCourseCard";
-import CourseDialog from "../../components/common/CourseDialog/CourseDialog";
+import CourseDialog from "../../components/teacher/CourseDialog/CourseDialog";
 import {UserType} from "../../vo/vo";
-import type {DialogActionConfig} from "../../components/common/CourseDialog/CourseDialog";
+import type {DialogActionConfig} from "../../components/student/CourseDialog/CourseDialog";
+import type {HttpResponse} from "../../apis/http";
+import {error} from "../../utils/snackbar-helper";
+import FullScreenLoading from "../../components/common/FullScreenLoading/FullScreenLoading";
 
 interface IState {
   unfinishedCourse: CourseVO[];
   finishedCourse: CourseVO[];
   checkCourse: CourseVO;
+  loading: boolean
 }
 
 /**
@@ -40,7 +38,9 @@ export default class Index extends React.Component<any, IState> {
     super(props);
     this._logger = Logger.getLogger("TeacherHomepage");
     this._teacherApi = apiHub.teacherApi;
-    this.state = {};
+    this.state = {
+      loading: false
+    };
   }
 
   componentDidMount(): void {
@@ -56,6 +56,35 @@ export default class Index extends React.Component<any, IState> {
 
   showCourseHistory = (course) => {
     this.setState({checkCourse:course});
+  };
+
+  startLesson = () => {
+    const course = this.state.checkCourse;
+    if (course) {
+      let lesson:LessonVO = {
+        id: -1,
+        name: '',//TODO
+        courseId: course.id,
+        teacherId: this.getTeacherId(),
+        startTime: Date.now(),
+        endTime: 0
+      };
+      this._teacherApi.createLesson(lesson)
+        .then(() => {
+
+        })
+        .catch((e:HttpResponse) => {
+          this._logger.error(e);
+          this.setState({loading: false});
+          error(e.message, this);
+        })
+    } else {
+      this._logger.error("startLesson", this.state);
+    }
+  };
+
+  getTeacherId = () => {
+    return this.props.match.params.id;
   };
 
   render(): React.ReactNode {
@@ -99,19 +128,21 @@ export default class Index extends React.Component<any, IState> {
     );
 
     let checkCourse = this.state.checkCourse;
-    // let actionConfigs: DialogActionConfig[] = [
-    //   {
-    //     onClick: () => {
-    //
-    //     }
-    //   }
-    // ];
+    let actionConfigs: DialogActionConfig[] = [
+      {
+        onClick: () => this.startLesson(),
+        title: "开始上课",
+        color: "primary",
+        autoFocus: true
+      }
+    ];
     let checkCourseDialog = (
       checkCourse
         ? (
           <CourseDialog onClose={() => this.setState({checkCourse: null})}
                         title={checkCourse? `课程名称：${checkCourse.name}`: '课程'}
                         courseId={checkCourse.id}
+                        actionConfigs={actionConfigs}
                         userType={UserType.TEACHER}
           />
         )
@@ -120,6 +151,7 @@ export default class Index extends React.Component<any, IState> {
 
     return (
       <Container style={{paddingTop: "20px"}}>
+        {this.state.loading? <FullScreenLoading/>: null}
         {unfinishedCourseFragment}
         {finishedCourseFragment}
         {checkCourseDialog}

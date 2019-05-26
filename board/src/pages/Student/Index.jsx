@@ -13,7 +13,7 @@ import Container from "@material-ui/core/Container/Container";
 import Button from "@material-ui/core/Button/Button";
 import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
 import SimpleLine from "../../components/common/SimpleLine";
-import CourseDialog from "../../components/common/CourseDialog/CourseDialog";
+import CourseDialog from "../../components/student/CourseDialog/CourseDialog";
 import {UserType} from "../../vo/vo";
 import EmptyCourseCard from "../../components/common/EmptyCourseCard";
 
