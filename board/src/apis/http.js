@@ -1,5 +1,6 @@
 import Axios, {AxiosPromise, AxiosResponse} from "axios";
 import Logger from "../utils/logger";
+import {useMock} from "./ApiHub";
 
 
 Axios.defaults.withCredentials = true;
@@ -23,7 +24,7 @@ export const HttpCodes = {
 };
 
 export class Http {
-  static _baseUrl = "http://localhost/nju_admit_server";
+  static _baseUrl = "http://106.14.178.184:8080/board";
   static _logger = Logger.getLogger("http");
 
   static async _handleResult<T>(responsePromise: AxiosPromise<AxiosResponse<T>>): Promise<T> {
@@ -58,19 +59,22 @@ export class Http {
   }
 
   static async uploadFile(file: File): Promise<String> {
-    return URL.createObjectURL(file);
-    const form = new FormData();
-    form.append("file", file);
-    const res = await Axios.request({
-      method: "POST",
-      data: form,
-      headers: {
-        'Content-Type':'multipart/form-data'
-      },
-      url: "/uploadFile"
-    });
-    const url = res.data.data;
-    return url;
+    if (useMock) {
+      return URL.createObjectURL(file);
+    } else {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await Axios.request({
+        method: "POST",
+        data: form,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        url: "/uploadFile"
+      });
+      const url = res.data.data;
+      return url;
+    }
   }
 }
 

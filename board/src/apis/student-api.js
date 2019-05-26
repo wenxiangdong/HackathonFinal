@@ -1,4 +1,4 @@
-import type {CourseVO, StudentNoteBookVO, StudentNoteItemVO, TeacherNoteBookVO} from "../vo/vo";
+import type {CourseVO, StudentNoteBookVO, StudentNoteItemVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 
 export interface IStudentApi {
@@ -16,7 +16,7 @@ export interface IStudentApi {
 
   // 学生拿正在上课的课程
   // get:
-  studentGetOnGoingCourses(): Promise<CourseVO[]>;
+  studentGetOngoingCourses(): Promise<CourseVO[]>;
 
   // 学生加入课程
   // post:
@@ -65,12 +65,12 @@ export class StudentApi implements IStudentApi {
     return Http.get("/studentGetFinishedCourses");
   }
 
-  studentGetOnGoingCourses(): Promise<CourseVO[]> {
-    return Http.get("/studentGetOnGoingCourses");
+  studentGetOngoingCourses(): Promise<CourseVO[]> {
+    return Http.get("/studentGetOngoingCourses");
   }
 
   joinCourse(courseId: Number): Promise<void> {
-    return Http.post("/studentGetOnGoingCourses", {courseId});
+    return Http.post("/studentGetOngoingCourses", {courseId});
   }
 
   joinLesson(lessonId: Number): Promise<String> {
@@ -137,7 +137,7 @@ export class MockStudentApi implements IStudentApi {
     return HttpMock.success([]);
   }
 
-  studentGetOnGoingCourses(): Promise<CourseVO[]> {
+  studentGetOngoingCourses(): Promise<CourseVO[]> {
     return HttpMock.success(MockStudentApi.createCourses(false));
   }
 

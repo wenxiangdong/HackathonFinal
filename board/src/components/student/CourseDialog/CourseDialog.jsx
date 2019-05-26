@@ -5,7 +5,6 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import LessonList from "../../common/LessonList/LessonList";
 import type {LessonVO} from "../../../vo/vo";
-import {PropTypes} from "@material-ui/core";
 import SimpleLoading from "../../common/SimpleLoading";
 import Logger from "../../../utils/logger";
 import type {ICommonApi} from "../../../apis/common-api";
@@ -15,26 +14,17 @@ import {withSnackbar} from "notistack";
 import {withRouter} from "react-router-dom";
 import type {HttpResponse} from "../../../apis/http";
 import {error} from "../../../utils/snackbar-helper";
-import {UserType} from "../../../vo/vo";
 
 interface IProp {
   onClose: () => void,
   title: string,
   courseId: number,
-  userType: UserType,
   content: string|null,
 }
 
 interface IState {
   open: boolean,
   lessons: LessonVO[]
-}
-
-export interface DialogActionConfig {
-  onClick: () => void;
-  title: string,
-  color: PropTypes.Color,
-  autoFocus: boolean
 }
 
 /**
@@ -62,7 +52,7 @@ class CourseDialog extends React.Component<IProp, IState> {
   }
 
   queryLessons = () => {
-    this._commonApi.getLessonsByCourseId(this.props.courseId)
+    this._commonApi.getLessons(this.props.courseId)
       .then((lessons) => {
         this.setState({lessons});
       })
@@ -79,14 +69,10 @@ class CourseDialog extends React.Component<IProp, IState> {
   };
 
   handleSelectLesson = (lesson:LessonVO) => {
-    if (this.props.userType === UserType.STUDENT) {
-      if (lesson.endTime) {
-        this.props.history.push(`/Student/LessonReview/${lesson.id}`);
-      } else {
-        this.props.history.push(`/Student/LessonOnGoing/${lesson.id}`);
-      }
+    if (lesson.endTime) {
+      this.props.history.push(`/Student/LessonReview/${lesson.id}`);
     } else {
-      this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+      this.props.history.push(`/Student/LessonOnGoing/${lesson.id}`);
     }
   };
 

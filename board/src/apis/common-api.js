@@ -13,7 +13,7 @@ export interface ICommonApi {
 
   // 学生根据课程拿所有的课
   // get:
-  getLessonsByCourseId(courseId: Number): Promise<LessonVO[]>;
+  getLessons(courseId: Number): Promise<LessonVO[]>;
 
   // 学生根据lessonId拿老师的板书
   // get:
@@ -34,8 +34,8 @@ export class CommonApi implements ICommonApi {
     return Http.post("/login", userVO);
   }
 
-  getLessonsByCourseId(courseId: Number): Promise<LessonVO[]> {
-    return Http.get("/getLessonsByCourseId", {courseId});
+  getLessons(courseId: Number): Promise<LessonVO[]> {
+    return Http.get("/getLessons", {courseId});
   }
 
   getTeacherNoteBook(lessonId: Number): Promise<TeacherNoteBookVO> {
@@ -87,7 +87,7 @@ export class MockCommonApi implements ICommonApi {
     return courses;
   }
 
-  getLessonsByCourseId(courseId: Number): Promise<LessonVO[]> {
+  getLessons(courseId: Number): Promise<LessonVO[]> {
     return HttpMock.success(MockCommonApi.getLessons());
   }
 

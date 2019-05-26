@@ -51,7 +51,7 @@ export default class StudentCourseCard extends React.Component<IProp> {
           <div className={"bottom-div"}>
             <div>
               <div className={"course-name"}>
-                课程名称
+                课程名称: {course.name}
               </div>
               <div className={"course-teacher-name"}>
                 主讲：{course.teacherName}

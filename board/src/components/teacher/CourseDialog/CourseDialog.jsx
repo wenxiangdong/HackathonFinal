@@ -2,12 +2,10 @@ import React from "react";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import LessonList from "../../common/LessonList/LessonList";
 import type {LessonVO} from "../../../vo/vo";
-import {PropTypes} from "@material-ui/core";
 import SimpleLoading from "../../common/SimpleLoading";
 import Logger from "../../../utils/logger";
 import type {ICommonApi} from "../../../apis/common-api";
@@ -16,28 +14,24 @@ import {apiHub} from "../../../apis/ApiHub";
 import {withSnackbar} from "notistack";
 import {withRouter} from "react-router-dom";
 import type {HttpResponse} from "../../../apis/http";
-import {error} from "../../../utils/snackbar-helper";
-import {UserType} from "../../../vo/vo";
+import {error, success} from "../../../utils/snackbar-helper";
+import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
+import type {ITeacherApi} from "../../../apis/teacher-api";
+import SingleTextFormDialog from "../../common/SingleTextFormDialog/SingleTextFormDialog";
 
 interface IProp {
   onClose: () => void,
   title: string,
   courseId: number,
   finished: boolean,
-  userType: UserType,
-  content: string | null,
+  onEndCourse: () => void
 }
 
 interface IState {
   open: boolean,
-  lessons: LessonVO[]
-}
-
-export interface DialogActionConfig {
-  onClick: () => void;
-  title: string,
-  color: PropTypes.Color,
-  autoFocus: boolean
+  lessons: LessonVO[],
+  startLesson: boolean,
+  loading: boolean
 }
 
 /**
@@ -50,13 +44,17 @@ class CourseDialog extends React.Component<IProp, IState> {
 
   _logger: Logger;
   _commonApi: ICommonApi;
+  _teacherApi: ITeacherApi;
 
   constructor(props) {
     super(props);
     this._logger = Logger.getLogger("CourseDialog");
     this._commonApi = apiHub.commonApi;
+    this._teacherApi = apiHub.teacherApi;
     this.state = {
-      open: true
+      open: true,
+      startLesson: false,
+      loading: false
     };
   }
 
@@ -65,7 +63,7 @@ class CourseDialog extends React.Component<IProp, IState> {
   }
 
   queryLessons = () => {
-    this._commonApi.getLessonsByCourseId(this.props.courseId)
+    this._commonApi.getLessons(this.props.courseId)
       .then((lessons) => {
         this.setState({lessons});
       })
@@ -82,30 +80,42 @@ class CourseDialog extends React.Component<IProp, IState> {
   };
 
   handleSelectLesson = (lesson:LessonVO) => {
-    if (this.props.userType === UserType.STUDENT) {
-      if (lesson.endTime) {
-        this.props.history.push(`/Student/LessonReview/${lesson.id}`);
-      } else {
-        this.props.history.push(`/Student/LessonOnGoing/${lesson.id}`);
-      }
-    } else {
-      this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
-    }
+    this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+  };
+
+  handleStartLesson = () => {
+    this.setState({startLesson: true})
+  };
+
+  getTeacherId = () => {
+    return this.props.match.params.id;
+  };
+
+  startLesson = (name) => {
+    this.setState({loading: true});
+    let lesson:LessonVO = {
+      id: -1,
+      name,
+      courseId: this.props.courseId,
+      teacherId: this.getTeacherId(),
+      startTime: Date.now(),
+      endTime: 0
+    };
+    this._teacherApi.createLesson(lesson)
+      .then(() => {
+        this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+        success(`课程 ${name} 已成功开启`, this);
+      })
+      .catch((e) => {
+        this._logger.error(e);
+        this.setState({loading: false});
+        error(e.message, this);
+      })
   };
 
   render(): React.ReactNode {
-    const {title, content, actionConfigs} = this.props;
+    const {title} = this.props;
     const {lessons} = this.state;
-
-    let dialogContentText = (
-      content
-        ? (
-          <DialogContentText id="alert-dialog-description">
-            {content}
-          </DialogContentText>
-        )
-        : null
-    );
 
     let lessonList = (
       lessons
@@ -114,34 +124,42 @@ class CourseDialog extends React.Component<IProp, IState> {
     );
 
     let dialogActions = (
-      actionConfigs
-        ? (
+      this.props.finished
+        ? null
+        : (
           <DialogActions>
-            {
-              actionConfigs.map((config:DialogActionConfig) => (
-                <Button key={config.title} onClick={config.onClick} color={config.color} autoFocus={config.autoFocus}>
-                  {config.title}
-                </Button>
-              ))
-            }
+            <Button onClick={this.props.onEndCourse} color="primary">
+              结束课程
+            </Button>
+            <Button onClick={this.handleStartLesson} color="primary">
+              开始上课
+            </Button>
           </DialogActions>
         )
+    );
+
+    let lessonNameDialog = (
+      this.state.startLesson
+        ? <SingleTextFormDialog title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.startLesson(name)} buttonText={"开始上课"}/>
         : null
     );
 
     return (
-      <Dialog
-        open={this.state.open}
-        onClose={() => this.handleClose()}
-        aria-labelledby="alert-dialog-title"
-      >
-        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-        <DialogContent>
-          {dialogContentText}
-          {lessonList}
-        </DialogContent>
-        {dialogActions}
-      </Dialog>
+      <>
+        {this.state.loading? <FullScreenLoading/>: null}
+        {lessonNameDialog}
+        <Dialog
+          open={this.state.open}
+          onClose={() => this.handleClose()}
+          aria-labelledby="alert-dialog-title"
+        >
+          <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+          <DialogContent>
+            {lessonList}
+          </DialogContent>
+          {dialogActions}
+        </Dialog>
+      </>
     );
   }
 }
