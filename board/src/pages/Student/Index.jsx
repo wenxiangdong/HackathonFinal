@@ -107,7 +107,7 @@ class Index extends React.Component<IProp, IState> {
                     ))
                   }
                   {
-                    unfinishedCourse.map((course, idx) => (
+                    unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
                       <Grid key={`unfinished-course-${idx}-${course.id}`} item>
                         <StudentCourseCard course={course} ongoing={false}
                                            onClick={() => this.showCourseHistory(course)}/>
