@@ -1,0 +1,6 @@
+.LL__title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px;
+}

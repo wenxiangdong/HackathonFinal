@@ -63,7 +63,7 @@ export class Http {
  */
 export class HttpMock {
   static success<T>(data: T): Promise<T> {
-    return new Promise<T>(resolve => {
+    return new Promise(resolve => {
       setTimeout(() => {
         resolve(data);
       }, 1000);

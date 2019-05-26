@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import loadable from "@loadable/component";
 import {HashRouter, Switch, Route} from "react-router-dom";
+import Dev from "./pages/Dev";
 
 
 // 引入页面
@@ -25,6 +26,7 @@ function App() {
         <Route path="/Student/:id" component={StudentHomepage}/>
         <Route path="/Register" component={Register}/>
         <Route path="/Login" component={Login}/>
+        <Route path="/dev" component={Dev}/>
         <Route component={Login}/>
       </Switch>
     </HashRouter>
