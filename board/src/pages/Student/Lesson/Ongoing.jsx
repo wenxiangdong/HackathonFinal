@@ -14,7 +14,6 @@ interface IState {
 }
 
 interface IProp {
-  initTeacherNoteItemVOs?: TeacherNoteItemVO[];
 }
 
 /**
@@ -42,15 +41,9 @@ export default class Ongoing extends React.Component<IProp, IState> {
     super(props);
     this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
-
-    if (this.props.initTeacherNoteItemVOs) {
-      // 偷懒的深拷贝
-      this.teacherNoteVOList = JSON.parse(JSON.stringify(this.props.initTeacherNoteItemVOs));
-    }
   }
 
   render(): React.ReactNode {
-    const {mode} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
