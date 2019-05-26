@@ -1,0 +1,22 @@
+.canvas-padding {
+  min-height: 100vh;
+  display: flex;
+  padding: 20px 120px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: #efefef;
+}
+
+.canvas-box {
+  flex: auto;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,.1);
+}
+
+
+canvas {
+  width: 100%;
+  line-height: 0;
+  vertical-align: middle;
+  background: white;
+}
