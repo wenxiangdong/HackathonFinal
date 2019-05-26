@@ -1,4 +1,4 @@
-import type {CourseVO, StudentNoteBookVO, StudentNoteItemVO, TeacherNoteBookVO} from "../vo/vo";
+import type {CourseVO, StudentNoteBookVO, StudentNoteItemVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 
 export interface IStudentApi {

@@ -22,7 +22,7 @@ export interface ITeacherApi {
   // 老师上课
   // 服务端做了两个 初始化
   // post
-  createLesson(lessonVO: lessonVO): Promise<TeacherNoteBookVO>;
+  createLesson(lessonVO: LessonVO): Promise<TeacherNoteBookVO>;
 
   // 老师发送板书
   // post
@@ -89,30 +89,30 @@ export class MockTeacherApi implements ITeacherApi {
   }
 
   createCourse(courseVO: CourseVO): Promise<CourseVO> {
-
+    return HttpMock.success({});
   }
 
   updateCourse(courseVO: CourseVO): Promise<CourseVO> {
-
+    return HttpMock.success({finished: true});
   }
 
   createLesson(lessonVO: LessonVO): Promise<TeacherNoteBookVO> {
-
+    return HttpMock.success({});
   }
 
   sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
-
+    return HttpMock.success({});
   }
 
   updateTeacherNote(teacherNoteId: Number): Promise<void> {
-
+    return HttpMock.success();
   }
 
   deleteTeacherNote(teacherNoteId: Number): Promise<void> {
-
+    return HttpMock.success();
   }
 
   endLesson(lessonId: Number): Promise<void> {
-
+    return HttpMock.success();
   }
 }

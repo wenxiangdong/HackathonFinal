@@ -1,32 +1,29 @@
 import React from "react";
-import LessonList from "../components/common/LessonList/LessonList";
-import type {LessonVO} from "../vo/vo";
-import SearchCourse from "../components/student/SearchCourse/SearchCourse";
+// import type {LessonVO} from "../vo/vo";
 import WebsocketPublisher from "../utils/websocket-publisher";
 import Logger from "../utils/logger";
-import Input from "@material-ui/core/Input";
 import PDFLoader from "../components/teacher/PDFLoader/PDFLoader";
 import PDFPreviewer from "../components/teacher/PDFPreviewer/PDFPreviewer";
 
 export default class Dev extends React.Component {
   state = {pdf: {}};
-  lessons: LessonVO[] = [
-    {
-      id: 1,
-      name: "名称",
-      startTime: new Date().getTime()
-    },
-    {
-      id: 2,
-      name: "名称",
-      startTime: new Date().getTime()
-    },
-    {
-      id: 3,
-      name: "名称",
-      startTime: new Date().getTime()
-    },
-  ];
+  // lessons: LessonVO[] = [
+  //   {
+  //     id: 1,
+  //     name: "名称",
+  //     startTime: new Date().getTime()
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "名称",
+  //     startTime: new Date().getTime()
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "名称",
+  //     startTime: new Date().getTime()
+  //   },
+  // ];
   _logger = Logger.getLogger(Dev.name);
 
   componentDidMount(): void {

@@ -14,10 +14,11 @@ import Button from "@material-ui/core/Button/Button";
 import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
 import SimpleLine from "../../components/common/SimpleLine";
 import CourseDialog from "../../components/student/CourseDialog/CourseDialog";
-import {UserType} from "../../vo/vo";
 import EmptyCourseCard from "../../components/common/EmptyCourseCard";
 
 import "./index.css"
+import type {HttpResponse} from "../../apis/http";
+import {error} from "../../utils/snackbar-helper";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -46,15 +47,15 @@ export default class Index extends React.Component<any, IState> {
   componentDidMount(): void {
     this._studentApi.studentGetOnGoingCourses()
       .then((courses) => this.setState({ongoingCourse: courses}))
-      .catch()
+      .catch(e => this.handleError(e))
     ;
     this._studentApi.studentGetUnfinishedCourses()
       .then((courses) => this.setState({unfinishedCourse: courses}))
-      .catch()
+      .catch(e => this.handleError(e))
     ;
     this._studentApi.studentGetFinishedCourses()
       .then((courses) => this.setState({finishedCourse: courses}))
-      .catch()
+      .catch(e => this.handleError(e))
     ;
   }
 
@@ -64,6 +65,12 @@ export default class Index extends React.Component<any, IState> {
 
   showCourseHistory = (course) => {
     this.setState({checkCourse: course});
+  };
+
+  handleError = (e:HttpResponse) => {
+    this._logger.error(e);
+    error(e.message, this);
+    this.setState({loading: false});
   };
 
   render(): React.ReactNode {
@@ -141,7 +148,6 @@ export default class Index extends React.Component<any, IState> {
           <CourseDialog onClose={() => this.setState({checkCourse: null})}
                         title={checkCourse? `课程名称：${checkCourse.name}`: '课程'}
                         courseId={checkCourse.id}
-                        userType={UserType.STUDENT}
                         content={checkCourse? `主讲：${checkCourse.username}`: null}
           />
         )

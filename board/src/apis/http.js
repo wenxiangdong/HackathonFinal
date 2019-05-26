@@ -58,7 +58,7 @@ export class Http {
   }
 
   static async uploadFile(file: File): Promise<String> {
-    return URL.createObjectURL(file);
+    // return URL.createObjectURL(file); TODO
     const form = new FormData();
     form.append("file", file);
     const res = await Axios.request({
