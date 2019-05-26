@@ -20,7 +20,6 @@ import DialogContentText from "@material-ui/core/DialogContentText/DialogContent
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
 import SimpleLine from "../../components/common/SimpleLine";
-import Icon from "@material-ui/core/Icon/Icon";
 
 interface IState {
   ongoingCourse: CourseVO[];

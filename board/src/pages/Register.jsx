@@ -73,13 +73,10 @@ class Register extends React.Component {
               fullWidth
               variant="contained"
               color="primary"
-              className={"register-button"}
+              className={"return-button"}
             >
               返回
             </Button>
-            <Link to={"/Register"}>
-              <div className={'to-register'}>还没有账户？点击注册</div>
-            </Link>
           </form>
         </div>
       </div>
