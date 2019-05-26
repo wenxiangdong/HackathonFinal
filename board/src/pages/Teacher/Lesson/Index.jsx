@@ -24,6 +24,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {drawNoteList} from "../../../utils/draw-teacher-note";
 import {formatContent, NoteTypes} from "../../../utils/teacher-note-helper";
 import {apiHub} from "../../../apis/ApiHub";
+import ColorPicker from "../../../components/common/ColorPicker/ColorPicker";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -40,6 +41,7 @@ interface IState {
 
   pages: TeacherNoteItemVO[][];
   pageIndex: number;
+  selectedColor: string;
 }
 
 interface IProp {
@@ -71,7 +73,8 @@ export default class Index extends React.Component<IProp, IState> {
       open: false,
       selectedPdfUrl: "",
       pages: [[]],
-      pageIndex: 0
+      pageIndex: 0,
+      selectedColor: "#bf291c"
     };
 
     if (this.props.initTeacherNoteItemVOs) {
@@ -79,6 +82,12 @@ export default class Index extends React.Component<IProp, IState> {
       this.teacherNoteVOList = JSON.parse(JSON.stringify(this.props.initTeacherNoteItemVOs));
     }
   }
+
+  handleSelectColor = (color) => {
+    this.setState({
+      selectedColor: color
+    })
+  };
 
   // 处理PDFPreviewer的导出事件
   handleImportPages = (pdf, indexes: number[]) => {
@@ -131,6 +140,13 @@ export default class Index extends React.Component<IProp, IState> {
     });
   };
 
+  shouldComponentUpdate(nextProps: Readonly<IProp>, nextState: Readonly<IState>, nextContext: any): boolean {
+    if (nextState.selectedColor !== this.state.selectedColor) {
+      this.ctx.strokeStyle = nextState.selectedColor;
+    }
+    return true;
+  }
+
   render(): React.ReactNode {
     const {mode, open} = this.state;
 
@@ -142,9 +158,10 @@ export default class Index extends React.Component<IProp, IState> {
         onClose={this.toggleDrawer()}
       >
         <div style={{width: "500px", padding: "16px"}}>
-          <Typography variant="h5" gutterBottom>
-            工具栏
+          <Typography variant="h6" gutterBottom>
+            选择颜色
           </Typography>
+          <div className={"tool-item-wrapper"}><ColorPicker selectColor={this.state.selectedColor} onColorSelect={this.handleSelectColor}/></div>
           <Divider/>
           <div className={"tool-item-wrapper"}><PDFLoader onSelectPDF={(pdf) => this.setState({selectedPdfUrl: pdf.url})}/></div>
           <div className={"tool-item-wrapper"}><PDFPreviewer src={this.state.selectedPdfUrl} onImportPages={this.handleImportPages}/></div>
@@ -450,7 +467,7 @@ export default class Index extends React.Component<IProp, IState> {
   initCanvas() {
     this.ctx = document.getElementById("canvas").getContext('2d');
     this.ctx.lineWidth = 4;
-    this.ctx.strokeStyle = '#D32F2F'; // todo temp
+    this.ctx.strokeStyle = this.state.selectedColor;
     // this.reRenderTeacherNoteVOList();
     this.reRenderPage([]);
   }
