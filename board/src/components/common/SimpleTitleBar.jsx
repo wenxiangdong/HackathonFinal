@@ -1,5 +1,6 @@
 import React from "react";
 import Typography from '@material-ui/core/Typography';
+import Container from "@material-ui/core/Container/Container";
 
 interface IProp {
   title: string
@@ -15,11 +16,11 @@ export default class SimpleTitleBar extends React.Component<IProp> {
     const title = this.props.title;
 
     return (
-      <div className={"title-wrapper"}>
+      <Container className={"title-wrapper"}>
         <Typography className={"title"}>
           {title}
         </Typography>
-      </div>
+      </Container>
     );
   }
 }

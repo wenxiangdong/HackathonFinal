@@ -6,11 +6,17 @@ import {apiHub} from "../../apis/ApiHub";
 import StudentCourseCard from "../../components/student/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
+import SearchCourse from "../../components/student/SearchCourse";
+import SimpleLoading from "../../components/common/SimpleLoading";
 
 interface IState {
   ongoingCourse: CourseVO[];
+  loadingOngoing: boolean;
   unfinishedCourse: CourseVO[];
+  loadingUnfinished: boolean;
   finishedCourse: CourseVO[];
+  loadingFinished: boolean;
+
   studentVO: UserVO;
 }
 
@@ -27,7 +33,11 @@ export default class Index extends React.Component<any, IState> {
     super(props);
     this._logger = Logger.getLogger("StudentHomepage");
     this._studentApi = apiHub.studentApi;
-    this.state = {};
+    this.state = {
+      loadingOngoing: true,
+      loadingUnfinished: true,
+      loadingFinished: true
+    };
   }
 
   componentDidMount(): void {
@@ -49,26 +59,69 @@ export default class Index extends React.Component<any, IState> {
     return this.props.match.params.id;
   };
 
-  handleOngoingCourseClicked = (course) => {
+  joinCourse = (course) => {
+  //  TODO
+  };
 
+  showCourseHistory = (course) => {
+    //  TODO
+  };
+
+  handleSearchCourseSelected = (course) => {
+    //  TODO
   };
 
   render(): React.ReactNode {
     let ongoingCourse = this.state.ongoingCourse;
-    // let unfinishedCourse = this.state.unfinishedCourse;
-    // let finishedCourse = this.state.finishedCourse;
+    let unfinishedCourse = this.state.unfinishedCourse;
+    let finishedCourse = this.state.finishedCourse;
 
     let myCourseFragment = (
       <div className={"my-course"}>
         <SimpleTitleBar title={"我的课程"}/>
         <Grid container className={"courses-grid"} spacing={2}>
-          {ongoingCourse && ongoingCourse.length > 0
-            ? ongoingCourse.map((course, idx) => (
-              <Grid key={`ongoing-course-${idx}-${course.id}`} item>
-                <StudentCourseCard course={course} ongoing={true} onClick={() => this.handleOngoingCourseClicked(course)}/>
+          {ongoingCourse && unfinishedCourse
+            ? (ongoingCourse.length === 0 && unfinishedCourse === 0)
+              ? null // TODO 空卡片
+              : (
+                <>
+                  {
+                    ongoingCourse.map((course, idx) => (
+                      <Grid key={`ongoing-course-${idx}-${course.id}`} item>
+                        <StudentCourseCard course={course} ongoing={true} onClick={() => this.joinCourse(course)}/>
+                      </Grid>
+                    ))
+                  }
+                  {
+                    unfinishedCourse.map((course, idx) => (
+                      <Grid key={`unfinished-course-${idx}-${course.id}`} item>
+                        <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
+                      </Grid>
+                    ))
+                  }
+                </>
+              )
+            : <SimpleLoading/>
+          }
+        </Grid>
+      </div>
+    );
+
+    let historyCourseFragment = (
+      <div className={"my-course"}>
+        <SimpleTitleBar title={"历史课程"}/>
+        <Grid container className={"courses-grid"} spacing={2}>
+          {finishedCourse && finishedCourse.length > 0
+            ? finishedCourse.map((course, idx) => (
+              <Grid key={`finished-course-${idx}-${course.id}`} item>
+                <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
               </Grid>
             ))
-            : null
+            : (
+              this.state.loadingFinished
+                ? <SimpleLoading/>
+                : null // TODO 空卡片
+            )
           }
         </Grid>
       </div>
@@ -76,7 +129,9 @@ export default class Index extends React.Component<any, IState> {
 
     return (
       <React.Fragment>
+        <SearchCourse onSelectCourse={this.handleSearchCourseSelected}/>
         {myCourseFragment}
+        {historyCourseFragment}
       </React.Fragment>
     );
   }
