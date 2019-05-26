@@ -15,10 +15,9 @@ import {withSnackbar} from "notistack";
 import {withRouter} from "react-router-dom";
 import type {HttpResponse} from "../../../apis/http";
 import {error, success} from "../../../utils/snackbar-helper";
-import TextField from "@material-ui/core/TextField/TextField";
-import updateState from "../../../utils/state-helper";
 import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
 import type {ITeacherApi} from "../../../apis/teacher-api";
+import SingleTextFormDialog from "../../common/SingleTextFormDialog/SingleTextFormDialog";
 
 interface IProp {
   onClose: () => void,
@@ -32,7 +31,6 @@ interface IState {
   open: boolean,
   lessons: LessonVO[],
   startLesson: boolean,
-  lessonName: string,
   loading: boolean
 }
 
@@ -56,7 +54,6 @@ class CourseDialog extends React.Component<IProp, IState> {
     this.state = {
       open: true,
       startLesson: false,
-      lessonName: "",
       loading: false
     };
   }
@@ -94,11 +91,11 @@ class CourseDialog extends React.Component<IProp, IState> {
     return this.props.match.params.id;
   };
 
-  startLesson = () => {
+  startLesson = (name) => {
     this.setState({loading: true});
     let lesson:LessonVO = {
       id: -1,
-      name: this.state.lessonName,
+      name,
       courseId: this.props.courseId,
       teacherId: this.getTeacherId(),
       startTime: Date.now(),
@@ -107,7 +104,7 @@ class CourseDialog extends React.Component<IProp, IState> {
     this._teacherApi.createLesson(lesson)
       .then(() => {
         this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
-        success(`课程 ${lesson.name} 已成功开启`, this);
+        success(`课程 ${name} 已成功开启`, this);
       })
       .catch((e) => {
         this._logger.error(e);
@@ -142,25 +139,9 @@ class CourseDialog extends React.Component<IProp, IState> {
     );
 
     let lessonNameDialog = (
-      <Dialog open={this.state.startLesson} onClose={() => this.setState({startLesson: false})} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">课程名称</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="lessonName"
-            label="课程名称"
-            fullWidth
-            value={this.state.lessonName}
-            onChange={(e) => updateState("lessonName", e.target.value, this)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => this.startLesson()} color="primary">
-            开始上课
-          </Button>
-        </DialogActions>
-      </Dialog>
+      this.state.startLesson
+        ? <SingleTextFormDialog title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.startLesson(name)} buttonText={"开始上课"}/>
+        : null
     );
 
     return (

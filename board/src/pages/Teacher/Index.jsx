@@ -9,25 +9,34 @@ import Grid from "@material-ui/core/Grid/Grid";
 import StudentCourseCard from "../../components/student/StudentCourseCard/StudentCourseCard";
 import SimpleLoading from "../../components/common/SimpleLoading";
 
+import AddIcon from "@material-ui/icons/Add"
 import "./../Student/index.css"
 import EmptyCourseCard from "../../components/common/EmptyCourseCard";
 import CourseDialog from "../../components/teacher/CourseDialog/CourseDialog";
 import type {HttpResponse} from "../../apis/http";
 import {error, success} from "../../utils/snackbar-helper";
 import FullScreenLoading from "../../components/common/FullScreenLoading/FullScreenLoading";
+import Button from "@material-ui/core/Button/Button";
+import SingleTextFormDialog from "../../components/common/SingleTextFormDialog/SingleTextFormDialog";
+import {withSnackbar} from "notistack";
 
 interface IState {
   unfinishedCourses: CourseVO[];
   finishedCourses: CourseVO[];
   checkCourse: CourseVO;
+  addCourse: boolean;
   loading: boolean
+}
+
+interface IProp {
+  enqueueSnackbar?: () => void;
 }
 
 /**
  * Teacher Homepage
  * @create 2019/5/26 14:22
  */
-export default class Index extends React.Component<any, IState> {
+class Index extends React.Component<IProp, IState> {
 
   _logger: Logger;
   _teacherApi: ITeacherApi;
@@ -37,7 +46,8 @@ export default class Index extends React.Component<any, IState> {
     this._logger = Logger.getLogger("TeacherHomepage");
     this._teacherApi = apiHub.teacherApi;
     this.state = {
-      loading: false
+      loading: false,
+      addCourse: false
     };
   }
 
@@ -75,6 +85,30 @@ export default class Index extends React.Component<any, IState> {
     ;
   };
 
+  createCourse = (name) => {
+    this.setState({loading: true});
+
+    let course:CourseVO = {
+      id: -1,
+      name,
+      finished: false,
+      teacherId: this.getTeacherId(),
+      teacherName: ""
+    };
+    this._teacherApi.createCourse(course)
+      .then((course) => {
+        this.setState({loading: false, addCourse: false, unfinishedCourses: [course, ...this.state.unfinishedCourses]}, () => {
+          success(`课程 ${name} 已成功创建`, this);
+        });
+      })
+      .catch(e => this.handleError(e))
+    ;
+  };
+
+  getTeacherId = () => {
+    return this.props.match.params.id;
+  };
+
   handleError = (e:HttpResponse) => {
     this._logger.error(e);
     error(e.message, this);
@@ -87,7 +121,14 @@ export default class Index extends React.Component<any, IState> {
 
     let unfinishedCourseFragment = (
       <Container className={"courses-wrapper"}>
-        <SimpleTitleBar title={"进行中课程"}/>
+        <div className={"my-courses"}>
+          <SimpleTitleBar title={"进行中课程"}/>
+          <span className={"spacer"}/>
+          <Button variant="contained" color="primary" onClick={() => this.setState({addCourse: true})}>
+            创建新课程
+            <AddIcon/>
+          </Button>
+        </div>
         <Grid container className={"courses-grid"} spacing={2}>
           {unfinishedCourses
             ? unfinishedCourses.length > 0
@@ -101,6 +142,12 @@ export default class Index extends React.Component<any, IState> {
           }
         </Grid>
       </Container>
+    );
+
+    let addCourseDialog = (
+      this.state.addCourse
+        ? <SingleTextFormDialog title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.createCourse(name)} buttonText={"创建课程"}/>
+        : null
     );
 
     let finishedCourseFragment = (
@@ -140,8 +187,11 @@ export default class Index extends React.Component<any, IState> {
         {this.state.loading? <FullScreenLoading/>: null}
         {unfinishedCourseFragment}
         {finishedCourseFragment}
+        {addCourseDialog}
         {checkCourseDialog}
       </Container>
     );
   }
 }
+
+export default withSnackbar(Index);
