@@ -12,7 +12,7 @@ import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 
-import InboxIcon from "@material-ui/icons/Inbox"
+import ToolIcon from "@material-ui/icons/Build"
 import Fab from "@material-ui/core/Fab/Fab";
 import PDFLoader from "../../../components/teacher/PDFLoader/PDFLoader";
 import PDFPreviewer from "../../../components/teacher/PDFPreviewer/PDFPreviewer";
@@ -20,11 +20,15 @@ import Typography from "@material-ui/core/Typography";
 
 import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
+import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import {drawNoteList} from "../../../utils/draw-teacher-note";
 import {formatContent, NoteTypes} from "../../../utils/teacher-note-helper";
 import {apiHub} from "../../../apis/ApiHub";
 import ColorPicker from "../../../components/common/ColorPicker/ColorPicker";
+import TextField from "@material-ui/core/TextField";
+import {withSnackbar} from "notistack";
+import Button from "@material-ui/core/Button";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -46,13 +50,14 @@ interface IState {
 
 interface IProp {
   initTeacherNoteItemVOs?: TeacherNoteItemVO[];
+  enqueueSnackbar?: () => void;
 }
 
 /**
  * Ongoing
  * @create 2019/5/26 14:21
  */
-export default class Index extends React.Component<IProp, IState> {
+class Index extends React.Component<IProp, IState> {
 
   logger = Logger.getLogger(Index.name);
 
@@ -135,6 +140,7 @@ export default class Index extends React.Component<IProp, IState> {
     pageIndex += offset;
     if (pageIndex >= pages.length) {
       pages.push([]);
+      this.props.enqueueSnackbar("新建页面");
     }
     this.setState({
       pages,
@@ -144,12 +150,34 @@ export default class Index extends React.Component<IProp, IState> {
     });
   };
 
+  handleChangePageIndex = (e) => {
+    let pageIndex = parseInt(e.target.value);
+    if (Number.isNaN(pageIndex)) {
+      return;
+    }
+    if (pageIndex < 0) {
+      return;
+    }
+    if (pageIndex >= this.state.pages.length) {
+      return;
+    }
+    this.setState({pageIndex}, () => {
+      this.reRenderPage(this.state.pages[pageIndex]);
+    });
+  };
+
   shouldComponentUpdate(nextProps: Readonly<IProp>, nextState: Readonly<IState>, nextContext: any): boolean {
     if (nextState.selectedColor !== this.state.selectedColor) {
       this.ctx.strokeStyle = nextState.selectedColor;
     }
     return true;
   }
+
+  handleClickOver = () => {
+    // TODO 调用api
+    // apiHub.teacherApi.endLesson()
+    this.props.history.goBack();
+  };
 
   render(): React.ReactNode {
     const {mode, open} = this.state;
@@ -169,6 +197,10 @@ export default class Index extends React.Component<IProp, IState> {
           <Divider/>
           <div className={"tool-item-wrapper"}><PDFLoader onSelectPDF={(pdf) => this.setState({selectedPdfUrl: pdf.url})}/></div>
           <div className={"tool-item-wrapper"}><PDFPreviewer src={this.state.selectedPdfUrl} onImportPages={this.handleImportPages}/></div>
+          <Divider/>
+          <div className={"tool-item-wrapper"}>
+            <Button variant="contained" color={"primary"} fullWidth onClick={this.handleClickOver}>下课</Button>
+          </div>
         </div>
       </Drawer>
     );
@@ -191,7 +223,7 @@ export default class Index extends React.Component<IProp, IState> {
     const fab = (
       <div className={"fab-box"}>
         <Fab color="primary" aria-label="Add" onClick={() => this.openDrawer()}>
-          <InboxIcon/>
+          <ToolIcon/>
         </Fab>
       </div>
     );
@@ -202,8 +234,16 @@ export default class Index extends React.Component<IProp, IState> {
         <IconButton disabled={this.state.pageIndex <= 0} onClick={() => this.handleClickSwitchPage(-1)}>
           <LeftIcon/>
         </IconButton>
+        <span>
+          <TextField
+            type="number"
+            style={{width: "24px", textAlign: "center"}}
+            value={this.state.pageIndex}
+            onChange={this.handleChangePageIndex}/>
+          {/*{this.state.pageIndex}*/}
+        </span>
         <IconButton onClick={() => this.handleClickSwitchPage(1)}>
-          <RightIcon/>
+          {this.state.pageIndex === this.state.pages.length - 1 ? <AddIcon/> : <RightIcon/>}
         </IconButton>
       </div>
     );
@@ -481,3 +521,5 @@ export default class Index extends React.Component<IProp, IState> {
     e.preventDefault();
   }
 }
+
+export default withSnackbar(Index);
