@@ -85,7 +85,7 @@ class PDFLoader extends React.Component<IProp, IState> {
     return (
       <Card>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             PDF列表
           </Typography>
           <List>

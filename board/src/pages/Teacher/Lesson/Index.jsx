@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./../../CanvasCommon.css"
+import "./Index.css";
 import Logger from "../../../utils/logger";
 import type {TeacherNoteItemVO} from "../../../vo/vo";
 import {Point} from "../../../vo/vo";
@@ -13,13 +14,22 @@ import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 
 import InboxIcon from "@material-ui/icons/Inbox"
 import Fab from "@material-ui/core/Fab/Fab";
+import PDFLoader from "../../../components/teacher/PDFLoader/PDFLoader";
+import PDFPreviewer from "../../../components/teacher/PDFPreviewer/PDFPreviewer";
+import Typography from "@material-ui/core/Typography";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
   actualSettingWidthRate: string,
   // paint or erase
   mode: string,
-  open: boolean
+  open: boolean,
+  selectedPdfUrl: string,
+  // pdf 那个pdfjsLib的一个api对象
+  // pdf.getPage(1).then(function(page) {
+  //   // you can now use *page* here
+  // });
+  pdbjsPDF: any;
 }
 
 interface IProp {
@@ -47,7 +57,8 @@ export default class Index extends React.Component<IProp, IState> {
     this.state = {
       actualSettingWidthRate: 1,
       mode: "paint",
-      open: false
+      open: false,
+      selectedPdfUrl: ""
     };
 
     if (this.props.initTeacherNoteItemVOs) {
@@ -55,6 +66,11 @@ export default class Index extends React.Component<IProp, IState> {
       this.teacherNoteVOList = JSON.parse(JSON.stringify(this.props.initTeacherNoteItemVOs));
     }
   }
+
+  // 处理PDFPreviewer的导出事件
+  handleImportPages = (pdf, indexes: number[]) => {
+    this.logger.info(pdf, indexes);
+  };
 
   render(): React.ReactNode {
     const {mode, open} = this.state;
@@ -66,20 +82,14 @@ export default class Index extends React.Component<IProp, IState> {
         open={open}
         onClose={this.toggleDrawer()}
       >
-        <Divider />
-        <List>
-          <ListItem button key={"123123"}>
-            <ListItemIcon><InboxIcon /></ListItemIcon>
-            <ListItemText primary={"123123"} />
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-          <ListItem button key={"123123"}>
-            <ListItemIcon><InboxIcon /></ListItemIcon>
-            <ListItemText primary={"123123"} />
-          </ListItem>
-        </List>
+        <div style={{width: "500px", padding: "16px"}}>
+          <Typography variant="h5" gutterBottom>
+            工具栏
+          </Typography>
+          <Divider/>
+          <div className={"tool-item-wrapper"}><PDFLoader onSelectPDF={(pdf) => this.setState({selectedPdfUrl: pdf.url})}/></div>
+          <div className={"tool-item-wrapper"}><PDFPreviewer src={this.state.selectedPdfUrl} onImportPages={this.handleImportPages}/></div>
+        </div>
       </Drawer>
     );
 
@@ -101,7 +111,7 @@ export default class Index extends React.Component<IProp, IState> {
     const fab = (
       <div className={"fab-box"}>
         <Fab color="primary" aria-label="Add" onClick={() => this.openDrawer()}>
-          <InboxIcon />
+          <InboxIcon/>
         </Fab>
       </div>
     );
@@ -115,7 +125,7 @@ export default class Index extends React.Component<IProp, IState> {
     );
   }
 
-  openDrawer () {
+  openDrawer() {
     this.logger.info(123);
     this.setState({open: true})
   }

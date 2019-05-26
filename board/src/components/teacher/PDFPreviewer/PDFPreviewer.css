@@ -14,3 +14,7 @@
 .PP__canvas {
     width: 100%;
 }
+
+.PP__canvas-btn {
+    position: absolute;
+}

@@ -104,16 +104,17 @@ class PDFPreviewer extends React.Component<IProp, IState> {
     const {pageNums} = this.state;
     const canvasList = Array(pageNums).fill("").map((_, index) => (
       <div
+        onClick={() => this.handleSelectPages([index])}
         className={"PP__canvas-wrapper"}
-        key={this._baseCanvasId + index}
-        onClick={() => this.handleSelectPages([index])}>
+        key={this._baseCanvasId + index}>
         <canvas className={"PP__canvas"} id={this._baseCanvasId + index} width={this._canvasWidth}/>
+        {/*<Button className={"PP__canvas-btn"} onClick={() => this.handleSelectPages([index])}>导入</Button>*/}
       </div>
     ));
     return (
       <Card>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             PDF预览
           </Typography>
           <div className={"PP__list-wrapper"}>
