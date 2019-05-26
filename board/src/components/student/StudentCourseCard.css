@@ -6,8 +6,9 @@
 
   flex-direction: column;
   flex-wrap: nowrap;
+  text-align: left;
 
-  box-shadow: rgba(0,0,0,.3) 0 0 10px 0;
+  /*box-shadow: rgba(0,0,0,.3) 0 0 10px 0;*/
 }
 
 .top-div {
