@@ -20,3 +20,9 @@ canvas {
   vertical-align: middle;
   background: white;
 }
+
+.fab-box {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+}

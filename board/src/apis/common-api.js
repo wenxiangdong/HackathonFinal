@@ -1,4 +1,4 @@
-import type {LessonVO, UserVO} from "../vo/vo";
+import type {LessonVO, TeacherNoteBookVO, UserVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 import {UserType} from "../vo/vo";
 
@@ -14,23 +14,36 @@ export interface ICommonApi {
   // 学生根据课程拿所有的课
   // get:
   getLessonsByCourseId(courseId: Number): Promise<LessonVO[]>;
+
+  // 学生根据lessonId拿老师的板书
+  // get:
+  getTeacherNoteBook(lessonId: Number): Promise<TeacherNoteBookVO>;
+
+  // 上传文件
+  // 文件的完整url
+  // post
+  uploadFile(file: File): String;
 }
 
 export class CommonApi implements ICommonApi {
-  // 注册
-  // post:
   async register(userVO: UserVO): Promise<UserVO> {
     return Http.post("/register", userVO);
   }
 
-  // 登陆
-  // post:
   async login(userVO: UserVO): Promise<UserVO> {
     return Http.post("/login", userVO);
   }
 
   getLessonsByCourseId(courseId: Number): Promise<LessonVO[]> {
     return Http.get("/getLessonsByCourseId", {courseId});
+  }
+
+  getTeacherNoteBook(lessonId: Number): Promise<TeacherNoteBookVO> {
+    return Http.get("/getTeacherNoteBook", {lessonId});
+  }
+
+  uploadFile(file: File): Promise<String> {
+    return Http.get("/uploadFile", {file});
   }
 }
 
@@ -76,5 +89,13 @@ export class MockCommonApi implements ICommonApi {
 
   getLessonsByCourseId(courseId: Number): Promise<LessonVO[]> {
     return HttpMock.success(MockCommonApi.getLessons());
+  }
+
+  getTeacherNoteBook(lessonId: Number): Promise<TeacherNoteBookVO> {
+
+  }
+
+  uploadFile(file: File): Promise<String> {
+
   }
 }

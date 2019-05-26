@@ -14,7 +14,6 @@ export const UserType = {
 export interface CourseVO {
   id: Number;
   name: String;
-  username: String;
   finished: Boolean;
   teacherId: Number;
   teacherName: String;
@@ -36,7 +35,6 @@ export interface Point {
 
 export interface TeacherNoteItemVO {	// 老师的板书节点
   id: Number;
-  bookId: Number;
   page: Number;
   color: String;
   content: String;
@@ -54,7 +52,6 @@ export interface TeacherNoteBookVO {	// 老师板书
 
 export interface StudentNoteItemVO {
   id: Number;
-  bookId: Number;
   teacherNoteItemId: Number;
   content: String;
 }

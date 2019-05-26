@@ -5,10 +5,10 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
-import LessonList from "../LessonList/LessonList";
+import LessonList from "../../common/LessonList/LessonList";
 import type {LessonVO} from "../../../vo/vo";
 import {PropTypes} from "@material-ui/core";
-import SimpleLoading from "../SimpleLoading";
+import SimpleLoading from "../../common/SimpleLoading";
 import Logger from "../../../utils/logger";
 import type {ICommonApi} from "../../../apis/common-api";
 import {apiHub} from "../../../apis/ApiHub";
@@ -23,9 +23,9 @@ interface IProp {
   onClose: () => void,
   title: string,
   courseId: number,
+  finished: boolean,
   userType: UserType,
-  content? : string,
-  actionConfigs?: DialogActionConfig[]
+  content: string | null,
 }
 
 interface IState {
@@ -118,7 +118,7 @@ class CourseDialog extends React.Component<IProp, IState> {
         ? (
           <DialogActions>
             {
-              actionConfigs.map((config:DialogActionConfig, idx) => (
+              actionConfigs.map((config:DialogActionConfig) => (
                 <Button key={config.title} onClick={config.onClick} color={config.color} autoFocus={config.autoFocus}>
                   {config.title}
                 </Button>
