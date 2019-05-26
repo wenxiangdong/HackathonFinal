@@ -39,19 +39,26 @@ export function drawTeacherNote(vo: TeacherNoteItemVO, ctx: CanvasRenderingConte
         pdf.getPage(parseInt(result.page))
           .then(page => {
             let viewport = page.getViewport({scale: 1,});
-            const rate =  viewport.width / viewport.height;
+            const rate = viewport.width / viewport.height;
             let scale = 1;
+            let offsetTop = 0;
+            let offsetLeft = 0;
             if (rate > 16 / 9) {
               scale = 3200 / viewport.width;
+              offsetTop = (1800 - viewport.height * scale) / 2;
             } else {
               scale = 1800 / viewport.height;
+              offsetLeft = (3200 - viewport.width * scale) / 2;
+
             }
-            viewport = page.getViewport({scale: scale});
+
+            viewport = page.getViewport({scale: scale, offsetLeft: -offsetLeft, offsetTop: -offsetTop});
             const renderContext = {
               canvasContext: ctx,
               viewport: viewport
             };
             page.render(renderContext);
+
           })
           .catch(e => {
             logger.error(e);

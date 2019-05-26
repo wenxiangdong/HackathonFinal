@@ -64,3 +64,12 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+.finished .top-div {
+  background: #8BC34A;
+}
+
+.unfinished .top-div {
+  background: #009688;
+}
+

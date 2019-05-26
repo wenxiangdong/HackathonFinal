@@ -104,7 +104,7 @@ class PDFPreviewer extends React.Component<IProp, IState> {
     const {pageNums} = this.state;
     const canvasList = Array(pageNums).fill("").map((_, index) => (
       <div
-        onClick={() => this.handleSelectPages([index])}
+        onClick={() => this.handleSelectPages([index + 1])}
         className={"PP__canvas-wrapper"}
         key={this._baseCanvasId + index}>
         <canvas className={"PP__canvas"} id={this._baseCanvasId + index} width={this._canvasWidth}/>
