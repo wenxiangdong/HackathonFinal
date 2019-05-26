@@ -7,6 +7,8 @@ import updateState from "../../../utils/state-helper";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 
+import "./../Dialog.css"
+
 interface IProp {
   title: string,
   label: string,

@@ -5,7 +5,7 @@ import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
 import StudentCourseCard from "../../components/student/StudentCourseCard/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
-import SimpleTitleBar from "../../components/common/SimpleTitleBar";
+import SimpleTitleBar from "../../components/common/SimpleTitleBar/SimpleTitleBar";
 import SimpleLoading from "../../components/common/SimpleLoading";
 
 import SearchIcon from "@material-ui/icons/Search"
