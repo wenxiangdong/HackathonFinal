@@ -21,6 +21,9 @@ import Typography from "@material-ui/core/Typography";
 import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 import IconButton from "@material-ui/core/IconButton";
+import {drawNoteList} from "../../../utils/draw-teacher-note";
+import {formatContent, NoteTypes} from "../../../utils/teacher-note-helper";
+import {apiHub} from "../../../apis/ApiHub";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -49,7 +52,7 @@ interface IProp {
  */
 export default class Index extends React.Component<IProp, IState> {
 
-  logger = Logger.getLogger();
+  logger = Logger.getLogger(Index.name);
 
   // 这里是指 canvas 在 HTML 中实际的尺寸，会受到 CSS 宽度的限制，但是实际点坐标什么的都以这个为准
   canvasWidth = 3200;
@@ -80,6 +83,37 @@ export default class Index extends React.Component<IProp, IState> {
   // 处理PDFPreviewer的导出事件
   handleImportPages = (pdf, indexes: number[]) => {
     this.logger.info(pdf, indexes);
+    const {selectedPdfUrl} = this.state;
+    // 请求api
+    const promises = indexes.map(index => {
+      const vo: TeacherNoteItemVO = {
+        id: 0,
+        page: this.state.pageIndex,
+        color: "red",
+        content: formatContent(NoteTypes.PDF,{content: selectedPdfUrl, page: index}),
+        coordinates: [{x: 0, y: 0}],
+        createTime: 123
+      };
+      this.logger.info("vo", vo);
+      return apiHub.teacherApi.sendTeacherNote(vo);
+    });
+    Promise.all(promises)
+      .then(vos => {
+        this.logger.info("get vos", vos);
+        // 插多几页
+        let {pages, pageIndex} = this.state;
+        pages = [...pages, ...vos.map(vo => [vo])];
+        pageIndex = pages.length - 1;
+        this.setState({
+          pageIndex,
+          pages
+        }, () => {
+          this.reRenderPage(pages[pageIndex]);
+        });
+      })
+      .catch(e => {
+        this.logger.error(e);
+      })
   };
 
   handleClickSwitchPage = (offset) => {
@@ -311,14 +345,20 @@ export default class Index extends React.Component<IProp, IState> {
   // 结束绘画（添加新内容等等）
   finishDraw(paint) {
     // todo
-    this.teacherNoteVOList.push({
+    const noteVO = {
       id: 0,
-      page: 1,
+      page: this.state.pageIndex,
       color: "red",
-      content: "123123",
+      content: formatContent(NoteTypes.HANDWRITING,{content: ""}),
       coordinates: paint,
       createTime: 123
-    })
+    };
+    apiHub.teacherApi.sendTeacherNote(noteVO)
+      .then(res => {
+        const {pageIndex, pages} = this.state;
+        pages[pageIndex].push(res);
+      })
+      .catch();
   }
 
   // 重新渲染列表里的笔画
@@ -340,18 +380,8 @@ export default class Index extends React.Component<IProp, IState> {
 
   reRenderPage(voList: TeacherNoteItemVO[]) {
     this.cleanCanvas();
-    for (let vo: TeacherNoteItemVO of voList) {
-      const coordinates = vo.coordinates;
-      if (coordinates.length > 1) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(coordinates[0].x, coordinates[0].y);
-        for (let i = 1; i < coordinates.length; i++) {
-          this.ctx.lineTo(coordinates[i].x, coordinates[i].y);
-        }
-        this.ctx.stroke();
-        this.ctx.closePath();
-      }
-    }
+    this.logger.info("更新页面", voList);
+    drawNoteList(voList, this.ctx);
   }
 
   // 清空 canvas
@@ -421,7 +451,8 @@ export default class Index extends React.Component<IProp, IState> {
     this.ctx = document.getElementById("canvas").getContext('2d');
     this.ctx.lineWidth = 4;
     this.ctx.strokeStyle = '#D32F2F'; // todo temp
-    this.reRenderTeacherNoteVOList();
+    // this.reRenderTeacherNoteVOList();
+    this.reRenderPage([]);
   }
 
   stopScroll(e) {

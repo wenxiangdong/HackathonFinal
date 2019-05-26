@@ -8,10 +8,11 @@ export const NoteTypes = {
  * @param type NoteTypes中的一个
  * @param params 参数
  */
-export const formatContent = (type: String, params: {content: string, page?: number}): string => {
+export const formatContent = (type: string, params: {content: string, page?: number}): string => {
   // 手写 content "handwriting?type=HANDWRITING"
 // pdf content "${url}?type=PDF&page=${page}"
 // text content "${text}?type=TEXT"
+  console.log(type);
   switch (type) {
     case NoteTypes.HANDWRITING:
       return `${params.content}?type=${NoteTypes.HANDWRITING}`;
@@ -21,7 +22,6 @@ export const formatContent = (type: String, params: {content: string, page?: num
       return `${params.content}?type=${NoteTypes.TEXT}`;
     default:
       return params.content;
-      break;
   }
 };
 
@@ -30,7 +30,7 @@ export const formatContent = (type: String, params: {content: string, page?: num
  * @param content
  */
 export const parseContent = (content: string): {type: string, content: string, page: number} => {
-  let [content, params] = content.split("?");
+  let [parsedContent, params] = content.split("?");
   let result = {};
   if (params) {
     result = params
@@ -41,6 +41,6 @@ export const parseContent = (content: string): {type: string, content: string, p
       })
       .reduce((pre, cur) => ({...pre, ...cur}), {});
   }
-  result.content = content;
+  result.content = parsedContent;
   return result;
 };
