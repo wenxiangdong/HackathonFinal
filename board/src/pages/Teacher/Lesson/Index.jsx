@@ -18,6 +18,10 @@ import PDFLoader from "../../../components/teacher/PDFLoader/PDFLoader";
 import PDFPreviewer from "../../../components/teacher/PDFPreviewer/PDFPreviewer";
 import Typography from "@material-ui/core/Typography";
 
+import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import RightIcon from "@material-ui/icons/KeyboardArrowRight";
+import IconButton from "@material-ui/core/IconButton";
+
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
   actualSettingWidthRate: string,
@@ -30,6 +34,9 @@ interface IState {
   //   // you can now use *page* here
   // });
   pdbjsPDF: any;
+
+  pages: TeacherNoteItemVO[][];
+  pageIndex: number;
 }
 
 interface IProp {
@@ -50,6 +57,7 @@ export default class Index extends React.Component<IProp, IState> {
 
   teacherNoteVOList: TeacherNoteItemVO[] = [];
 
+
   ctx;
 
   constructor(props) {
@@ -58,7 +66,9 @@ export default class Index extends React.Component<IProp, IState> {
       actualSettingWidthRate: 1,
       mode: "paint",
       open: false,
-      selectedPdfUrl: ""
+      selectedPdfUrl: "",
+      pages: [[]],
+      pageIndex: 0
     };
 
     if (this.props.initTeacherNoteItemVOs) {
@@ -70,6 +80,21 @@ export default class Index extends React.Component<IProp, IState> {
   // 处理PDFPreviewer的导出事件
   handleImportPages = (pdf, indexes: number[]) => {
     this.logger.info(pdf, indexes);
+  };
+
+  handleClickSwitchPage = (offset) => {
+    this.logger.info(offset);
+    this.setState((pre) => {
+      let {pageIndex, pages} = pre;
+      pageIndex += offset;
+      if (pageIndex >= pages.length) {
+        pages.push([]);
+      }
+      return {
+        pages: pages,
+        pageIndex: pageIndex
+      }
+    });
   };
 
   render(): React.ReactNode {
@@ -116,10 +141,23 @@ export default class Index extends React.Component<IProp, IState> {
       </div>
     );
 
+    // 切换页面的按钮
+    const pageButtons = (
+      <div className={"page-button-wrapper"}>
+        <IconButton disabled={this.state.pageIndex <= 0} onClick={() => this.handleClickSwitchPage(-1)}>
+          <LeftIcon/>
+        </IconButton>
+        <IconButton onClick={() => this.handleClickSwitchPage(1)}>
+          <RightIcon/>
+        </IconButton>
+      </div>
+    );
+
     return (
       <div className={"main-box"}>
         {canvasView}
         {drawer}
+        {pageButtons}
         {fab}
       </div>
     );
@@ -286,8 +324,23 @@ export default class Index extends React.Component<IProp, IState> {
   // 重新渲染列表里的笔画
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
-
     for (let vo: TeacherNoteItemVO of this.teacherNoteVOList) {
+      const coordinates = vo.coordinates;
+      if (coordinates.length > 1) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(coordinates[0].x, coordinates[0].y);
+        for (let i = 1; i < coordinates.length; i++) {
+          this.ctx.lineTo(coordinates[i].x, coordinates[i].y);
+        }
+        this.ctx.stroke();
+        this.ctx.closePath();
+      }
+    }
+  }
+
+  reRenderPage(voList: TeacherNoteItemVO[]) {
+    this.cleanCanvas();
+    for (let vo: TeacherNoteItemVO of voList) {
       const coordinates = vo.coordinates;
       if (coordinates.length > 1) {
         this.ctx.beginPath();
