@@ -27,7 +27,7 @@ interface IState {
 
 interface IProp {
   onSelectCourse: (course: CourseVO) => void;
-  enqueueSnackbar: () => void;
+  enqueueSnackbar?: () => void;
   height?: String;  // list的高度
 }
 
