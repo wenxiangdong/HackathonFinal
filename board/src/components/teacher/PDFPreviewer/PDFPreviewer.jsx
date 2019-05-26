@@ -124,9 +124,9 @@ class PDFPreviewer extends React.Component<IProp, IState> {
             共{pageNums}页
           </Typography> : null}
         </CardContent>
-        <CardActions>
+        {pageNums ? <CardActions>
           <Button color="primary" onClick={this.handleClickExportAll}>全部导入</Button>
-        </CardActions>
+        </CardActions> : null}
       </Card>
     );
   }

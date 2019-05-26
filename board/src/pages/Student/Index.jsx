@@ -5,7 +5,7 @@ import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
 import StudentCourseCard from "../../components/student/StudentCourseCard/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
-import SimpleTitleBar from "../../components/common/SimpleTitleBar";
+import SimpleTitleBar from "../../components/common/SimpleTitleBar/SimpleTitleBar";
 import SimpleLoading from "../../components/common/SimpleLoading";
 
 import SearchIcon from "@material-ui/icons/Search"
@@ -108,7 +108,7 @@ class Index extends React.Component<IProp, IState> {
                     ))
                   }
                   {
-                    unfinishedCourse.map((course, idx) => (
+                    unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
                       <Grid key={`unfinished-course-${idx}-${course.id}`} item>
                         <StudentCourseCard course={course} ongoing={false}
                                            onClick={() => this.showCourseHistory(course)}/>

@@ -3,14 +3,21 @@ import React from "react";
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
 import type {LiveLessonData, TeacherNoteItemVO} from "../../../vo/vo";
-import {Point} from "../../../vo/vo";
-import type {ITeacherApi} from "../../../apis/teacher-api";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
 import WebsocketPublisher from "../../../utils/websocket-publisher";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import Button from "@material-ui/core/Button/Button";
+
+import "./../../../components/common/Dialog.css"
 
 
 interface IState {
+  lessonEnded: boolean
 }
 
 interface IProp {
@@ -41,6 +48,9 @@ export default class Ongoing extends React.Component<IProp, IState> {
     super(props);
     this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
+    this.state = {
+      lessonEnded: false
+    }
   }
 
   render(): React.ReactNode {
@@ -58,12 +68,50 @@ export default class Ongoing extends React.Component<IProp, IState> {
       </div>
     );
 
+    let lessonEndedDialog = this.state.lessonEnded
+      ? (
+        <Dialog
+          open={true}
+          onClose={() => this.returnHomePage()}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">警告</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              课程已结束
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.returnHomePage()} color="primary">
+              返回主页
+            </Button>
+            <Button onClick={() => this.jumpToReviewPage()} color="primary" autoFocus>
+              继续复习
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )
+      : null
+    ;
+
     return (
       <div>
+        {lessonEndedDialog}
         {canvasView}
       </div>
     );
   }
+
+
+  returnHomePage = () => {
+    this.props.history.goBack();
+  };
+
+  jumpToReviewPage = () => {
+    this.props.history.goBack();
+    this.props.history.push(`/Student/LessonOnGoing/${this.lessonId}`);
+  };
 
   async componentDidMount() {
     try {
@@ -136,9 +184,8 @@ export default class Ongoing extends React.Component<IProp, IState> {
     }
   }
 
-  // todo
   endLesson() {
-
+    this.setState({lessonEnded: true});
   }
 
   // 重新渲染列表里的笔画

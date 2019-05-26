@@ -17,7 +17,7 @@ function LessonItem(props: { lesson: LessonVO, onSelect: (lesson: LessonVO) => v
       <ListItemIcon>
         <CodeIcon/>
       </ListItemIcon>
-      <ListItemText primary={lesson.name} secondary={new Date(lesson.startTime).toLocaleTimeString()}/>
+      <ListItemText primary={lesson.name} secondary={new Date(lesson.startTime).toLocaleTimeString() + (lesson.endTime? "": " 上课中")}/>
     </ListItem>
   );
 }
@@ -35,8 +35,8 @@ interface IProp {
 class LessonList extends React.Component<IProp> {
   render(): React.ReactNode {
     const {lessons, onSelectLesson = () => null, title} = this.props;
-    const lessonComponents = lessons.map((lesson: LessonVO) =>
-      (<LessonItem key={lesson.id} lesson={lesson} onSelect={onSelectLesson}/>)
+    const lessonComponents = lessons.map((lesson: LessonVO, idx) =>
+        (<LessonItem key={`lesson-${idx}-${lesson.id}`} lesson={lesson} onSelect={onSelectLesson}/>)
     );
     return (
       <>
