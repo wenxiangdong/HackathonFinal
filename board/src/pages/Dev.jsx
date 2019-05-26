@@ -1,6 +1,7 @@
 import React from "react";
 import LessonList from "../components/common/LessonList/LessonList";
 import type {LessonVO} from "../vo/vo";
+import SearchCourse from "../components/Student/SearchCourse";
 
 export default class Dev extends React.Component {
   lessons: LessonVO[] = [
@@ -23,6 +24,7 @@ export default class Dev extends React.Component {
   render() {
     return (
       <div>
+        <SearchCourse/>
         <LessonList lessons={this.lessons} title={"课程"}/>
       </div>
     );
