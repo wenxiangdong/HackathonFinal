@@ -104,7 +104,7 @@ export default class Index extends React.Component<IProp, IState> {
         createTime: 123
       };
       this.logger.info("vo", vo);
-      return apiHub.teacherApi.sendTeacherNote(vo);
+      return apiHub.teacherApi.sendTeacherNote(this.getBookId(), vo);
     });
     Promise.all(promises)
       .then(vos => {
@@ -123,6 +123,10 @@ export default class Index extends React.Component<IProp, IState> {
       .catch(e => {
         this.logger.error(e);
       })
+  };
+
+  getBookId = () => {
+    return this.props.match.params.id;
   };
 
   handleClickSwitchPage = (offset) => {
@@ -370,7 +374,7 @@ export default class Index extends React.Component<IProp, IState> {
       coordinates: paint,
       createTime: 123
     };
-    apiHub.teacherApi.sendTeacherNote(noteVO)
+    apiHub.teacherApi.sendTeacherNote(this.getBookId(), noteVO)
       .then(res => {
         const {pageIndex, pages} = this.state;
         pages[pageIndex].push(res);

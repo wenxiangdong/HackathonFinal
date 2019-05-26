@@ -29,7 +29,7 @@ interface IProp {
  */
 export default class Ongoing extends React.Component<IProp, IState> {
 
-  logger = Logger.getLogger();
+  logger = Logger.getLogger("Ongoing");
   lessonId;
   webSocketUrl;
   webSocketPublisher;

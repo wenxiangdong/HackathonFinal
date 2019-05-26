@@ -3,14 +3,6 @@ import {Http, HttpMock} from "./http";
 import {MockStudentApi} from "./student-api";
 
 export interface ITeacherApi {
-  // 老师拿未结课课程
-  // get
-  teacherGetRunningCourses(): Promise<CourseVO[]>;
-
-  // 老师拿结束课程
-  // get
-  teacherGetFinishedCourses(): Promise<CourseVO[]>;
-
   // 老师创建课程
   // post
   createCourse(courseVO: CourseVO): Promise<CourseVO>;
@@ -19,6 +11,14 @@ export interface ITeacherApi {
   // post
   updateCourse(courseVO: CourseVO): Promise<CourseVO>;
 
+  // 老师拿未结课课程
+  // get
+  teacherGetRunningCourses(): Promise<CourseVO[]>;
+
+  // 老师拿结束课程
+  // get
+  teacherGetFinishedCourses(): Promise<CourseVO[]>;
+
   // 老师上课
   // 服务端做了两个 初始化
   // post
@@ -26,15 +26,15 @@ export interface ITeacherApi {
 
   // 老师发送板书
   // post
-  sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO>;
+  sendTeacherNote(bookId: number, teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO>;
 
   // 老师修改板书
   // post
-  updateTeacherNote(teacherNoteId: Number): Promise<void>;
+  updateTeacherNote(bookId: number, teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO>;
 
   // 老师删除板书
   // post
-  deleteTeacherNote(teacherNoteId: Number): Promise<void>;
+  deleteTeacherNote(bookId: Number, teacherNoteId: Number): Promise<void>;
 
   // 老师下课
   // post
@@ -62,16 +62,17 @@ export class TeacherApi implements ITeacherApi {
     return Http.post("/createLesson", lessonVO);
   }
 
-  sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
-    return Http.post("/sendTeacherNote", teacherNote);
+  sendTeacherNote(bookId: number, teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
+    return Http.post("/sendTeacherNote", teacherNote, {bookId});
   }
 
-  updateTeacherNote(teacherNoteId: Number): Promise<void> {
-    return Http.post("/updateTeacherNote", {}, {teacherNoteId});
+  updateTeacherNote(bookId: number, teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
+    return Http.post("/updateTeacherNote", teacherNote, {bookId});
+
   }
 
-  deleteTeacherNote(teacherNoteId: Number): Promise<void> {
-    return Http.post("/deleteTeacherNote", {}, {teacherNoteId});
+  deleteTeacherNote(bookId: Number, teacherNoteId: Number): Promise<void> {
+    return Http.post("/deleteTeacherNote", {}, {bookId, teacherNoteId});
   }
 
   endLesson(lessonId: Number): Promise<void> {
@@ -100,15 +101,16 @@ export class MockTeacherApi implements ITeacherApi {
     return HttpMock.success({});
   }
 
-  sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
-    return HttpMock.success({});
+  sendTeacherNote(bookId: number, teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
+    return HttpMock.success(teacherNote);
   }
 
-  updateTeacherNote(teacherNoteId: Number): Promise<void> {
-    return HttpMock.success();
+  updateTeacherNote(bookId: number, teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
+    return HttpMock.success(teacherNote);
+
   }
 
-  deleteTeacherNote(teacherNoteId: Number): Promise<void> {
+  deleteTeacherNote(bookId: Number, teacherNoteId: Number): Promise<void> {
     return HttpMock.success();
   }
 

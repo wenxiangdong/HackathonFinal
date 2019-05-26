@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import LessonList from "../../common/LessonList/LessonList";
-import type {LessonVO} from "../../../vo/vo";
+import type {LessonVO, TeacherNoteBookVO} from "../../../vo/vo";
 import SimpleLoading from "../../common/SimpleLoading";
 import Logger from "../../../utils/logger";
 import type {ICommonApi} from "../../../apis/common-api";
@@ -87,10 +87,6 @@ class CourseDialog extends React.Component<IProp, IState> {
     this.setState({startLesson: true})
   };
 
-  getTeacherId = () => {
-    return this.props.match.params.id;
-  };
-
   startLesson = (name) => {
     this.setState({loading: true});
     let lesson:LessonVO = {
@@ -98,8 +94,8 @@ class CourseDialog extends React.Component<IProp, IState> {
       courseId: this.props.courseId,
     };
     this._teacherApi.createLesson(lesson)
-      .then((lesson) => {
-        this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+      .then((book:TeacherNoteBookVO) => {
+        this.props.history.push(`/Teacher/Lesson/${book.id}`);
         success(`课程 ${name} 已成功开启`, this);
       })
       .catch((e) => {
