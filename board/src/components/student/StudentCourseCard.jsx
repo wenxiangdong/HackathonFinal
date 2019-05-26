@@ -3,7 +3,6 @@ import type {CourseVO} from "../../vo/vo";
 
 import './StudentCourseCard.css'
 import Card from "@material-ui/core/Card/Card";
-import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 
 interface IProp {
   course: CourseVO,
@@ -37,32 +36,30 @@ export default class StudentCourseCard extends React.Component<IProp> {
     }
 
     return (
-      <ButtonBase>
-        <Card>
-          <div className={baseClass} onClick={this.props.onClick}>
-            <div className={"top-div"}>
-              <div>
-                <div className={"title"}>
-                  {title}
-                </div>
-                <div className={"sub-title"}>
-                  {subTitle}
-                </div>
+      <Card>
+        <div className={baseClass} onClick={this.props.onClick}>
+          <div className={"top-div"}>
+            <div>
+              <div className={"title"}>
+                {title}
               </div>
-            </div>
-            <div className={"bottom-div"}>
-              <div>
-                <div className={"course-name"}>
-                  课程名称
-                </div>
-                <div className={"course-teacher-name"}>
-                  主讲：{course.teacherName}
-                </div>
+              <div className={"sub-title"}>
+                {subTitle}
               </div>
             </div>
           </div>
-        </Card>
-      </ButtonBase>
+          <div className={"bottom-div"}>
+            <div>
+              <div className={"course-name"}>
+                课程名称
+              </div>
+              <div className={"course-teacher-name"}>
+                主讲：{course.teacherName}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
     );
   }
 }

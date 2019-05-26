@@ -8,6 +8,8 @@ import Grid from "@material-ui/core/Grid/Grid";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
 import SimpleLoading from "../../components/common/SimpleLoading";
 
+import SearchIcon from "@material-ui/icons/Search"
+
 import "./index.css"
 import Container from "@material-ui/core/Container/Container";
 import Dialog from "@material-ui/core/Dialog/Dialog";
@@ -17,6 +19,8 @@ import Button from "@material-ui/core/Button/Button";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
+import SimpleLine from "../../components/common/SimpleLine";
+import Icon from "@material-ui/core/Icon/Icon";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -61,16 +65,16 @@ export default class Index extends React.Component<any, IState> {
     return this.props.match.params.id;
   };
 
-  joinCourse = (course:CourseVO) => {
+  joinCourse = (course: CourseVO) => {
     this.props.history.push(`/Student/LessonOnGoing/${course.id}`);
   };
 
   showCourseHistory = (course) => {
-    this.setState({checkCourse:course});
+    this.setState({checkCourse: course});
   };
 
   handleSearchCourseSelected = (course) => {
-    this.setState({checkSearchCourse:course});
+    this.setState({checkSearchCourse: course});
   };
 
   render(): React.ReactNode {
@@ -86,7 +90,14 @@ export default class Index extends React.Component<any, IState> {
 
     let myCourseFragment = (
       <Container className={"courses-wrapper"}>
-        <SimpleTitleBar title={"我的课程"}/>
+        <div className={"my-courses"}>
+          <SimpleTitleBar title={"我的课程"}/>
+          <span className={"spacer"}/>
+          <Button variant="contained" color="primary">
+            搜索并创建新课程
+            <SearchIcon/>
+          </Button>
+        </div>
         <Grid container className={"courses-grid"} spacing={2}>
           {ongoingCourse && unfinishedCourse
             ? (ongoingCourse.length === 0 && unfinishedCourse === 0)
@@ -103,7 +114,8 @@ export default class Index extends React.Component<any, IState> {
                   {
                     unfinishedCourse.map((course, idx) => (
                       <Grid key={`unfinished-course-${idx}-${course.id}`} item>
-                        <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
+                        <StudentCourseCard course={course} ongoing={false}
+                                           onClick={() => this.showCourseHistory(course)}/>
                       </Grid>
                     ))
                   }
@@ -135,20 +147,18 @@ export default class Index extends React.Component<any, IState> {
       </Container>
     );
 
-    let checkCourse = this.state.checkCourse;
     let checkSearchCourse = this.state.checkSearchCourse;
 
-    let handleClose = () => {
+    let resetCheckSearchCourse = () => {
       this.setState({
-        checkCourse: null,
         checkSearchCourse: null
       })
     };
 
-    let checkCourseDialog = (
+    let checkSearchCourseDialog = (
       <Dialog
-        open={checkCourse || checkSearchCourse}
-        onClose={handleClose}
+        open={checkSearchCourse}
+        onClose={resetCheckSearchCourse}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -159,23 +169,57 @@ export default class Index extends React.Component<any, IState> {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Disagree
+          <Button onClick={resetCheckSearchCourse} color="primary">
+            取消
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
-            Agree
+          <Button onClick={resetCheckSearchCourse} color="primary" autoFocus>
+            加入
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+
+    let checkCourse = this.state.checkCourse;
+
+    let resetCheckCourse = () => {
+      this.setState({
+        checkCourse: null
+      })
+    };
+
+    let checkCourseDialog = (
+      <Dialog
+        open={checkCourse}
+        onClose={resetCheckCourse}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            TODO
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={resetCheckCourse} color="primary">
+            取消
+          </Button>
+          <Button onClick={resetCheckCourse} color="primary" autoFocus>
+            复习
           </Button>
         </DialogActions>
       </Dialog>
     );
 
     return (
-      <React.Fragment>
+      <Container>
         {searchContainer}
         {myCourseFragment}
+        <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}
         {checkCourseDialog}
-      </React.Fragment>
+      </Container>
+
     );
   }
 }

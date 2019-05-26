@@ -2,3 +2,17 @@
     /*max-width: 100%;*/
     /*overflow: scroll;*/
 }
+
+.my-courses {
+  display: flex;
+  align-items: flex-start;
+}
+
+.my-course-title{
+  margin-right: 100px;
+}
+
+.spacer {
+  display: inline-block;
+  width: 20px;
+}
