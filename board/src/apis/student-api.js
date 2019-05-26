@@ -142,7 +142,7 @@ export class MockStudentApi implements IStudentApi {
   }
 
   joinCourse(courseId: Number): Promise<void> {
-
+    return HttpMock.success();
   }
 
   joinLesson(lessonId: Number): Promise<String> {

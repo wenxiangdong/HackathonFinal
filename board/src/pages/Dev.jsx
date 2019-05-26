@@ -2,7 +2,7 @@ import React from "react";
 // import type {LessonVO} from "../vo/vo";
 import WebsocketPublisher from "../utils/websocket-publisher";
 import Logger from "../utils/logger";
-import PDFLoader from "../components/teacher/PDFLoader/PDFLoader";
+// import PDFLoader from "../components/teacher/PDFLoader/PDFLoader";
 import StudentNoteList from "../components/student/StudentNoteList/StudentNoteList";
 import NoteInput from "../components/student/NoteInput/NoteInput";
 

@@ -14,6 +14,7 @@ declare var pdfjsLib;
 const Login = loadable(() => import("./pages/Login"));
 const Register = loadable(() => import("./pages/Register"));
 const StudentHomepage = loadable(() => import("./pages/Student/Index"));
+const StudentSearchPage = loadable(() => import("./pages/Student/Search/Search"));
 const StudentLessonOngoing = loadable(() => import("./pages/Student/Lesson/Ongoing"));
 const StudentLessonReview = loadable(() => import("./pages/Student/Lesson/Review"));
 const TeacherHomepage = loadable(() => import("./pages/Teacher/Index"));
@@ -45,6 +46,7 @@ function App() {
           <Route path="/Teacher/:id" component={TeacherHomepage}/>
           <Route path="/Student/LessonOnGoing/:id" component={StudentLessonOngoing}/>
           <Route path="/Student/LessonReview/:id" component={StudentLessonReview}/>
+          <Route path="/Student/Search" component={StudentSearchPage}/>
           <Route path="/Student/:id" component={StudentHomepage}/>
           <Route path="/Register" component={Register}/>
           <Route path="/Login" component={Login}/>
