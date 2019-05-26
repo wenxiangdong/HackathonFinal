@@ -24,7 +24,7 @@ export const HttpCodes = {
 };
 
 export class Http {
-  static _baseUrl = "http://localhost/nju_admit_server";
+  static _baseUrl = "http://106.14.178.184:8080/board";
   static _logger = Logger.getLogger("http");
 
   static async _handleResult<T>(responsePromise: AxiosPromise<AxiosResponse<T>>): Promise<T> {

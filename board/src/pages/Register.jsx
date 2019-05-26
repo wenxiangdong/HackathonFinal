@@ -141,7 +141,7 @@ class Register extends React.Component<IProp, IState> {
               fullWidth
               name="confirmPassword"
               label="确认密码"
-              type="confirmPassword"
+              type="password"
               id="confirmPassword"
               value={this.state.confirmPassword}
               onChange={(e) => updateState("confirmPassword", e.target.value, this)}

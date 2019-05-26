@@ -45,7 +45,7 @@ export default class Index extends React.Component<any, IState> {
   }
 
   componentDidMount(): void {
-    this._studentApi.studentGetOnGoingCourses()
+    this._studentApi.studentGetOngoingCourses()
       .then((courses) => this.setState({ongoingCourse: courses}))
       .catch(e => this.handleError(e))
     ;
@@ -96,7 +96,7 @@ export default class Index extends React.Component<any, IState> {
         </div>
         <Grid container className={"courses-grid"} spacing={2}>
           {ongoingCourse && unfinishedCourse
-            ? (ongoingCourse.length === 0 && unfinishedCourse === 0)
+            ? (ongoingCourse.length === 0 && unfinishedCourse.length === 0)
               ? <EmptyCourseCard/>
               : (
                 <>

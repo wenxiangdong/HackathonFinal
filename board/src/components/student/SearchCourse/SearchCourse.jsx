@@ -47,30 +47,32 @@ class SearchCourse extends React.Component<IProp, IState> {
     this.searchCourses = debounce(this.searchCourses, 300);
   }
 
-
   handleInputChange = (e) => {
     const keyword = e.target.value;
-    this.searchCourses(keyword);
-    this.setState({
-      keyword
+    this.setState({keyword, courseList: []}, () => {
+      this.checkSearchCourses(keyword, false);
     });
   };
 
   handleClickLoadMore = () => {
-    this.searchCourses(this.state.keyword, this.state.courseList.length);
+    this.checkSearchCourses(this.state.keyword, true);
+  };
+
+  checkSearchCourses = (keyword, check) => {
+    if (!keyword.trim()) {
+      check && this.props.enqueueSnackbar("请不要搜索空字符", {variant: "error"});
+      return;
+    }
+    this.searchCourses(keyword, this.state.courseList.length);
   };
 
   searchCourses = async (keyword, index = 0, offset = 10) => {
-    if (!keyword.trim()) {
-      this.props.enqueueSnackbar("请不要搜索空字符", {variant: "error"});
-      return;
-    }
     this._logger.info("查找" + keyword);
     try {
       this.setState({
         loading: true
       });
-      const courseList = await apiHub.studentApi.searchCourses(keyword);
+      const courseList = await apiHub.studentApi.searchCourses(keyword, index, offset);
       this.setState((pre) => ({
         courseList: [...pre.courseList, ...courseList]
       }));

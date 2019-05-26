@@ -52,7 +52,7 @@ class CourseDialog extends React.Component<IProp, IState> {
   }
 
   queryLessons = () => {
-    this._commonApi.getLessonsByCourseId(this.props.courseId)
+    this._commonApi.getLessons(this.props.courseId)
       .then((lessons) => {
         this.setState({lessons});
       })

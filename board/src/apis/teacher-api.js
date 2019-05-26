@@ -47,23 +47,23 @@ export class TeacherApi implements ITeacherApi {
   }
 
   teacherGetFinishedCourses(): Promise<CourseVO[]> {
-    return Http.get("/teacherGetRunningCourses");
+    return Http.get("/teacherGetFinishedCourses");
   }
 
   createCourse(courseVO: CourseVO): Promise<CourseVO> {
-    return Http.post("/createCourse", {courseVO});
+    return Http.post("/createCourse", courseVO);
   }
 
   updateCourse(courseVO: CourseVO): Promise<CourseVO> {
-    return Http.post("/updateCourse", {courseVO});
+    return Http.post("/updateCourse", courseVO);
   }
 
   createLesson(lessonVO: LessonVO): Promise<TeacherNoteBookVO> {
-    return Http.post("/createLesson", {lessonVO});
+    return Http.post("/createLesson", lessonVO);
   }
 
   sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
-    return Http.post("/sendTeacherNote", {teacherNote});
+    return Http.post("/sendTeacherNote", teacherNote);
   }
 
   updateTeacherNote(teacherNoteId: Number): Promise<void> {
