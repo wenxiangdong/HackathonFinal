@@ -1,23 +1,29 @@
 import React from "react";
-import type {CourseVO, UserVO} from "../../vo/vo";
+import type {CourseVO} from "../../vo/vo";
 import Logger from "../../utils/logger";
 import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
-import StudentCourseCard from "../../components/Student/StudentCourseCard";
+import StudentCourseCard from "../../components/student/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
-import SearchCourse from "../../components/student/SearchCourse";
 import SimpleLoading from "../../components/common/SimpleLoading";
+
+import "./index.css"
+import Container from "@material-ui/core/Container/Container";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import Button from "@material-ui/core/Button/Button";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
 
 interface IState {
   ongoingCourse: CourseVO[];
-  loadingOngoing: boolean;
   unfinishedCourse: CourseVO[];
-  loadingUnfinished: boolean;
   finishedCourse: CourseVO[];
-  loadingFinished: boolean;
-
-  studentVO: UserVO;
+  checkCourse: CourseVO;
+  checkSearchCourse: CourseVO;
 }
 
 /**
@@ -33,11 +39,7 @@ export default class Index extends React.Component<any, IState> {
     super(props);
     this._logger = Logger.getLogger("StudentHomepage");
     this._studentApi = apiHub.studentApi;
-    this.state = {
-      loadingOngoing: true,
-      loadingUnfinished: true,
-      loadingFinished: true
-    };
+    this.state = {};
   }
 
   componentDidMount(): void {
@@ -59,16 +61,16 @@ export default class Index extends React.Component<any, IState> {
     return this.props.match.params.id;
   };
 
-  joinCourse = (course) => {
-  //  TODO
+  joinCourse = (course:CourseVO) => {
+    this.props.history.push(`/Student/LessonOnGoing/${course.id}`);
   };
 
   showCourseHistory = (course) => {
-    //  TODO
+    this.setState({checkCourse:course});
   };
 
   handleSearchCourseSelected = (course) => {
-    //  TODO
+    this.setState({checkSearchCourse:course});
   };
 
   render(): React.ReactNode {
@@ -76,8 +78,14 @@ export default class Index extends React.Component<any, IState> {
     let unfinishedCourse = this.state.unfinishedCourse;
     let finishedCourse = this.state.finishedCourse;
 
+    let searchContainer = (
+      <Container className={"search-container"}>
+        <SearchCourse onSelectCourse={this.handleSearchCourseSelected}/>
+      </Container>
+    );
+
     let myCourseFragment = (
-      <div className={"my-course"}>
+      <Container className={"courses-wrapper"}>
         <SimpleTitleBar title={"我的课程"}/>
         <Grid container className={"courses-grid"} spacing={2}>
           {ongoingCourse && unfinishedCourse
@@ -104,11 +112,11 @@ export default class Index extends React.Component<any, IState> {
             : <SimpleLoading/>
           }
         </Grid>
-      </div>
+      </Container>
     );
 
     let historyCourseFragment = (
-      <div className={"my-course"}>
+      <Container className={"courses-wrapper"}>
         <SimpleTitleBar title={"历史课程"}/>
         <Grid container className={"courses-grid"} spacing={2}>
           {finishedCourse && finishedCourse.length > 0
@@ -124,14 +132,49 @@ export default class Index extends React.Component<any, IState> {
             )
           }
         </Grid>
-      </div>
+      </Container>
+    );
+
+    let checkCourse = this.state.checkCourse;
+    let checkSearchCourse = this.state.checkSearchCourse;
+
+    let handleClose = () => {
+      this.setState({
+        checkCourse: null,
+        checkSearchCourse: null
+      })
+    };
+
+    let checkCourseDialog = (
+      <Dialog
+        open={checkCourse || checkSearchCourse}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            TODO
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Disagree
+          </Button>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     );
 
     return (
       <React.Fragment>
-        <SearchCourse onSelectCourse={this.handleSearchCourseSelected}/>
+        {searchContainer}
         {myCourseFragment}
         {historyCourseFragment}
+        {checkCourseDialog}
       </React.Fragment>
     );
   }

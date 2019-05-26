@@ -1,0 +1,6 @@
+.SC__course-list-wrapper {
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+    align-items: center;
+}
