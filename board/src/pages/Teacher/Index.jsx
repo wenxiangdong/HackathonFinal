@@ -19,6 +19,7 @@ import FullScreenLoading from "../../components/common/FullScreenLoading/FullScr
 import Button from "@material-ui/core/Button/Button";
 import SingleTextFormDialog from "../../components/common/SingleTextFormDialog/SingleTextFormDialog";
 import {withSnackbar} from "notistack";
+import SimpleLine from "../../components/common/SimpleLine";
 
 interface IState {
   unfinishedCourses: CourseVO[];
@@ -186,6 +187,7 @@ class Index extends React.Component<IProp, IState> {
       <Container style={{paddingTop: "20px"}}>
         {this.state.loading? <FullScreenLoading/>: null}
         {unfinishedCourseFragment}
+        <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {finishedCourseFragment}
         {addCourseDialog}
         {checkCourseDialog}
