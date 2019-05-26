@@ -118,16 +118,16 @@ export default class Index extends React.Component<IProp, IState> {
 
   handleClickSwitchPage = (offset) => {
     this.logger.info(offset);
-    this.setState((pre) => {
-      let {pageIndex, pages} = pre;
-      pageIndex += offset;
-      if (pageIndex >= pages.length) {
-        pages.push([]);
-      }
-      return {
-        pages: pages,
-        pageIndex: pageIndex
-      }
+    let {pageIndex, pages} = this.state;
+    pageIndex += offset;
+    if (pageIndex >= pages.length) {
+      pages.push([]);
+    }
+    this.setState({
+      pages,
+      pageIndex
+    }, () => {
+      this.reRenderPage(pages[pageIndex]);
     });
   };
 

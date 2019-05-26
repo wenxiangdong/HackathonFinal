@@ -6,17 +6,22 @@ import Logger from "./logger";
 // text content "${text}?type=text"
 const logger = Logger.getLogger("draw-teacher-note");
 
-export function drawNoteList(voList: TeacherNoteItemVO[], ctx: CanvasRenderingContext2D) {
+export async function drawNoteList(voList: TeacherNoteItemVO[], ctx: CanvasRenderingContext2D) {
   let list = [...voList];
   const pdfItems = list.splice(
     list.findIndex(item => parseContent(item.content).type === NoteTypes.PDF),
     1
   );
-  list = [...pdfItems, ...list];
-  list.forEach(item => drawTeacherNote(item, ctx));
+  logger.info(pdfItems, list);
+  for (let vo of pdfItems) {
+    await drawTeacherNote(vo, ctx);
+  }
+  setTimeout(() => {
+    list.forEach(vo => drawTeacherNote(vo, ctx));
+  }, 1000);
 }
 
-export function drawTeacherNote(vo: TeacherNoteItemVO, ctx: CanvasRenderingContext2D) {
+export async function drawTeacherNote(vo: TeacherNoteItemVO, ctx: CanvasRenderingContext2D) {
   let result = parseContent(vo.content);
   switch (result.type) {
     case NoteTypes.TEXT:
@@ -34,31 +39,26 @@ export function drawTeacherNote(vo: TeacherNoteItemVO, ctx: CanvasRenderingConte
     case NoteTypes.PDF:
       // eslint-disable-next-line no-undef
       const task = pdfjsLib.getDocument(result.content);
-      task.promise.then(pdf => {
-        console.log(result);
-        pdf.getPage(parseInt(result.page))
-          .then(page => {
-            let viewport = page.getViewport({scale: 1,});
-            const rate =  viewport.width / viewport.height;
-            let scale = 1;
-            if (rate > 16 / 9) {
-              scale = 3200 / viewport.width;
-            } else {
-              scale = 1800 / viewport.height;
-            }
-            viewport = page.getViewport({scale: scale});
-            const renderContext = {
-              canvasContext: ctx,
-              viewport: viewport
-            };
-            page.render(renderContext);
-          })
-          .catch(e => {
-            logger.error(e);
-          })
-      }).catch(e => {
-        logger.error(e);
-      });
+      try {
+        const pdf = await task.promise;
+        const page = await pdf.getPage(parseInt(result.page))
+        let viewport = page.getViewport({scale: 1,});
+        const rate = viewport.width / viewport.height;
+        let scale = 1;
+        if (rate > 16 / 9) {
+          scale = 3200 / viewport.width;
+        } else {
+          scale = 1800 / viewport.height;
+        }
+        viewport = page.getViewport({scale: scale});
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        page.render(renderContext);
+      } catch (e) {
+        console.error(e);
+      }
       break;
   }
 }

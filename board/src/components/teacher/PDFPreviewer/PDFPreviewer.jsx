@@ -104,7 +104,7 @@ class PDFPreviewer extends React.Component<IProp, IState> {
     const {pageNums} = this.state;
     const canvasList = Array(pageNums).fill("").map((_, index) => (
       <div
-        onClick={() => this.handleSelectPages([index])}
+        onClick={() => this.handleSelectPages([index + 1])}
         className={"PP__canvas-wrapper"}
         key={this._baseCanvasId + index}>
         <canvas className={"PP__canvas"} id={this._baseCanvasId + index} width={this._canvasWidth}/>
@@ -124,9 +124,9 @@ class PDFPreviewer extends React.Component<IProp, IState> {
             共{pageNums}页
           </Typography> : null}
         </CardContent>
-        <CardActions>
+        {pageNums ? <CardActions>
           <Button color="primary" onClick={this.handleClickExportAll}>全部导入</Button>
-        </CardActions>
+        </CardActions> : null}
       </Card>
     );
   }
