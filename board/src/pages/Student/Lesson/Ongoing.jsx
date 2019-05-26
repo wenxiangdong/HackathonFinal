@@ -18,6 +18,7 @@ interface IProp {
 }
 
 /**
+ * 这个到时候需要简化（cyf）
  * Ongoing
  * @create 2019/5/26 14:21
  */
@@ -87,11 +88,6 @@ export default class Ongoing extends React.Component<IProp, IState> {
     })
   }
 
-  stopScroll(e) {
-    if (e._isScroller) return;
-    e.preventDefault();
-  }
-
   // click () {
   //   var de = document.documentElement;
   //   if (de.requestFullscreen) {
@@ -103,40 +99,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
   //   }
   // }
 
-
-  onWindowResize = () => {
-    const clientWidth = document.getElementById("canvas").clientWidth;
-    this.setState({actualSettingWidthRate: clientWidth / this.canvasWidth});
-  }
-
-  getLocation(ev) {
-    const {actualSettingWidthRate} = this.state;
-    const canvasElement = document.getElementById("canvas");
-    const box = canvasElement.getBoundingClientRect();
-    return {
-      x: (ev.clientX - box.left) / actualSettingWidthRate,
-      y: (ev.clientY - box.top) / actualSettingWidthRate
-    };
-  }
-
-  getTouchLocation(ev) {
-    const {actualSettingWidthRate} = this.state;
-    const canvasElement = document.getElementById("canvas");
-    const box = canvasElement.getBoundingClientRect();
-    return {
-      x: (ev.touches[0].clientX - box.left) / actualSettingWidthRate,
-      y: (ev.touches[0].clientY - box.top) / actualSettingWidthRate
-    };
-  }
-
-
-  initCanvas() {
-    this.ctx = document.getElementById("canvas").getContext('2d');
-    this.ctx.lineWidth = 4;
-    this.ctx.strokeStyle = '#D32F2F'; // todo temp
-    this.reRenderTeacherNoteVOList();
-  }
-
+  // 橡皮擦擦除监听
   erase(ev) {
     ev.persist();
     ev.stopPropagation();
@@ -157,6 +120,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     };
   }
 
+  // 触摸橡皮撒
   touchErase(ev) {
     ev.persist();
     ev.stopPropagation();
@@ -180,6 +144,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     }
   }
 
+  // 鼠标绘画
   draw(ev) {
     let newPaint = [];
     ev.persist();
@@ -207,6 +172,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     };
   }
 
+  // 触摸绘画
   touchDraw(ev) {
     ev.persist();
     ev.stopPropagation();
@@ -238,6 +204,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     }
   }
 
+  // 结束绘画（添加新内容等等）
   finishDraw(paint) {
     // todo
     this.teacherNoteVOList.push({
@@ -250,7 +217,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     })
   }
 
-
+  // 重新渲染列表里的笔画
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
 
@@ -268,6 +235,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     }
   }
 
+  // 清空 canvas
   cleanCanvas() {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
@@ -282,24 +250,17 @@ export default class Ongoing extends React.Component<IProp, IState> {
     }
   }
 
+  // 判定一个点附近是否有线条需要删除
   erasePointNearbyArea(x, y) {
     // 循环 voList 检测有没有临近的点，如果有就直接删掉
     for (let i = 0; i < this.teacherNoteVOList.length; i++) {
       let vo = this.teacherNoteVOList[i];
-      // if (!vo) {
-      //   this.logger.info(this.teacherNoteVOList);
-      // } else {
       for (let j = 0; j < vo.coordinates.length; j++) {
         let point = vo.coordinates[j];
         if (this.checkIsNearBy(x, y, point.x, point.y)) {
-          // this.teacherNoteVOList.splice(i, 1);
           vo.coordinates = [];
         }
       }
-      // if (i === 0) {
-      //   break;
-      // }
-      // }
     }
     this.reRenderTeacherNoteVOList();
   }
@@ -310,5 +271,42 @@ export default class Ongoing extends React.Component<IProp, IState> {
     const actual = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     // this.logger.info(actual);
     return actual < distance;
+  }
+
+  getLocation(ev) {
+    const {actualSettingWidthRate} = this.state;
+    const canvasElement = document.getElementById("canvas");
+    const box = canvasElement.getBoundingClientRect();
+    return {
+      x: (ev.clientX - box.left) / actualSettingWidthRate,
+      y: (ev.clientY - box.top) / actualSettingWidthRate
+    };
+  }
+
+  getTouchLocation(ev) {
+    const {actualSettingWidthRate} = this.state;
+    const canvasElement = document.getElementById("canvas");
+    const box = canvasElement.getBoundingClientRect();
+    return {
+      x: (ev.touches[0].clientX - box.left) / actualSettingWidthRate,
+      y: (ev.touches[0].clientY - box.top) / actualSettingWidthRate
+    };
+  }
+
+  onWindowResize = () => {
+    const clientWidth = document.getElementById("canvas").clientWidth;
+    this.setState({actualSettingWidthRate: clientWidth / this.canvasWidth});
+  };
+
+  initCanvas() {
+    this.ctx = document.getElementById("canvas").getContext('2d');
+    this.ctx.lineWidth = 4;
+    this.ctx.strokeStyle = '#D32F2F'; // todo temp
+    this.reRenderTeacherNoteVOList();
+  }
+
+  stopScroll(e) {
+    if (e._isScroller) return;
+    e.preventDefault();
   }
 }
