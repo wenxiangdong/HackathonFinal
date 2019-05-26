@@ -29,48 +29,48 @@ export interface ITeacherApi {
 
   // 老师删除板书
   // post
-  deleteTeacherNote(teacherNoteIds: Number[]): Promise<void>;
+  deleteTeacherNote(teacherNoteId: Number): Promise<void>;
 
   // 老师下课
   // post
   endLesson(lessonId: Number): Promise<void>;
 }
 
-export class TeacherApi implements ITeacherApi{
+export class TeacherApi implements ITeacherApi {
   teacherGetRunningCourses(): Promise<CourseVO[]> {
-
+    return Http.get("/teacherGetRunningCourses");
   }
 
   teacherGetFinishedCourses(): Promise<CourseVO[]> {
-
+    return Http.get("/teacherGetRunningCourses");
   }
 
   createCourse(courseVO: CourseVO): Promise<CourseVO> {
-
+    return Http.post("/createCourse", {courseVO});
   }
 
   updateCourse(courseVO: CourseVO): Promise<CourseVO> {
-
+    return Http.post("/updateCourse", {courseVO});
   }
 
-  createLesson(lessonVO: lessonVO): Promise<TeacherNoteBookVO> {
-
+  createLesson(lessonVO: LessonVO): Promise<TeacherNoteBookVO> {
+    return Http.post("/createLesson", {lessonVO});
   }
 
   sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
-
+    return Http.post("/sendTeacherNote", {teacherNote});
   }
 
-  deleteTeacherNote(teacherNoteIds: Number[]): Promise<void> {
-
+  deleteTeacherNote(teacherNoteId: Number): Promise<void> {
+    return Http.post("/deleteTeacherNote", {teacherNoteId});
   }
 
   endLesson(lessonId: Number): Promise<void> {
-
+    return Http.post("/endLesson", {lessonId});
   }
 }
 
-export class MockTeacherApi implements ITeacherApi{
+export class MockTeacherApi implements ITeacherApi {
   teacherGetRunningCourses(): Promise<CourseVO[]> {
 
   }
@@ -87,7 +87,7 @@ export class MockTeacherApi implements ITeacherApi{
 
   }
 
-  createLesson(lessonVO: lessonVO): Promise<TeacherNoteBookVO> {
+  createLesson(lessonVO: LessonVO): Promise<TeacherNoteBookVO> {
 
   }
 
@@ -95,7 +95,7 @@ export class MockTeacherApi implements ITeacherApi{
 
   }
 
-  deleteTeacherNote(teacherNoteIds: Number[]): Promise<void> {
+  deleteTeacherNote(teacherNoteId: Number): Promise<void> {
 
   }
 

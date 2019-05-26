@@ -41,10 +41,12 @@ export class Http {
     }
 
     static async post<T>(url: String, params: Object = {}): Promise<T> {
+        this._logger.info(`请求${url}，参数：${JSON.stringify(params)}`);
         url = this._baseUrl + url;
         return this._handleResult(Axios.post(url, params));
     }
     static async get<T>(url: String, params: Object = {}): Promise<T> {
+        this._logger.info(`请求${url}，参数：${JSON.stringify(params)}`);
         url = this._baseUrl + url;
         return this._handleResult(
             Axios.get(url, {
