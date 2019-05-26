@@ -104,7 +104,7 @@ export class StudentApi implements IStudentApi {
 
 export class MockStudentApi implements IStudentApi {
   createCourses(finished: boolean): CourseVO[] {
-    let courses: CourseVO[] = new Array(10)
+    let courses: CourseVO[] = new Array(2)
       .fill(
         {
           id: -1,
