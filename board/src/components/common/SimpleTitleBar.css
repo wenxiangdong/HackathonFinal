@@ -1,0 +1,17 @@
+.title-bar {
+  margin-top: -10px;
+  height: 80px;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 36px;
+}
+
+.bottom-line {
+  position: absolute;
+  width: 50px;
+  height: 8px;
+  margin-top: 4px;
+  background: #2196F3;
+}
