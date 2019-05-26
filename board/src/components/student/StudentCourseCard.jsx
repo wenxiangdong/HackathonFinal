@@ -23,35 +23,39 @@ export default class StudentCourseCard extends React.Component<IProp> {
     if (this.props.ongoing) {
       title = "正在授课";
       subTitle = "点击进入课程";
-      baseClass = "ongoing";
+      baseClass = "ongoing base-box";
     } else{
       subTitle = "点击查看课程历史";
       if (course.finished) {
         title = "已结束";
-        baseClass = "finished";
+        baseClass = "finished base-box";
       } else {
-        title = "目前未在授课";
-        baseClass = "unfinished";
+        title = "点击查看课程历史";
+        baseClass = "unfinished base-box";
       }
     }
 
     return (
       <div className={baseClass} onClick={this.props.onClick}>
         <div className={"top-div"}>
-          <Typography className={"title"}>
-            {title}
-          </Typography>
-          <Typography className={"sub-title"}>
-            {subTitle}
-          </Typography>
+          <div>
+            <div className={"title"}>
+              {title}
+            </div>
+            <div className={"sub-title"}>
+              {subTitle}
+            </div>
+          </div>
         </div>
         <div className={"bottom-div"}>
-          <Typography className={"course-name"}>
-            {course.name}
-          </Typography>
-          <Typography className={"course-teacher-name"}>
-            主讲：{course.teacherName}
-          </Typography>
+          <div>
+            <div className={"course-name"}>
+              课程名称
+            </div>
+            <div className={"course-teacher-name"}>
+              主讲：{course.teacherName}
+            </div>
+          </div>
         </div>
       </div>
     );

@@ -1,0 +1,63 @@
+.base-box {
+  display: inline-flex;
+
+  width: 240px;
+  min-height: 160px;
+
+  flex-direction: column;
+  flex-wrap: nowrap;
+
+  box-shadow: rgba(0,0,0,.3) 0 0 10px 0;
+}
+
+.top-div {
+  padding: 10px 20px;
+  background: #2196F3;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bottom-div {
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  flex: 0 0 auto;
+}
+
+.course-name {
+  font-weight: bold;
+  color: #555555;
+  font-size: 18px;
+}
+
+.course-teacher-name {
+  font-weight: bold;
+  color: #777777;
+  font-size: 12px;
+}
+
+.ongoing .title {
+  color: white;
+  font-weight: bold;
+  font-size: 26px;
+}
+
+.finished .title {
+  color: #dddddd;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.unfinished .title {
+  color: #eeeeee;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.sub-title {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+}
