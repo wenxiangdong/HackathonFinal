@@ -15,6 +15,11 @@ import DialogContentText from "@material-ui/core/DialogContentText/DialogContent
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 
+import "./../Student/index.css"
+import EmptyCourseCard from "../../components/common/EmptyCourseCard";
+import CourseDialog from "../../components/common/CourseDialog/CourseDialog";
+import {UserType} from "../../vo/vo";
+import type {DialogActionConfig} from "../../components/common/CourseDialog/CourseDialog";
 
 interface IState {
   unfinishedCourse: CourseVO[];
@@ -68,7 +73,7 @@ export default class Index extends React.Component<any, IState> {
                   <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
                 </Grid>
               ))
-              : null // TODO 空卡片
+              : <EmptyCourseCard/>
             : <SimpleLoading/>
           }
         </Grid>
@@ -86,7 +91,7 @@ export default class Index extends React.Component<any, IState> {
                   <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
                 </Grid>
               ))
-              : null // TODO 空卡片
+              : <EmptyCourseCard/>
             : <SimpleLoading/>
           }
         </Grid>
@@ -94,47 +99,27 @@ export default class Index extends React.Component<any, IState> {
     );
 
     let checkCourse = this.state.checkCourse;
-
-    let resetCheckCourse = () => this.setState({checkCourse:null});
-    let startLesson = () => {
-      resetCheckCourse();
-      this.props.history.push(`/Teacher/Lesson/${checkCourse.id}`);
-    };
-
-    let dialogActions = checkCourse && !checkCourse.finished
-      ? (
-        <DialogActions>
-          <Button onClick={startLesson} color="primary">
-            上课
-          </Button>
-        </DialogActions>
-      )
-      : null
-    ;
-
+    // let actionConfigs: DialogActionConfig[] = [
+    //   {
+    //     onClick: () => {
+    //
+    //     }
+    //   }
+    // ];
     let checkCourseDialog = (
       checkCourse
         ? (
-          <Dialog
-            open={!!checkCourse}
-            onClose={resetCheckCourse}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">{checkCourse.name}</DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-
-              </DialogContentText>
-            </DialogContent>
-            {dialogActions}
-          </Dialog>
+          <CourseDialog onClose={() => this.setState({checkCourse: null})}
+                        title={checkCourse? `课程名称：${checkCourse.name}`: '课程'}
+                        courseId={checkCourse.id}
+                        userType={UserType.TEACHER}
+          />
         )
         : null
     );
 
     return (
-      <Container>
+      <Container style={{paddingTop: "20px"}}>
         {unfinishedCourseFragment}
         {finishedCourseFragment}
         {checkCourseDialog}

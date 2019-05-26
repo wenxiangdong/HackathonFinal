@@ -58,10 +58,6 @@ export default class Index extends React.Component<any, IState> {
     ;
   }
 
-  getStudentId = () => {
-    return this.props.match.params.id;
-  };
-
   joinCourse = (course: CourseVO) => {
     this.props.history.push(`/Student/LessonOnGoing/${course.id}`);
   };
@@ -94,7 +90,7 @@ export default class Index extends React.Component<any, IState> {
         <Grid container className={"courses-grid"} spacing={2}>
           {ongoingCourse && unfinishedCourse
             ? (ongoingCourse.length === 0 && unfinishedCourse === 0)
-              ? <EmptyCourseCard/>// TODO 空卡片
+              ? <EmptyCourseCard/>
               : (
                 <>
                   {
@@ -131,7 +127,7 @@ export default class Index extends React.Component<any, IState> {
                   <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
                 </Grid>
               ))
-              :  <EmptyCourseCard/> // TODO 空卡片
+              :  <EmptyCourseCard/>
             : <SimpleLoading/>
           }
         </Grid>
