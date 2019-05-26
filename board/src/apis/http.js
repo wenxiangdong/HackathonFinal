@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios, {AxiosPromise, AxiosResponse} from "axios";
 import Logger from "../utils/logger";
 
 
@@ -13,30 +13,56 @@ interface HttpResponse<T> {
     message: String;
 }
 
+/**
+ * 自定义http状态
+ * @type {{SUCCESS: string, ERROR: string}}
+ */
+export const HttpCodes = {
+    SUCCESS: "SUCCESS",
+    ERROR: "ERROR"
+};
+
 export class Http {
     static _baseUrl = "http://localhost/nju_admit_server";
     static _logger = Logger.getLogger("http");
-    static async _handleResult(responsePromise): Promise<HttpResponse<T>> {
+    static async _handleResult<T>(responsePromise: AxiosPromise<AxiosResponse<T>>): Promise<T> {
         const response = await responsePromise;
         this._logger.info("请求得到", response);
         if (response.status !== 200) {
             throw new Error("网络错误");
         } else {
-            return response.data;
+            const httpResponse: HttpResponse =  response.data;
+            if (httpResponse.code !== HttpCodes.SUCCESS) {
+                throw httpResponse;
+            } else {
+                return httpResponse.data;
+            }
         }
     }
 
-    static async post<T>(url: String, params: Object = {}): Promise<HttpResponse<T>> {
+    static async post<T>(url: String, params: Object = {}): Promise<T> {
         url = this._baseUrl + url;
         return this._handleResult(Axios.post(url, params));
-        // return this._handleResult(Axios.post(url, JSON.stringify(params)));
     }
-    static async get<T>(url: String, params: Object = {}): Promise<HttpResponse<T>> {
+    static async get<T>(url: String, params: Object = {}): Promise<T> {
         url = this._baseUrl + url;
         return this._handleResult(
             Axios.get(url, {
                 params: params
             })
         );
+    }
+}
+
+/**
+ * 模拟请求
+ */
+export class HttpMock {
+    static success<T>(data: T): Promise<T> {
+        return new Promise<T>(resolve => {
+            setTimeout(() => {
+                resolve(data);
+            }, 1000);
+        })
     }
 }
