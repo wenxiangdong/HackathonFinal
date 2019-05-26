@@ -94,6 +94,11 @@ class Register extends React.Component<IProp, IState> {
     this.props.history.goBack();
   }
 
+  hasError(): boolean {
+    const {name, username, password, confirmPassword} = this.state;
+    return !(name && username && password && confirmPassword && password === confirmPassword);
+  }
+
   render(): React.ReactNode {
     const {name, username, password, confirmPassword} = this.state;
     const registerForm = (
@@ -105,6 +110,7 @@ class Register extends React.Component<IProp, IState> {
           </Typography>
           <form className={"register-form"} noValidate onSubmit={(e) => this.register(e)}>
             <TextField
+              error={!name}
               margin="normal"
               required
               fullWidth
@@ -116,6 +122,7 @@ class Register extends React.Component<IProp, IState> {
               onChange={(e) => updateState("name", e.target.value, this)}
             />
             <TextField
+              error={!username}
               margin="normal"
               required
               fullWidth
@@ -126,6 +133,7 @@ class Register extends React.Component<IProp, IState> {
               onChange={(e) => updateState("username", e.target.value, this)}
             />
             <TextField
+              error={!password}
               margin="normal"
               required
               fullWidth
@@ -137,6 +145,7 @@ class Register extends React.Component<IProp, IState> {
               onChange={(e) => updateState("password", e.target.value, this)}
             />
             <TextField
+              error={!(confirmPassword && confirmPassword === password)}
               margin="normal"
               required
               fullWidth
@@ -165,7 +174,7 @@ class Register extends React.Component<IProp, IState> {
               />
             </RadioGroup>
             <Button
-              disabled={!(name && username && password && confirmPassword && password === confirmPassword)}
+              disabled={this.hasError()}
               type="submit"
               fullWidth
               variant="contained"
