@@ -7,7 +7,7 @@ Axios.defaults.headers = {
   'Content-Type': "application/json;charset=utf8"
 };
 
-interface HttpResponse<T> {
+export interface HttpResponse<T> {
   data: T;
   code: String;
   message: String;

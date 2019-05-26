@@ -1,5 +1,6 @@
 import type {UserVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
+import {UserType} from "../vo/vo";
 
 export interface ICommonApi {
   // 注册
@@ -15,13 +16,13 @@ export class CommonApi implements ICommonApi {
   // 注册
   // post:
   async register(userVO: UserVO): Promise<UserVO> {
-    return Http.post<UserVO>("/register", userVO);
+    return Http.post("/register", userVO);
   }
 
   // 登陆
   // post:
   async login(userVO: UserVO): Promise<UserVO> {
-    return Http.post<UserVO>("/login", userVO);
+    return Http.post("/login", userVO);
   }
 }
 
@@ -36,6 +37,10 @@ export class MockCommonApi implements ICommonApi {
   // 登陆
   // post:
   login(userVO: UserVO): Promise<UserVO> {
+    userVO.type =
+      // UserType.TEACHER
+      UserType.STUDENT
+    ;
     return HttpMock.success(userVO);
   }
 }
