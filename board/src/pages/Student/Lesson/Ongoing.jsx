@@ -2,28 +2,32 @@ import React from "react";
 
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
-import type {TeacherNoteItemVO} from "../../../vo/vo";
+import type {LiveLessonData, TeacherNoteItemVO} from "../../../vo/vo";
+import {Point} from "../../../vo/vo";
+import type {ITeacherApi} from "../../../apis/teacher-api";
+import {apiHub} from "../../../apis/ApiHub";
+import type {IStudentApi} from "../../../apis/student-api";
+import WebsocketPublisher from "../../../utils/websocket-publisher";
 
 
 interface IState {
-  // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
-  actualSettingWidthRate: string,
-  // paint or erase
-  mode: string
 }
 
 interface IProp {
-  initTeacherNoteItemVOs?: TeacherNoteItemVO[];
 }
 
 /**
- * 这个到时候需要简化（cyf）
  * Ongoing
  * @create 2019/5/26 14:21
  */
 export default class Ongoing extends React.Component<IProp, IState> {
 
   logger = Logger.getLogger();
+  lessonId;
+  webSocketUrl;
+  webSocketPublisher;
+  _studentApi: IStudentApi;
+
 
   // 这里是指 canvas 在 HTML 中实际的尺寸，会受到 CSS 宽度的限制，但是实际点坐标什么的都以这个为准
   canvasWidth = 3200;
@@ -35,32 +39,22 @@ export default class Ongoing extends React.Component<IProp, IState> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      actualSettingWidthRate: 1,
-      mode: "paint"
-    };
-
-    if (this.props.initTeacherNoteItemVOs) {
-      // 偷懒的深拷贝
-      this.teacherNoteVOList = JSON.parse(JSON.stringify(this.props.initTeacherNoteItemVOs));
-    }
+    this.lessonId = props.match.params.id;
+    this._studentApi = apiHub.studentApi;
   }
 
   render(): React.ReactNode {
-    const {mode} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
         <div className={'canvas-box'}>
           <canvas id={"canvas"}
-                  onTouchStart={mode === "paint" ? (e) => this.touchDraw(e) : (e) => this.touchErase(e)}
-                  onMouseDown={mode === "paint" ? (e) => this.draw(e) : (e) => this.erase(e)}
                   width={this.canvasWidth + "px"}
                   height={this.canvasHeight + "px"}/>
         </div>
-        {/*<button onClick={() => this.click()}>looo</button>*/}
-        <button onClick={() => this.changeMode("paint")}>paint</button>
-        <button onClick={() => this.changeMode("erase")}>erase</button>
+        {/*/!*<button onClick={() => this.click()}>looo</button>*!/*/}
+        {/*<button onClick={() => this.changeMode("paint")}>paint</button>*/}
+        {/*<button onClick={() => this.changeMode("erase")}>erase</button>*/}
       </div>
     );
 
@@ -72,7 +66,15 @@ export default class Ongoing extends React.Component<IProp, IState> {
   }
 
   componentDidMount() {
-    document.body.addEventListener('resize', this.onWindowResize)
+    this._studentApi.joinLesson(this.lessonId).then(
+      (res) => {
+        this.webSocketUrl = res;
+        this.webSocketPublisher = new WebsocketPublisher(this.webSocketUrl);
+        this.webSocketPublisher.subscribe(this.messageHandler);
+      }
+    );
+
+    document.body.addEventListener('resize', this.onWindowResize);
     this.onWindowResize();
     this.initCanvas();
     document.body.addEventListener('touchmove', this.stopScroll, {
@@ -85,6 +87,23 @@ export default class Ongoing extends React.Component<IProp, IState> {
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
     })
+
+    this.webSocketPublisher.unsubscribe(this.messageHandler);
+  }
+
+  messageHandler = (res: LiveLessonData) => {
+    if (res.operationType === "CREATE") {
+      this.teacherNoteVOList.push(res.teacherNoteItem);
+      this.reRenderTeacherNoteVOList();
+    } else if (res.operationType === "DELETE") {
+      this.deleteTeacherNoteItem(res.teacherNoteItem);
+      this.reRenderTeacherNoteVOList();
+    } else if (res.operationType === "UPDATE") {
+      this.updateTeacherNoteItem(res.teacherNoteItem);
+      this.reRenderTeacherNoteVOList();
+    } else {
+      this.endLesson();
+    }
   }
 
   // click () {
@@ -98,122 +117,27 @@ export default class Ongoing extends React.Component<IProp, IState> {
   //   }
   // }
 
-  // 橡皮擦擦除监听
-  erase(ev) {
-    ev.persist();
-    ev.stopPropagation();
-    this.ctx.beginPath();
-    let {x, y} = this.getLocation(ev);
-    this.erasePointNearbyArea(x, y);
-
-    document.onmousemove = (e) => {
-      // 在按住的情况下覆盖move方法
-      let {x, y} = this.getLocation(e);
-      this.erasePointNearbyArea(x, y);
-    };
-
-    document.onmouseup = () => {
-      // 在按住的情况下覆盖up方法
-      document.onmousemove = null;
-      document.onmouseup = null;
-    };
-  }
-
-  // 触摸橡皮撒
-  touchErase(ev) {
-    ev.persist();
-    ev.stopPropagation();
-    ev.preventDefault();
-    this.ctx.beginPath();
-    let {x, y} = this.getTouchLocation(ev);
-    this.erasePointNearbyArea(x, y);
-
-    document.ontouchmove = (e) => {
-      e.cancelBubble = true;
-      e.stopPropagation();
-      e.preventDefault();
-      ev.defaultPrevented = true;
-      let {x, y} = this.getTouchLocation(e);
-      this.erasePointNearbyArea(x, y);
-    };
-
-    document.ontouchend = () => {
-      document.ontouchmove = null;
-      document.ontouchend = null;
+  deleteTeacherNoteItem(vo: TeacherNoteItemVO) {
+    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
+      if (this.teacherNoteVOList[i].id === vo.id) {
+        this.teacherNoteVOList.splice(i, 1);
+        break;
+      }
     }
   }
 
-  // 鼠标绘画
-  draw(ev) {
-    let newPaint = [];
-    ev.persist();
-    ev.stopPropagation();
-    this.ctx.beginPath();
-    let {x, y} = this.getLocation(ev);
-    newPaint.push({x, y});
-    this.ctx.moveTo(x, y);
-
-    document.onmousemove = (e) => {
-      // 在按住的情况下覆盖move方法
-      let {x, y} = this.getLocation(e);
-      this.ctx.lineTo(x, y);
-      newPaint.push({x, y});
-      this.ctx.stroke();
-    };
-
-    document.onmouseup = () => {
-      // 在按住的情况下覆盖up方法
-      document.onmousemove = null;
-      this.ctx.stroke();
-      this.ctx.closePath();
-      this.finishDraw(newPaint);
-      document.onmouseup = null;
-    };
-  }
-
-  // 触摸绘画
-  touchDraw(ev) {
-    ev.persist();
-    ev.stopPropagation();
-    ev.preventDefault();
-    this.ctx.beginPath();
-    let {x, y} = this.getTouchLocation(ev);
-    this.ctx.moveTo(x, y);
-
-    let newPaint = [];
-    newPaint.push({x, y});
-
-    document.ontouchmove = (e) => {
-      e.cancelBubble = true;
-      e.stopPropagation();
-      e.preventDefault();
-      ev.defaultPrevented = true;
-      let {x, y} = this.getTouchLocation(e);
-      newPaint.push({x, y});
-      this.ctx.lineTo(x, y);
-      this.ctx.stroke();
-    };
-
-    document.ontouchend = () => {
-      document.ontouchmove = null;
-      this.ctx.stroke();
-      this.ctx.closePath();
-      this.finishDraw(newPaint);
-      document.ontouchend = null;
+  updateTeacherNoteItem(vo: TeacherNoteItemVO) {
+    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
+      if (this.teacherNoteVOList[i].id === vo.id) {
+        this.teacherNoteVOList[i] = vo;
+        break;
+      }
     }
   }
 
-  // 结束绘画（添加新内容等等）
-  finishDraw(paint) {
-    // todo
-    this.teacherNoteVOList.push({
-      id: 0,
-      page: 1,
-      color: "red",
-      content: "123123",
-      coordinates: paint,
-      createTime: 123
-    })
+  // todo
+  endLesson() {
+
   }
 
   // 重新渲染列表里的笔画
@@ -237,59 +161,6 @@ export default class Ongoing extends React.Component<IProp, IState> {
   // 清空 canvas
   cleanCanvas() {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-  }
-
-  // 修改画笔的模式
-  changeMode(mode) {
-    // 确保不会设置成什么奇怪的模式
-    if (mode === "paint") {
-      this.setState({mode: "paint"})
-    } else if (mode === "erase") {
-      this.setState({mode: "erase"})
-    }
-  }
-
-  // 判定一个点附近是否有线条需要删除
-  erasePointNearbyArea(x, y) {
-    // 循环 voList 检测有没有临近的点，如果有就直接删掉
-    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
-      let vo = this.teacherNoteVOList[i];
-      for (let j = 0; j < vo.coordinates.length; j++) {
-        let point = vo.coordinates[j];
-        if (this.checkIsNearBy(x, y, point.x, point.y)) {
-          vo.coordinates = [];
-        }
-      }
-    }
-    this.reRenderTeacherNoteVOList();
-  }
-
-  // 对比 (x1, y1) 和 (x2, y2) 点的距离是否比较接近
-  checkIsNearBy(x1, y1, x2, y2) {
-    const distance = 40;
-    const actual = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    // this.logger.info(actual);
-    return actual < distance;
-  }
-
-  getLocation(ev) {
-    const {actualSettingWidthRate} = this.state;
-    const canvasElement = document.getElementById("canvas");
-    const box = canvasElement.getBoundingClientRect();
-    return {
-      x: (ev.clientX - box.left) / actualSettingWidthRate,
-      y: (ev.clientY - box.top) / actualSettingWidthRate
-    };
-  }
-
-  getTouchLocation(ev) {
-    const {actualSettingWidthRate} = this.state;
-    const canvasElement = document.getElementById("canvas");
-    const box = canvasElement.getBoundingClientRect();
-    return {
-      x: (ev.touches[0].clientX - box.left) / actualSettingWidthRate,
-      y: (ev.touches[0].clientY - box.top) / actualSettingWidthRate
-    };
   }
 
   onWindowResize = () => {
