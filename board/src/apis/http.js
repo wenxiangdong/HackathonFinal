@@ -62,8 +62,8 @@ export class Http {
  * 模拟请求
  */
 export class HttpMock {
-  static success<T>(data: T): Promise<T> {
-    return new Promise<T>(resolve => {
+  static success<T>(data): Promise<T> {
+    return new Promise(resolve => {
       setTimeout(() => {
         resolve(data);
       }, 1000);

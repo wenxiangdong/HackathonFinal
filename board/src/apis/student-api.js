@@ -1,5 +1,5 @@
 import type {CourseVO, LessonVO, StudentNoteBookVO, StudentNoteItemVO, TeacherNoteBookVO} from "../vo/vo";
-import {Http} from "./http";
+import {Http, HttpMock} from "./http";
 
 export interface IStudentApi {
   // 学生搜索课程
@@ -103,20 +103,35 @@ export class StudentApi implements IStudentApi {
 }
 
 export class MockStudentApi implements IStudentApi {
-  searchCourses(keyword: String, index: Number, offset: Number): Promise<CourseVO[]> {
+  createCourses(finished: boolean): CourseVO[] {
+    let courses: CourseVO[] = new Array(10)
+      .fill(
+        {
+          id: -1,
+          name: "name",
+          username: "name",
+          finished,
+          teacherId: -1,
+          teacherName: "teacherName",
+        }
+      );
+    return courses;
+  }
 
+  searchCourses(keyword: String, index: Number, offset: Number): Promise<CourseVO[]> {
+    return HttpMock.success(this.createCourses(false));
   }
 
   studentGetUnfinishedCourses(): Promise<CourseVO[]> {
-
+    return HttpMock.success(this.createCourses(false));
   }
 
   studentGetFinishedCourses(): Promise<CourseVO[]> {
-
+    return HttpMock.success(this.createCourses(true));
   }
 
   studentGetOnGoingCourses(): Promise<CourseVO[]> {
-
+    return HttpMock.success(this.createCourses(false));
   }
 
   joinCourse(courseId: Number): Promise<void> {
