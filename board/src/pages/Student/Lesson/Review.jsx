@@ -1,5 +1,4 @@
 import React from "react";
-
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
 import type {TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
@@ -82,8 +81,6 @@ export default class Review extends React.Component<IProp, IState> {
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
     });
-
-    this.webSocketPublisher.unsubscribe(this.messageHandler);
   }
 
 

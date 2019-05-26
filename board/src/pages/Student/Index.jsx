@@ -19,6 +19,7 @@ import "./index.css"
 import type {HttpResponse} from "../../apis/http";
 import {error} from "../../utils/snackbar-helper";
 import {withSnackbar} from "notistack";
+import withToolBar from "../hocs/withToolBar";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -164,4 +165,4 @@ class Index extends React.Component<IProp, IState> {
   }
 }
 
-export default withSnackbar(Index);
+export default withSnackbar(withToolBar(Index));

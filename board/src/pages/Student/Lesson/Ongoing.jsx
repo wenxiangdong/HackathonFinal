@@ -6,7 +6,6 @@ import type {LiveLessonData, TeacherNoteItemVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
 import WebsocketPublisher from "../../../utils/websocket-publisher";
-
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
@@ -104,6 +103,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
     );
   }
 
+
   returnHomePage = () => {
     this.props.history.goBack();
   };
@@ -113,14 +113,15 @@ export default class Ongoing extends React.Component<IProp, IState> {
     this.props.history.push(`/Student/LessonOnGoing/${this.lessonId}`);
   };
 
-  componentDidMount() {
-    this._studentApi.joinLesson(this.lessonId).then(
-      (res) => {
-        this.webSocketUrl = res;
-        this.webSocketPublisher = new WebsocketPublisher(this.webSocketUrl);
-        this.webSocketPublisher.subscribe(this.messageHandler);
-      }
-    );
+  async componentDidMount() {
+    try {
+      const res = await this._studentApi.joinLesson(this.lessonId);
+      this.webSocketUrl = res;
+      this.webSocketPublisher = new WebsocketPublisher(this.webSocketUrl);
+      this.webSocketPublisher.subscribe(this.messageHandler);
+    } catch (e) {
+      this.logger.error(e);
+    }
 
     document.body.addEventListener('resize', this.onWindowResize);
     this.onWindowResize();
@@ -134,9 +135,9 @@ export default class Ongoing extends React.Component<IProp, IState> {
     document.body.removeEventListener('resize', this.onWindowResize);
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
-    })
+    });
 
-    this.webSocketPublisher.unsubscribe(this.messageHandler);
+    this.webSocketPublisher && this.webSocketPublisher.unsubscribe(this.messageHandler);
   }
 
   messageHandler = (res: LiveLessonData) => {
