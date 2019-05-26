@@ -44,7 +44,7 @@ function App() {
           <Route path="/Student/:id" component={StudentHomepage}/>
           <Route path="/Register" component={Register}/>
           <Route path="/Login" component={Login}/>
-          <Route component={Login}/>
+          <Route component={StudentHomepage}/>
         </Switch>
       </HashRouter>
     </ThemeProvider>

@@ -1234,7 +1234,7 @@
   dependencies:
     "@babel/runtime" "^7.2.0"
 
-"@material-ui/styles@^4.0.0":
+"@material-ui/styles@^4.0.0", "@material-ui/styles@latest":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-4.0.0.tgz#789461e3e2b484a26206db7656c78b3248904f3b"
   integrity sha512-TUpmXlyZDVOl6E2//+UzsZxgi2E+2L753QY02nNkbAC6PPx8FUBqvnjYSGqX0V/BjTJ/fD4CkoS6ZpY3lHf+Gg==
