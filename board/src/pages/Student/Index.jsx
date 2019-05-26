@@ -1,12 +1,11 @@
 import React from "react";
-import type {CourseVO, UserVO} from "../../vo/vo";
+import type {CourseVO} from "../../vo/vo";
 import Logger from "../../utils/logger";
 import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
-import StudentCourseCard from "../../components/Student/StudentCourseCard";
+import StudentCourseCard from "../../components/student/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar";
-import SearchCourse from "../../components/student/SearchCourse";
 import SimpleLoading from "../../components/common/SimpleLoading";
 
 import "./index.css"
@@ -17,6 +16,7 @@ import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
 
 interface IState {
   ongoingCourse: CourseVO[];
