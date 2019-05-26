@@ -1,11 +1,4 @@
 import React from "react";
-
-/**
- * Review
- * @create 2019/5/26 14:22
- */
-import React from "react";
-
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
 import type {LiveLessonData, TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
@@ -25,8 +18,8 @@ interface IProp {
 }
 
 /**
- * Ongoing
- * @create 2019/5/26 14:21
+ * Review
+ * @create 2019/5/26 14:22
  */
 export default class Review extends React.Component<IProp, IState> {
 
@@ -90,8 +83,6 @@ export default class Review extends React.Component<IProp, IState> {
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
     })
-
-    this.webSocketPublisher.unsubscribe(this.messageHandler);
   }
 
 

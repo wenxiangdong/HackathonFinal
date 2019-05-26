@@ -146,7 +146,7 @@ export class MockStudentApi implements IStudentApi {
   }
 
   joinLesson(lessonId: Number): Promise<String> {
-
+    return HttpMock.success("ws://127.0.0.1");
   }
 
   getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO> {

@@ -64,8 +64,12 @@ class Login extends React.Component<IProp, IState> {
       .then((user) => {
         if (user.type === UserType.STUDENT) {
           this.props.history.push(`/Student/${user.id}`);
+          localStorage.setItem('user-type', "student");
+          localStorage.setItem("user-id", user.id.toString())
         } else if (user.type === UserType.TEACHER) {
           this.props.history.push(`/Teacher/${user.id}`);
+          localStorage.setItem('user-type', "teacher");
+          localStorage.setItem("user-id", user.id.toString())
         } else {
           this.setState({loading: false});
           error("无法识别的用户类型", this);

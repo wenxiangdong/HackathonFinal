@@ -20,6 +20,7 @@ import Button from "@material-ui/core/Button/Button";
 import SingleTextFormDialog from "../../components/common/SingleTextFormDialog/SingleTextFormDialog";
 import {withSnackbar} from "notistack";
 import SimpleLine from "../../components/common/SimpleLine";
+import withToolBar from "../hocs/withToolBar";
 
 interface IState {
   unfinishedCourses: CourseVO[];
@@ -196,4 +197,4 @@ class Index extends React.Component<IProp, IState> {
   }
 }
 
-export default withSnackbar(Index);
+export default withSnackbar(withToolBar(Index));
