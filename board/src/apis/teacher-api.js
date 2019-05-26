@@ -36,7 +36,7 @@ export interface ITeacherApi {
   endLesson(lessonId: Number): Promise<void>;
 }
 
-export class TeacherApi implements ITeacherApi{
+export class TeacherApi implements ITeacherApi {
   teacherGetRunningCourses(): Promise<CourseVO[]> {
 
   }
@@ -70,7 +70,7 @@ export class TeacherApi implements ITeacherApi{
   }
 }
 
-export class MockTeacherApi implements ITeacherApi{
+export class MockTeacherApi implements ITeacherApi {
   teacherGetRunningCourses(): Promise<CourseVO[]> {
 
   }
