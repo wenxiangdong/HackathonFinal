@@ -1,5 +1,7 @@
 import React from "react";
 import type {CourseVO, UserVO} from "../../vo/vo";
+import Logger from "../../utils/logger";
+import type {IStudentApi} from "../../apis/student-api";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -14,16 +16,28 @@ interface IState {
  */
 export default class Index extends React.Component<any, IState> {
 
+  _logger: Logger;
+  _studentApi: IStudentApi;
+
+  constructor(props) {
+    super(props);
+    this._logger = Logger.getLogger("StudentHomepage");
+    this._studentApi =
+  }
 
   componentDidMount(): void {
-    super.componentDidMount();
+
   }
 
   getStudentId = () => {
-    return this.props.match.match.params.id;
+    return this.props.match.params.id;
   };
 
   render(): React.ReactNode {
-    return <div>Student Homepage works</div>;
+    return (
+      <React.Fragment>
+        Student Homepage works
+      </React.Fragment>
+    );
   }
 }

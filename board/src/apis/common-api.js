@@ -1,7 +1,7 @@
 import type {UserVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 
-interface ICommonApi {
+export interface ICommonApi {
   // 注册
   // post:
   register(userVO: UserVO): Promise<UserVO>;
@@ -11,7 +11,7 @@ interface ICommonApi {
   login(userVO: UserVO): Promise<UserVO>;
 }
 
-class CommonApi implements ICommonApi {
+export class CommonApi implements ICommonApi {
   // 注册
   // post:
   async register(userVO: UserVO): Promise<UserVO> {
@@ -26,7 +26,7 @@ class CommonApi implements ICommonApi {
 }
 
 
-class MockCommonApi implements ICommonApi {
+export class MockCommonApi implements ICommonApi {
   // 注册
   // post:
   register(userVO: UserVO): Promise<UserVO> {
