@@ -131,17 +131,15 @@ export default class Index extends React.Component<any, IState> {
       <Container className={"courses-wrapper"}>
         <SimpleTitleBar title={"历史课程"}/>
         <Grid container className={"courses-grid"} spacing={2}>
-          {finishedCourse && finishedCourse.length > 0
-            ? finishedCourse.map((course, idx) => (
-              <Grid key={`finished-course-${idx}-${course.id}`} item>
-                <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
-              </Grid>
-            ))
-            : (
-              this.state.loadingFinished
-                ? <SimpleLoading/>
-                : null // TODO 空卡片
-            )
+          {finishedCourse
+            ? finishedCourse.length > 0
+              ? finishedCourse.map((course, idx) => (
+                <Grid key={`finished-course-${idx}-${course.id}`} item>
+                  <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
+                </Grid>
+              ))
+              : null // TODO 空卡片
+            : <SimpleLoading/>
           }
         </Grid>
       </Container>
@@ -157,7 +155,7 @@ export default class Index extends React.Component<any, IState> {
 
     let checkSearchCourseDialog = (
       <Dialog
-        open={checkSearchCourse}
+        open={!!checkSearchCourse}
         onClose={resetCheckSearchCourse}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -189,7 +187,7 @@ export default class Index extends React.Component<any, IState> {
 
     let checkCourseDialog = (
       <Dialog
-        open={checkCourse}
+        open={!!checkCourse}
         onClose={resetCheckCourse}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -217,6 +215,7 @@ export default class Index extends React.Component<any, IState> {
         {myCourseFragment}
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}
+        {checkSearchCourseDialog}
         {checkCourseDialog}
       </Container>
 
