@@ -135,20 +135,18 @@ export default class Index extends React.Component<any, IState> {
       </Container>
     );
 
-    let checkCourse = this.state.checkCourse;
     let checkSearchCourse = this.state.checkSearchCourse;
 
-    let handleClose = () => {
+    let resetCheckSearchCourse = () => {
       this.setState({
-        checkCourse: null,
         checkSearchCourse: null
       })
     };
 
-    let checkCourseDialog = (
+    let checkSearchCourseDialog = (
       <Dialog
-        open={checkCourse || checkSearchCourse}
-        onClose={handleClose}
+        open={checkSearchCourse}
+        onClose={resetCheckSearchCourse}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -159,11 +157,43 @@ export default class Index extends React.Component<any, IState> {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Disagree
+          <Button onClick={resetCheckSearchCourse} color="primary">
+            取消
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
-            Agree
+          <Button onClick={resetCheckSearchCourse} color="primary" autoFocus>
+            加入
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+
+    let checkCourse = this.state.checkCourse;
+
+    let resetCheckCourse = () => {
+      this.setState({
+        checkCourse: null
+      })
+    };
+
+    let checkCourseDialog = (
+      <Dialog
+        open={checkCourse}
+        onClose={resetCheckCourse}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            TODO
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={resetCheckCourse} color="primary">
+            取消
+          </Button>
+          <Button onClick={resetCheckCourse} color="primary" autoFocus>
+            复习
           </Button>
         </DialogActions>
       </Dialog>
