@@ -24,8 +24,8 @@ interface IProp {
   listHeight?: string;
   onEdit?: (noteVO: StudentNoteItemVO) => void;
   onDelete?: (noteVO: StudentNoteItemVO) => void;
-  onSend?: (text: string) => void;
   onSelect?: (noteVO: StudentNoteItemVO) => void;
+  footer?: React.ReactNode
 }
 
 interface IState {
@@ -72,24 +72,9 @@ class StudentNoteList extends React.Component<IProp, IState> {
     });
   };
 
-  handleClickSend = (e) => {
-    typeof this.props.onSend === "function" && this.props.onSend(this.state.inputText);
-  };
-
-  handleKeyUp = (e) => {
-    e.persist();
-    this._logger.info(e);
-    if (e.which === 13 && typeof this.props.onSend === "function") {
-       this.props.onSend(this.state.inputText);
-       this.setState({
-         inputText: ""
-       });
-    }
-  };
-
   render(): React.ReactNode {
-    const {dataSets, listHeight = "500px", onEdit, onDelete, onSelect} = this.props;
-    const {hideBooleans, inputText} = this.state;
+    const {dataSets, listHeight = "500px", onEdit, onDelete, onSelect, footer} = this.props;
+    const {hideBooleans} = this.state;
     const noteItems = this.noteItems();
 
     return (
@@ -119,20 +104,7 @@ class StudentNoteList extends React.Component<IProp, IState> {
             )
           )}
         </div>
-        <Input
-          fullWidth
-          value={inputText}
-          onChange={(e) => this.setState({inputText: e.target.value})}
-          onKeyUp={this.handleKeyUp}
-          style={{
-          boxSizing: "border-box",
-          padding: "8px"
-        }} endAdornment={
-          <InputAdornment position={"end"}>
-            <IconButton color={"primary"} onClick={this.handleClickSend}>
-              <SendIcon/>
-            </IconButton>
-          </InputAdornment>}/>
+        {footer}
       </div>
     );
   }

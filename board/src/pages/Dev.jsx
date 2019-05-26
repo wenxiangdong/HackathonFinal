@@ -7,6 +7,7 @@ import Logger from "../utils/logger";
 import Input from "@material-ui/core/Input";
 import PDFLoader from "../components/teacher/PDFLoader/PDFLoader";
 import StudentNoteList from "../components/student/StudentNoteList/StudentNoteList";
+import NoteInput from "../components/student/NoteInput/NoteInput";
 
 export default class Dev extends React.Component {
   state = {pdf: {}};
@@ -178,8 +179,8 @@ export default class Dev extends React.Component {
     return (
       <div style={{width: "400px"}}>
         <StudentNoteList
+          footer={<NoteInput onSend={this._logger.info}/>}
           dataSets={this.dataSet}
-          onSend={this._logger.info}
           onSelect={this._logger.info}
           onDelete={this._logger.info}
           onEdit={this._logger.info}/>
