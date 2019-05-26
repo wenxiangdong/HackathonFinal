@@ -103,7 +103,7 @@ export class StudentApi implements IStudentApi {
 }
 
 export class MockStudentApi implements IStudentApi {
-  createCourses(finished: boolean): CourseVO[] {
+  static createCourses(finished: boolean): CourseVO[] {
     let courses: CourseVO[] = new Array(2)
       .fill(
         {
@@ -119,19 +119,19 @@ export class MockStudentApi implements IStudentApi {
   }
 
   searchCourses(keyword: String, index: Number, offset: Number): Promise<CourseVO[]> {
-    return HttpMock.success(this.createCourses(false));
+    return HttpMock.success(MockStudentApi.createCourses(false));
   }
 
   studentGetUnfinishedCourses(): Promise<CourseVO[]> {
-    return HttpMock.success(this.createCourses(false));
+    return HttpMock.success(MockStudentApi.createCourses(false));
   }
 
   studentGetFinishedCourses(): Promise<CourseVO[]> {
-    return HttpMock.success(this.createCourses(true));
+    return HttpMock.success(MockStudentApi.createCourses(true));
   }
 
   studentGetOnGoingCourses(): Promise<CourseVO[]> {
-    return HttpMock.success(this.createCourses(false));
+    return HttpMock.success(MockStudentApi.createCourses(false));
   }
 
   joinCourse(courseId: Number): Promise<void> {

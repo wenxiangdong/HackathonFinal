@@ -1,5 +1,6 @@
 import type {CourseVO, LessonVO, TeacherNoteBookVO, TeacherNoteItemVO} from "../vo/vo";
-import {Http} from "./http";
+import {Http, HttpMock} from "./http";
+import {MockStudentApi} from "./student-api";
 
 export interface ITeacherApi {
   // 老师拿未结课课程
@@ -72,11 +73,11 @@ export class TeacherApi implements ITeacherApi {
 
 export class MockTeacherApi implements ITeacherApi {
   teacherGetRunningCourses(): Promise<CourseVO[]> {
-
+    return HttpMock.success(MockStudentApi.createCourses(false));
   }
 
   teacherGetFinishedCourses(): Promise<CourseVO[]> {
-
+    return HttpMock.success(MockStudentApi.createCourses(true));
   }
 
   createCourse(courseVO: CourseVO): Promise<CourseVO> {

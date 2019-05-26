@@ -5,15 +5,22 @@ import TextField from "@material-ui/core/TextField/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox/Checkbox";
 import Button from "@material-ui/core/Button/Button";
-import Link from "@material-ui/core/Link/Link";
 import Typography from "@material-ui/core/Typography/Typography";
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
+import {Link} from "react-router-dom";
 
 /**
  * Login
  * @create 2019/5/26 14:19
+ * TODO 逻辑 和 md5 编码
  */
 class Login extends React.Component {
+  login(e:Event) {
+    e.preventDefault();
+    // this.props.history.push(`/Student/1`);
+    this.props.history.push(`/Teacher/1`);
+  };
+
   render(): React.ReactNode {
     const loginForm = (
       <div className={"login-card"}>
@@ -22,7 +29,7 @@ class Login extends React.Component {
           <Typography component="h1" variant="h5">
             登录板书
           </Typography>
-          <form className={"login-form"} noValidate>
+          <form className={"login-form"} noValidate onSubmit={(e) => this.login(e)}>
             <TextField
               margin="normal"
               required
@@ -57,7 +64,7 @@ class Login extends React.Component {
             >
               登录
             </Button>
-            <Link href="Register.jsx">
+            <Link to={"/Register"}>
               <div className={'to-register'}>还没有账户？点击注册</div>
             </Link>
           </form>
