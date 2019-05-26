@@ -1,6 +1,5 @@
 import React from "react";
-import Typography from '@material-ui/core/Typography';
-import Container from "@material-ui/core/Container/Container";
+import "./SimpleTitleBar.css"
 
 interface IProp {
   title: string
@@ -16,11 +15,12 @@ export default class SimpleTitleBar extends React.Component<IProp> {
     const title = this.props.title;
 
     return (
-      <Container className={"title-wrapper"}>
-        <Typography className={"title"}>
+      <div className={"title-bar"}>
+        <div className={"title"}>
           {title}
-        </Typography>
-      </Container>
+        </div>
+        <div className={'bottom-line'}/>
+      </div>
     );
   }
 }

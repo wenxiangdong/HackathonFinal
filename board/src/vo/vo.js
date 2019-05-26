@@ -60,3 +60,8 @@ export interface StudentNoteBookVO {
   studentId: Number;
   items: StudentNoteItemVO[];
 }
+
+export interface LiveLessonData {
+  operationType: String;	// "CREATE", "DELETE", "UPDATE", "END"（下课）
+  teacherNoteItem: TeacherNoteItemVO;
+}
