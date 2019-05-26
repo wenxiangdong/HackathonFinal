@@ -101,7 +101,7 @@ export class MockTeacherApi implements ITeacherApi {
   }
 
   sendTeacherNote(teacherNote: TeacherNoteItemVO): Promise<TeacherNoteItemVO> {
-    return HttpMock.success({});
+    return HttpMock.success(teacherNote);
   }
 
   updateTeacherNote(teacherNoteId: Number): Promise<void> {

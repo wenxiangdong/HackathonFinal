@@ -18,6 +18,13 @@ import PDFLoader from "../../../components/teacher/PDFLoader/PDFLoader";
 import PDFPreviewer from "../../../components/teacher/PDFPreviewer/PDFPreviewer";
 import Typography from "@material-ui/core/Typography";
 
+import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import RightIcon from "@material-ui/icons/KeyboardArrowRight";
+import IconButton from "@material-ui/core/IconButton";
+import {drawNoteList} from "../../../utils/draw-teacher-note";
+import {formatContent, NoteTypes} from "../../../utils/teacher-note-helper";
+import {apiHub} from "../../../apis/ApiHub";
+
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
   actualSettingWidthRate: string,
@@ -30,6 +37,9 @@ interface IState {
   //   // you can now use *page* here
   // });
   pdbjsPDF: any;
+
+  pages: TeacherNoteItemVO[][];
+  pageIndex: number;
 }
 
 interface IProp {
@@ -42,13 +52,14 @@ interface IProp {
  */
 export default class Index extends React.Component<IProp, IState> {
 
-  logger = Logger.getLogger();
+  logger = Logger.getLogger(Index.name);
 
   // 这里是指 canvas 在 HTML 中实际的尺寸，会受到 CSS 宽度的限制，但是实际点坐标什么的都以这个为准
   canvasWidth = 3200;
   canvasHeight = 1800;
 
   teacherNoteVOList: TeacherNoteItemVO[] = [];
+
 
   ctx;
 
@@ -58,7 +69,9 @@ export default class Index extends React.Component<IProp, IState> {
       actualSettingWidthRate: 1,
       mode: "paint",
       open: false,
-      selectedPdfUrl: ""
+      selectedPdfUrl: "",
+      pages: [[]],
+      pageIndex: 0
     };
 
     if (this.props.initTeacherNoteItemVOs) {
@@ -70,6 +83,52 @@ export default class Index extends React.Component<IProp, IState> {
   // 处理PDFPreviewer的导出事件
   handleImportPages = (pdf, indexes: number[]) => {
     this.logger.info(pdf, indexes);
+    const {selectedPdfUrl} = this.state;
+    // 请求api
+    const promises = indexes.map(index => {
+      const vo: TeacherNoteItemVO = {
+        id: 0,
+        page: this.state.pageIndex,
+        color: "red",
+        content: formatContent(NoteTypes.PDF,{content: selectedPdfUrl, page: index}),
+        coordinates: [{x: 0, y: 0}],
+        createTime: 123
+      };
+      this.logger.info("vo", vo);
+      return apiHub.teacherApi.sendTeacherNote(vo);
+    });
+    Promise.all(promises)
+      .then(vos => {
+        this.logger.info("get vos", vos);
+        // 插多几页
+        let {pages, pageIndex} = this.state;
+        pages = [...pages, ...vos.map(vo => [vo])];
+        pageIndex = pages.length - 1;
+        this.setState({
+          pageIndex,
+          pages
+        }, () => {
+          this.reRenderPage(pages[pageIndex]);
+        });
+      })
+      .catch(e => {
+        this.logger.error(e);
+      })
+  };
+
+  handleClickSwitchPage = (offset) => {
+    this.logger.info(offset);
+    this.setState((pre) => {
+      let {pageIndex, pages} = pre;
+      pageIndex += offset;
+      if (pageIndex >= pages.length) {
+        pages.push([]);
+      }
+      return {
+        pages: pages,
+        pageIndex: pageIndex
+      }
+    });
   };
 
   render(): React.ReactNode {
@@ -116,10 +175,23 @@ export default class Index extends React.Component<IProp, IState> {
       </div>
     );
 
+    // 切换页面的按钮
+    const pageButtons = (
+      <div className={"page-button-wrapper"}>
+        <IconButton disabled={this.state.pageIndex <= 0} onClick={() => this.handleClickSwitchPage(-1)}>
+          <LeftIcon/>
+        </IconButton>
+        <IconButton onClick={() => this.handleClickSwitchPage(1)}>
+          <RightIcon/>
+        </IconButton>
+      </div>
+    );
+
     return (
       <div className={"main-box"}>
         {canvasView}
         {drawer}
+        {pageButtons}
         {fab}
       </div>
     );
@@ -273,20 +345,25 @@ export default class Index extends React.Component<IProp, IState> {
   // 结束绘画（添加新内容等等）
   finishDraw(paint) {
     // todo
-    this.teacherNoteVOList.push({
+    const noteVO = {
       id: 0,
-      page: 1,
+      page: this.state.pageIndex,
       color: "red",
-      content: "123123",
+      content: formatContent(NoteTypes.HANDWRITING,{content: ""}),
       coordinates: paint,
       createTime: 123
-    })
+    };
+    apiHub.teacherApi.sendTeacherNote(noteVO)
+      .then(res => {
+        const {pageIndex, pages} = this.state;
+        pages[pageIndex].push(res);
+      })
+      .catch();
   }
 
   // 重新渲染列表里的笔画
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
-
     for (let vo: TeacherNoteItemVO of this.teacherNoteVOList) {
       const coordinates = vo.coordinates;
       if (coordinates.length > 1) {
@@ -299,6 +376,12 @@ export default class Index extends React.Component<IProp, IState> {
         this.ctx.closePath();
       }
     }
+  }
+
+  reRenderPage(voList: TeacherNoteItemVO[]) {
+    this.cleanCanvas();
+    this.logger.info("更新页面", voList);
+    drawNoteList(voList, this.ctx);
   }
 
   // 清空 canvas
@@ -368,7 +451,8 @@ export default class Index extends React.Component<IProp, IState> {
     this.ctx = document.getElementById("canvas").getContext('2d');
     this.ctx.lineWidth = 4;
     this.ctx.strokeStyle = '#D32F2F'; // todo temp
-    this.reRenderTeacherNoteVOList();
+    // this.reRenderTeacherNoteVOList();
+    this.reRenderPage([]);
   }
 
   stopScroll(e) {
