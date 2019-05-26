@@ -3,14 +3,9 @@ import type {CourseVO, UserVO} from "../../vo/vo";
 import Logger from "../../utils/logger";
 import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
-import TitleBar from "../../components/common/TitleBar";
 import StudentCourseCard from "../../components/student/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import GridListTileBar from "@material-ui/core/GridListTileBar/GridListTileBar";
-import GridListTile from "@material-ui/core/GridListTile/GridListTile";
-import GridList from "@material-ui/core/GridList/GridList";
+import SimpleTitleBar from "../../components/common/SimpleTitleBar";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -54,32 +49,34 @@ export default class Index extends React.Component<any, IState> {
     return this.props.match.params.id;
   };
 
+  handleOngoingCourseClicked = (course) => {
+
+  };
+
   render(): React.ReactNode {
     let ongoingCourse = this.state.ongoingCourse;
-    let unfinishedCourse = this.state.unfinishedCourse;
-    let finishedCourse = this.state.finishedCourse;
+    // let unfinishedCourse = this.state.unfinishedCourse;
+    // let finishedCourse = this.state.finishedCourse;
 
-    let ongoingCourseFragment = (!ongoingCourse || ongoingCourse.length === 0)
-      ? null
-      : (
-        <React.Fragment>
-          <TitleBar title={"进行中课程"}/>
-          <div>
-            <Grid container spacing={2}>
-              {ongoingCourse.map((course, idx) => (
-                <Grid item key={`course-${idx}-${course.id}`}>
-                  <StudentCourseCard course={course} ongoing onClick={() => {}} />
-                </Grid>
-              ))}
-            </Grid>
-          </div>
-        </React.Fragment>
-      );
+    let myCourseFragment = (
+      <div className={"my-course"}>
+        <SimpleTitleBar title={"我的课程"}/>
+        <Grid container className={"courses-grid"} spacing={2}>
+          {ongoingCourse && ongoingCourse.length > 0
+            ? ongoingCourse.map((course, idx) => (
+              <Grid key={`ongoing-course-${idx}-${course.id}`} item>
+                <StudentCourseCard course={course} ongoing={true} onClick={() => this.handleOngoingCourseClicked(course)}/>
+              </Grid>
+            ))
+            : null
+          }
+        </Grid>
+      </div>
+    );
+
     return (
       <React.Fragment>
-        {ongoingCourseFragment}
-        <TitleBar title={"未结课课程"}/>
-        <TitleBar title={"已结课课程"}/>
+        {myCourseFragment}
       </React.Fragment>
     );
   }
