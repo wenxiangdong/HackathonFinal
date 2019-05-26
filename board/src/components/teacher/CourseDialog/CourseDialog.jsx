@@ -94,15 +94,11 @@ class CourseDialog extends React.Component<IProp, IState> {
   startLesson = (name) => {
     this.setState({loading: true});
     let lesson:LessonVO = {
-      id: -1,
       name,
       courseId: this.props.courseId,
-      teacherId: this.getTeacherId(),
-      startTime: Date.now(),
-      endTime: 0
     };
     this._teacherApi.createLesson(lesson)
-      .then(() => {
+      .then((lesson) => {
         this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
         success(`课程 ${name} 已成功开启`, this);
       })

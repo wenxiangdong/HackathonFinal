@@ -3,7 +3,6 @@ import React from "react";
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
 import type {TeacherNoteItemVO} from "../../../vo/vo";
-import {Point} from "../../../vo/vo";
 
 
 interface IState {
