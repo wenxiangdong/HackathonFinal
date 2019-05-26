@@ -6,7 +6,7 @@ import WebsocketPublisher from "../utils/websocket-publisher";
 import Logger from "../utils/logger";
 import Input from "@material-ui/core/Input";
 import PDFLoader from "../components/teacher/PDFLoader/PDFLoader";
-import PDFPreviewer from "../components/teacher/PDFPreviewer/PDFPreviewer";
+import StudentNoteList from "../components/student/StudentNoteList/StudentNoteList";
 
 export default class Dev extends React.Component {
   state = {pdf: {}};
@@ -29,9 +29,114 @@ export default class Dev extends React.Component {
   ];
   _logger = Logger.getLogger(Dev.name);
 
+  dataSet = [
+    {
+      label: "label",
+      data: [
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 1,
+          teacherNoteItemId: 1
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 2,
+          teacherNoteItemId: 2
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 3,
+          teacherNoteItemId: 3
+        },
+      ]
+    },
+    {
+      label: "label",
+      data: [
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 1,
+          teacherNoteItemId: 1
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 2,
+          teacherNoteItemId: 2
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 3,
+          teacherNoteItemId: 3
+        },
+      ]
+    },
+    {
+      label: "label",
+      data: [
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 1,
+          teacherNoteItemId: 1
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 2,
+          teacherNoteItemId: 2
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 3,
+          teacherNoteItemId: 3
+        },
+      ]
+    },
+    {
+      label: "label",
+      data: [
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 1,
+          teacherNoteItemId: 1
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 2,
+          teacherNoteItemId: 2
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 3,
+          teacherNoteItemId: 3
+        },
+      ]
+    },
+    {
+      label: "label",
+      data: [
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 1,
+          teacherNoteItemId: 1
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 2,
+          teacherNoteItemId: 2
+        },
+        {
+          content: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容",
+          id: 3,
+          teacherNoteItemId: 3
+        },
+      ]
+    },
+  ];
+
   componentDidMount(): void {
     new WebsocketPublisher("ws://127.0.0.1:4300").subscribe({
-      onError: (e) => {this._logger.error(e)}
+      onError: (e) => {
+        this._logger.error(e)
+      }
     });
   }
 
@@ -48,7 +153,7 @@ export default class Dev extends React.Component {
         .then(page => {
           // you can now use *page* here
           var scale = 1.5;
-          var viewport = page.getViewport({ scale: scale, });
+          var viewport = page.getViewport({scale: scale,});
           var canvas = document.getElementById("my-canvas");
           this._logger.info(canvas);
           var context = canvas.getContext('2d');
@@ -68,12 +173,16 @@ export default class Dev extends React.Component {
     });
   };
 
+
   render() {
     return (
-      <div>
-        <PDFLoader onSelectPDF={this.handleSelectPDF}/>
-        <PDFPreviewer src={this.state.pdf.url} onImportPages={this._logger.info}/>
-        <canvas id="my-canvas"/>
+      <div style={{width: "400px"}}>
+        <StudentNoteList
+          dataSets={this.dataSet}
+          onSend={this._logger.info}
+          onSelect={this._logger.info}
+          onDelete={this._logger.info}
+          onEdit={this._logger.info}/>
       </div>
     );
   }

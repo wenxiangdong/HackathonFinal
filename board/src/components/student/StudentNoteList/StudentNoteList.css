@@ -1,0 +1,23 @@
+.SNL__list-wrapper {
+    position: relative;
+}
+
+.SNL__list {
+    overflow-y: auto;
+}
+.SNL__mark-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 16px;
+    background-color: white;
+}
+
+.SNL__mark-item {
+    display: flex;
+    background-color: white;
+    padding: 0 4px;
+    margin: 4px;
+    cursor: pointer;
+}
+
