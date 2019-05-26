@@ -5,13 +5,12 @@ import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
 import StudentCourseCard from "../../components/student/StudentCourseCard/StudentCourseCard";
 import Grid from "@material-ui/core/Grid/Grid";
-import SimpleTitleBar from "../../components/common/SimpleTitleBar";
+import SimpleTitleBar from "../../components/common/SimpleTitleBar/SimpleTitleBar";
 import SimpleLoading from "../../components/common/SimpleLoading";
 
 import SearchIcon from "@material-ui/icons/Search"
 import Container from "@material-ui/core/Container/Container";
 import Button from "@material-ui/core/Button/Button";
-import SearchCourse from "../../components/student/SearchCourse/SearchCourse";
 import SimpleLine from "../../components/common/SimpleLine";
 import CourseDialog from "../../components/student/CourseDialog/CourseDialog";
 import EmptyCourseCard from "../../components/common/EmptyCourseCard";
@@ -19,6 +18,7 @@ import EmptyCourseCard from "../../components/common/EmptyCourseCard";
 import "./index.css"
 import type {HttpResponse} from "../../apis/http";
 import {error} from "../../utils/snackbar-helper";
+import {withSnackbar} from "notistack";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -27,12 +27,15 @@ interface IState {
   checkCourse: CourseVO;
 }
 
+interface IProp {
+  enqueueSnackbar?: () => void;
+}
+
 /**
  * Student Homepage
  * @create 2019/5/26 14:21
- * TODO 搜索美化
  */
-export default class Index extends React.Component<any, IState> {
+class Index extends React.Component<IProp, IState> {
 
   _logger: Logger;
   _studentApi: IStudentApi;
@@ -78,18 +81,14 @@ export default class Index extends React.Component<any, IState> {
     let unfinishedCourse = this.state.unfinishedCourse;
     let finishedCourse = this.state.finishedCourse;
 
-    let searchContainer = (
-      <Container className={"search-container"}>
-        <SearchCourse onSelectCourse={this.handleSearchCourseSelected}/>
-      </Container>
-    );
-
     let myCourseFragment = (
       <Container className={"courses-wrapper"}>
         <div className={"my-courses"}>
           <SimpleTitleBar title={"我的课程"}/>
           <span className={"spacer"}/>
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" onClick={() => {
+            this.props.history.push(`/Student/Search/`);
+          }}>
             搜索并创建新课程
             <SearchIcon/>
           </Button>
@@ -108,7 +107,7 @@ export default class Index extends React.Component<any, IState> {
                     ))
                   }
                   {
-                    unfinishedCourse.map((course, idx) => (
+                    unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
                       <Grid key={`unfinished-course-${idx}-${course.id}`} item>
                         <StudentCourseCard course={course} ongoing={false}
                                            onClick={() => this.showCourseHistory(course)}/>
@@ -155,8 +154,7 @@ export default class Index extends React.Component<any, IState> {
     );
 
     return (
-      <Container>
-        {searchContainer}
+      <Container style={{paddingTop: "20px"}}>
         {myCourseFragment}
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}
@@ -165,3 +163,5 @@ export default class Index extends React.Component<any, IState> {
     );
   }
 }
+
+export default withSnackbar(Index);

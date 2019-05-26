@@ -67,15 +67,15 @@ export class TeacherApi implements ITeacherApi {
   }
 
   updateTeacherNote(teacherNoteId: Number): Promise<void> {
-    return Http.post("/updateTeacherNote", {teacherNoteId});
+    return Http.post("/updateTeacherNote", {}, {teacherNoteId});
   }
 
   deleteTeacherNote(teacherNoteId: Number): Promise<void> {
-    return Http.post("/deleteTeacherNote", {teacherNoteId});
+    return Http.post("/deleteTeacherNote", {}, {teacherNoteId});
   }
 
   endLesson(lessonId: Number): Promise<void> {
-    return Http.post("/endLesson", {lessonId});
+    return Http.post("/endLesson", {}, {lessonId});
   }
 }
 

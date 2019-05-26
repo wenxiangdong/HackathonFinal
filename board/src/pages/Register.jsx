@@ -95,6 +95,7 @@ class Register extends React.Component<IProp, IState> {
   }
 
   render(): React.ReactNode {
+    const {name, username, password, confirmPassword} = this.state;
     const registerForm = (
       <div className={"main-card"}>
         <CssBaseline/>
@@ -111,7 +112,7 @@ class Register extends React.Component<IProp, IState> {
               label="姓名"
               id="name"
               autoFocus
-              value={this.state.name}
+              value={name}
               onChange={(e) => updateState("name", e.target.value, this)}
             />
             <TextField
@@ -121,7 +122,7 @@ class Register extends React.Component<IProp, IState> {
               id="username"
               label="账号"
               name="username"
-              value={this.state.username}
+              value={username}
               onChange={(e) => updateState("username", e.target.value, this)}
             />
             <TextField
@@ -132,7 +133,7 @@ class Register extends React.Component<IProp, IState> {
               label="密码"
               type="password"
               id="password"
-              value={this.state.password}
+              value={password}
               onChange={(e) => updateState("password", e.target.value, this)}
             />
             <TextField
@@ -143,7 +144,7 @@ class Register extends React.Component<IProp, IState> {
               label="确认密码"
               type="password"
               id="confirmPassword"
-              value={this.state.confirmPassword}
+              value={confirmPassword}
               onChange={(e) => updateState("confirmPassword", e.target.value, this)}
             />
             <RadioGroup
@@ -164,6 +165,7 @@ class Register extends React.Component<IProp, IState> {
               />
             </RadioGroup>
             <Button
+              disabled={!(name && username && password && confirmPassword && password === confirmPassword)}
               type="submit"
               fullWidth
               variant="contained"

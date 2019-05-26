@@ -17,6 +17,12 @@ import {apiHub} from "../../../apis/ApiHub";
 import {HttpCodes} from "../../../apis/http";
 
 import {withSnackbar} from "notistack";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton/IconButton";
+
+import AddIcon from '@material-ui/icons/Add'
+import BachIcon from '@material-ui/icons/ArrowBack'
+import {withRouter} from "react-router-dom";
 
 
 interface IState {
@@ -90,14 +96,23 @@ class SearchCourse extends React.Component<IProp, IState> {
     }
   };
 
+  jumpBack = () => {
+    this.props.history.goBack();
+  };
+
   render(): React.ReactNode {
     const {courseList, loading, keyword} = this.state;
     const {onSelectCourse = () => null, height = "500px"} = this.props;
     const courseComponents = courseList.map((course: CourseVO) => (
-      <ListItem key={course.id} button onClick={() => onSelectCourse(course)}>
+      <ListItem key={course.id}>
         <ListItemText
           primary={course.name}
           secondary={course.teacherName}/>
+        <ListItemSecondaryAction>
+          <IconButton onClick={() => onSelectCourse(course)} edge="end" aria-label="Delete">
+            <AddIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
       </ListItem>
     ));
 
@@ -118,13 +133,20 @@ class SearchCourse extends React.Component<IProp, IState> {
             }}
           />
         </div>
-        <div className={"SC__course-list-wrapper"} style={{height}}>
+        <div className={"SC__course-list-wrapper"} style={{maxHeight: height}}>
           <List style={{width: "100%"}}>
             {courseComponents}
           </List>
+        </div>
+        <div className={"button-group"}>
           <Button
-            onClick={this.handleClickLoadMore}
-            style={{fontSize: "16px", display: "flex", alignItems: "center"}}>
+            onClick={() => this.jumpBack()}>
+            <BachIcon/>
+            <span>返回</span>
+          </Button>
+          <Button
+            disabled={loading}
+            onClick={this.handleClickLoadMore}>
             {loading ? <CircularProgress size={"16px"}/> : <MoreIcon/>}
             {loading ? "加载中" : "加载更多"}
           </Button>
@@ -134,4 +156,4 @@ class SearchCourse extends React.Component<IProp, IState> {
   }
 }
 
-export default withSnackbar(SearchCourse);
+export default withSnackbar(withRouter(SearchCourse));

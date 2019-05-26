@@ -19,6 +19,7 @@ export interface Subscriber {
 export default class WebsocketPublisher {
 
   constructor(url) {
+    console.log(url);
     this.url = url;
     this.subscribers = [];
     this._init();
