@@ -1,0 +1,16 @@
+.PP__list-wrapper {
+    overflow-y: auto;
+    height: 300px;
+    padding: 8px;
+}
+
+.PP__canvas-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px auto;
+    border: rgba(0,0,0,0.1) 1px solid;
+}
+.PP__canvas {
+    width: 100%;
+}

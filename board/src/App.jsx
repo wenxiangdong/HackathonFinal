@@ -7,6 +7,7 @@ import Dev from "./pages/Dev";
 import {blue, red, yellow} from "@material-ui/core/colors";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {SnackbarProvider} from "notistack";
+declare var pdfjsLib;
 
 
 // 引入页面
