@@ -150,7 +150,18 @@ export class MockStudentApi implements IStudentApi {
   }
 
   getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO> {
-
+    const item: StudentNoteItemVO = {
+      id: 0,
+      content: Math.random().toString(),
+      teacherNoteItemId: 0
+    };
+    const book: StudentNoteBookVO = {
+      id: 0,
+      lessonId: lessonId,
+      studentId: Math.random(),
+      items: [{...item}, {...item}, {...item}]
+    } ;
+    return HttpMock.success(book);
   }
 
   writeStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {

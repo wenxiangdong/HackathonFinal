@@ -3,7 +3,7 @@ import "./../../CanvasCommon.css"
 
 import "./Review.css";
 import Logger from "../../../utils/logger";
-import type {StudentNoteBookVO, TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
+import type {Point, StudentNoteBookVO, StudentNoteItemVO, TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
 import type {ICommonApi} from "../../../apis/common-api";
@@ -18,13 +18,18 @@ import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 import FullScreenLoading from "../../../components/common/FullScreenLoading/FullScreenLoading";
 import {withSnackbar} from "notistack";
+import withToolBar from "../../hocs/withToolBar";
+import Button from "@material-ui/core/Button";
+import StudentNoteList from "../../../components/student/StudentNoteList/StudentNoteList";
+import {drawNoteList} from "../../../utils/draw-teacher-note";
 
 interface IState {
   lessonEnded: boolean,
   showPickDialog: boolean,
   pages: TeacherNoteItemVO[][],
   pageIndex: number;
-  noteBook: StudentNoteBookVO
+  noteBooks: StudentNoteBookVO[],
+  hide: boolean
 }
 
 interface IProp {
@@ -62,15 +67,90 @@ class Review extends React.Component<IProp, IState> {
     this.state = {
       lessonEnded: false,
       showPickDialog: false,
-      pages: [],
-      noteBook: undefined,
-      pageIndex: 0
+      pages: [[]],
+      pageIndex: 0,
+      hide: false,
+      noteBooks: []
     }
+  }
+
+  handleCloneBook = (book: StudentNoteBookVO) => {
+    this.setState((pre) => ({
+      noteBooks: [...pre.noteBooks, book]
+    }))
+  };
+
+  getDataSet = () => {
+    return this.state.noteBooks.map(
+      (book: StudentNoteBookVO) => ({
+        label: book.studentId,
+        data: book.items
+      })
+    );
+  };
+
+  handleClickSwitchPage = (offset) => {
+    this.logger.info(offset);
+    let {pageIndex, pages} = this.state;
+    pageIndex += offset;
+    this.setState({
+      pages,
+      pageIndex
+    }, () => {
+      this.reRenderTeacherNoteVOList();
+    });
+  };
+
+  handleSelectNote = (note: StudentNoteItemVO) => {
+    const {pages} = this.state;
+    for (let page of pages) {
+      for (let vo: TeacherNoteItemVO of page) {
+        if (vo.id == note.teacherNoteItemId) {
+          const pointList = vo.coordinates;
+          this.countRect(pointList);
+          return;
+        }
+      }
+    }
+  };
+
+  countRect(list: Point[]) {
+
+    const expand = 200;
+
+    let [top, right, bottom, left] = [0, 3200, 1800, 0];
+    for (let point of list) {
+      if (top > point.y) {
+        top = point.y
+      }
+      if (right < point.x) {
+        right = point.x;
+      }
+      if (left > point.x) {
+        left = point.x
+      }
+      if (bottom < point.y) {
+        bottom = point.y
+      }
+    }
+
+    // 用left top width height，然后扩大相应的方框
+    let width = right - left + expand;
+    let height = bottom - top + expand;
+    top = top - expand / 2;
+    left = left - expand / 2;
+
+
+    // ctx绘制一个半透明的矩形
+    // 一段时间后删除重绘
+    // 绘制矩形参考：
+    this.ctx.fillStyle = 'rgba(30,136,229,.2)';
+    this.ctx.fillRect(left, top, width, height)
   }
 
   render(): React.ReactNode {
 
-    const {pages, pageIndex} = this.state;
+    const {pages, pageIndex, hide} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
@@ -94,7 +174,7 @@ class Review extends React.Component<IProp, IState> {
       <NoteBookListDialog
         lessonId={localStorageHelper.getLesson().lessonId}
         onClose={() => this.setState({showPickDialog: false})}
-        onClone={this.logger.info}
+        onClone={this.handleCloneBook}
       />
     );
 
@@ -116,13 +196,29 @@ class Review extends React.Component<IProp, IState> {
       </div>
     );
 
+    const footer = (
+      <Button onClick={() => this.setState({showPickDialog: true})}>查看同窗笔记</Button>
+    );
+
+
+    const noteListComponent = (
+      <div className={`Ongoing__note-list-wrapper`}>
+        <StudentNoteList
+          listHeight={"450px"}
+          onSelect={this.handleSelectNote}
+          dataSets={this.getDataSet()}
+          footer={footer}/>
+      </div>
+    );
+
 
     return (
       <div>
         {canvasView}
-        {fab}
+        {/*{fab}*/}
         {this.state.showPickDialog ? dialog : null}
         {pages.length ? pageButtons : <FullScreenLoading/>}
+        {noteListComponent}
       </div>
     );
   }
@@ -145,6 +241,17 @@ class Review extends React.Component<IProp, IState> {
         this.reRenderTeacherNoteVOList();
       }
     );
+
+    this._studentApi.getStudentNoteBook(localStorageHelper.getLesson().id).then(
+      (res: StudentNoteBookVO) => {
+        this.setState({
+          noteBooks: [res]
+        });
+      }
+    ).catch(e => {
+      this.logger.error(e);
+    });
+
     document.body.addEventListener('resize', this.onWindowResize);
     this.onWindowResize();
     this.initCanvas();
@@ -170,34 +277,11 @@ class Review extends React.Component<IProp, IState> {
   }
 
 
-  // click () {
-  //   var de = document.documentElement;
-  //   if (de.requestFullscreen) {
-  //     de.requestFullscreen();
-  //   } else if (de.mozRequestFullScreen) {
-  //     de.mozRequestFullScreen();
-  //   } else if (de.webkitRequestFullScreen) {
-  //     de.webkitRequestFullScreen();
-  //   }
-  // }
-
-
   // 重新渲染列表里的笔画
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
-
-    for (let vo: TeacherNoteItemVO of this.teacherNoteVOList) {
-      const coordinates = vo.coordinates;
-      if (coordinates.length > 1) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(coordinates[0].x, coordinates[0].y);
-        for (let i = 1; i < coordinates.length; i++) {
-          this.ctx.lineTo(coordinates[i].x, coordinates[i].y);
-        }
-        this.ctx.stroke();
-        this.ctx.closePath();
-      }
-    }
+    const {pages, pageIndex} = this.state;
+    pages[pageIndex] && drawNoteList(pages[pageIndex], this.ctx);
   }
 
   // 清空 canvas

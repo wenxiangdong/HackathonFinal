@@ -464,7 +464,7 @@ class Index extends React.Component<IProp, IState> {
 
   reRenderPage(voList: TeacherNoteItemVO[]) {
     this.cleanCanvas();
-    this._logger.info("更新页面", voList);
+    this._logger.info("更新页面", JSON.stringify(voList));
     drawNoteList(voList, this.ctx);
   }
 
