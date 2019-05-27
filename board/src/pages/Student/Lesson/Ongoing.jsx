@@ -255,11 +255,11 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   onNext = (res: LiveLessonData) => {
     this._logger.info(res);
     if (res.operationType === "CREATE") {
-      this.addTeacherNoteItem(res.teacherNoteItem);
+      this.addTeacherNoteItem(JSON.parse(res.teacherNoteItem));
     } else if (res.operationType === "DELETE") {
-      this.deleteTeacherNoteItem(res.teacherNoteItem);
+      this.deleteTeacherNoteItem(JSON.parse(res.teacherNoteItem));
     } else if (res.operationType === "UPDATE") {
-      this.updateTeacherNoteItem(res.teacherNoteItem);
+      this.updateTeacherNoteItem(JSON.parse(res.teacherNoteItem));
     } else {
       this.endLesson();
     }
@@ -271,7 +271,9 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       pages.push([]);
     }
     pageIndex = vo.page;
+    this._logger.info(pages, pageIndex, typeof vo);
     pages[pageIndex].push(vo);
+
     this.setState({
       pageIndex,
       pages
@@ -322,7 +324,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
     const {pages, pageIndex} = this.state;
-    drawNoteList(pages[pageIndex]);
+    drawNoteList(pages[pageIndex], this.ctx);
   }
 
   // 清空 canvas
