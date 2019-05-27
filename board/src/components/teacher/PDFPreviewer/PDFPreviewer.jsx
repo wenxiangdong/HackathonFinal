@@ -53,7 +53,7 @@ class PDFPreviewer extends React.Component<IProp, IState> {
           pdf: pdf
         }, () => {
           this.loadPdf(pdf);
-          // this.setState({loading: false})
+          this.setState({loading: false})
         });
       })
         .catch((e) => this.handleError(e));

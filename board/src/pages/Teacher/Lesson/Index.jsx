@@ -30,6 +30,7 @@ import FullScreenLoading from "../../../components/common/FullScreenLoading/Full
 import type {HttpResponse} from "../../../apis/http";
 import {error} from "../../../utils/snackbar-helper";
 import withToolBar from "../../hocs/withToolBar";
+import MockCommunicateBubble from "../../../components/common/CommunicateBubble/MockCommunicateBubble";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -280,6 +281,7 @@ class Index extends React.Component<IProp, IState> {
     return (
       <div className={"main-box"}>
         {this.state.loading ? <FullScreenLoading/> : null}
+        <MockCommunicateBubble/>
         {canvasView}
         {drawer}
         {pageButtons}
