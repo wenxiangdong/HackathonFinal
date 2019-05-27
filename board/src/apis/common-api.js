@@ -1,4 +1,4 @@
-import type {LessonVO, TeacherNoteBookVO, UserVO} from "../vo/vo";
+import type {LessonVO, TeacherNoteBookVO, TeacherNoteItemVO, UserVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 import {UserType} from "../vo/vo";
 
@@ -91,7 +91,17 @@ export class MockCommonApi implements ICommonApi {
   }
 
   getTeacherNoteBook(lessonId: Number): Promise<TeacherNoteBookVO> {
-
+    const item: TeacherNoteItemVO = {
+      id: 0,
+      content: "xxxxxxx?type=TEXT",
+      color: "",
+      coordinates: []
+    };
+    const book: TeacherNoteBookVO = {
+      id: 0,
+      items: [{...item}, {...item}, {...item}]
+    };
+    return HttpMock.success(book);
   }
 
   uploadFile(file: File): Promise<String> {

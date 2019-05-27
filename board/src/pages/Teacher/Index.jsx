@@ -10,7 +10,7 @@ import StudentCourseCard from "../../components/student/StudentCourseCard/Studen
 import SimpleLoading from "../../components/common/SimpleLoading";
 
 import AddIcon from "@material-ui/icons/Add"
-import "./../Student/index.css"
+import "../Student/index.css"
 import EmptyCourseCard from "../../components/common/EmptyCourseCard";
 import CourseDialog from "../../components/teacher/CourseDialog/CourseDialog";
 import type {HttpResponse} from "../../apis/http";
