@@ -1,5 +1,7 @@
 import React from "react";
 import "./../../CanvasCommon.css"
+
+import "./Review.css";
 import Logger from "../../../utils/logger";
 import type {StudentNoteBookVO, TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
@@ -9,11 +11,12 @@ import Fab from "@material-ui/core/Fab/Fab";
 import EditIcon from "@material-ui/icons/Edit";
 import NoteBookListDialog from "../../../components/student/NoteBookListDialog/NoteBookListDialog";
 import localStorageHelper from "../../../utils/local-storage-helper";
-import IconButton from "../../Teacher/Lesson";
+import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 
 import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
+import FullScreenLoading from "../../../components/common/FullScreenLoading/FullScreenLoading";
 
 interface IState {
   lessonEnded: boolean,
@@ -106,7 +109,7 @@ export default class Review extends React.Component<IProp, IState> {
             value={this.state.pageIndex}
             onChange={this.handleChangePageIndex}/>
         </span>
-        <IconButton disabled={pageIndex >= pages.length} onClick={() => this.handleClickSwitchPage(1)}>
+        <IconButton disabled={pageIndex >= pages.length - 1} onClick={() => this.handleClickSwitchPage(1)}>
           <RightIcon/>
         </IconButton>
       </div>
@@ -118,7 +121,7 @@ export default class Review extends React.Component<IProp, IState> {
         {canvasView}
         {fab}
         {this.state.showPickDialog ? dialog : null}
-        {pages.length ? pageButtons : null}
+        {pages.length ? pageButtons : <FullScreenLoading/>}
       </div>
     );
   }
@@ -127,9 +130,11 @@ export default class Review extends React.Component<IProp, IState> {
     this._commonApi.getTeacherNoteBook(localStorageHelper.getLesson().id).then(
       (res: TeacherNoteBookVO) => {
         let noteItemVOS = res.items;
+        this.logger.info(noteItemVOS);
         let pages = noteItemVOS.reduce((pre: TeacherNoteItemVO[][], cur: TeacherNoteItemVO) => {
           const index = cur.page;
-          pre[index] = [...pre[index], cur];
+          const lstItems = pre[index] || [];
+          pre[index] = [...lstItems, cur];
           return pre;
         }, []);
         this.logger.info(pages);

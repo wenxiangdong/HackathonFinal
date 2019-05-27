@@ -95,7 +95,8 @@ export class MockCommonApi implements ICommonApi {
       id: 0,
       content: "xxxxxxx?type=TEXT",
       color: "",
-      coordinates: []
+      coordinates: [],
+      page: Math.round(Math.random())
     };
     const book: TeacherNoteBookVO = {
       id: 0,
