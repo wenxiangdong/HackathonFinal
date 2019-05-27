@@ -1,12 +1,17 @@
 import * as React from "react";
 
-import HomeIcon from "@material-ui/icons/Home"
 import "./withToolBar.css"
 import {Link, withRouter} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import localStorageHelper from "../../utils/local-storage-helper";
-import {LOGIN, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../../utils/router-helper";
-import type {UserVO, UserType} from "../../vo/vo";
+import {
+  LOGIN,
+  STUDENT_HOME_PAGE,
+  STUDENT_LESSON_ONGOING,
+  STUDENT_LESSON_REVIEW,
+  TEACHER_HOME_PAGE, TEACHER_LESSON
+} from "../../utils/router-helper";
+import type {UserVO} from "../../vo/vo";
 
 /**
  * 顶部工具栏
@@ -15,14 +20,14 @@ import type {UserVO, UserType} from "../../vo/vo";
  */
 export default function withToolBar(WrappedComponent) {
   class WithToolBarComponent extends React.Component {
-    excludes = ["/Login", "/Register"];
+    excludes = [STUDENT_HOME_PAGE, STUDENT_LESSON_REVIEW, STUDENT_LESSON_ONGOING, TEACHER_HOME_PAGE, TEACHER_LESSON];
     render() {
       const pathname: string = this.props.history.location.pathname;
-      const exclude = this.excludes.some(reg => pathname.includes(reg));
+      const exclude = !this.excludes.some(reg => pathname.includes(reg));
       return (
         <div>
           <div className={"tool-bar"}>
-            <div className={"click-able"} onClick={this.handleClick}>
+            <div className={"click-able"} onClick={() => this.handleClick(pathname)}>
               <div className={'tool-bar-title'} style={{fontSize: '24px', fontWeight: 'bold'}}>板书</div>
               {/*<HomeIcon/>*/}
             </div>
@@ -38,14 +43,15 @@ export default function withToolBar(WrappedComponent) {
       );
     }
 
-    handleClick = () => {
+    handleClick = (pathname) => {
       const user:UserVO = localStorageHelper.getUser();
       if (user) {
-        if (user.type === UserType.TEACHER) {
-          this.props.history.push(TEACHER_HOME_PAGE);
+        //TODO
+        if (user.type === 0) {
+          (pathname !== TEACHER_HOME_PAGE) && this.props.history.push(TEACHER_HOME_PAGE);
           return;
-        } else if (user.type === UserType.STUDENT) {
-          this.props.history.push(STUDENT_HOME_PAGE);
+        } else if (user.type === 1) {
+          (pathname !== STUDENT_HOME_PAGE) && this.props.history.push(STUDENT_HOME_PAGE);
           return;
         }
       }
@@ -54,5 +60,4 @@ export default function withToolBar(WrappedComponent) {
   }
 
   return withRouter(WithToolBarComponent);
-
 }

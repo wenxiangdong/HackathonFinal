@@ -1,3 +1,7 @@
 .search-container {
     padding-top: 20px;
 }
+
+.button-group button {
+    width: 110px;
+}

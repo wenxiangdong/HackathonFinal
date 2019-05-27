@@ -20,6 +20,7 @@ import type {ITeacherApi} from "../../../apis/teacher-api";
 import SingleTextFormDialog from "../../common/SingleTextFormDialog/SingleTextFormDialog";
 import {TEACHER_LESSON} from "../../../utils/router-helper";
 import localStorageHelper from "../../../utils/local-storage-helper";
+import Typography from "@material-ui/core/Typography/Typography";
 
 interface IProp {
   onClose: () => void,
@@ -122,7 +123,11 @@ class CourseDialog extends React.Component<IProp, IState> {
 
     let lessonList = (
       lessons
-        ? <LessonList lessons={lessons} onSelectLesson={(lesson) => this.handleSelectLesson(lesson)}/>
+        ? (
+          lessons.length
+            ? <LessonList lessons={lessons} onSelectLesson={(lesson) => this.handleSelectLesson(lesson)}/>
+            : <Typography variant="subtitle1">暂时没有上课记录</Typography>
+        )
         : <SimpleLoading/>
     );
 
