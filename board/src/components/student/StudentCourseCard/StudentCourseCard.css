@@ -1,16 +1,22 @@
 .base-box {
   display: inline-flex;
+  flex: 1 1 auto;
 
   width: 240px;
+  max-width: 380px;
   min-height: 160px;
+
+  margin: 10px 10px;
 
   flex-direction: column;
   flex-wrap: nowrap;
   text-align: left;
 
   cursor: pointer;
+  border: 1px #dddddd solid;
+  border-radius: 2px;
 
-  /*box-shadow: rgba(0,0,0,.3) 0 0 10px 0;*/
+  box-shadow: rgba(0,0,0,.1) 0 0 5px 0;
 }
 
 .top-div {
@@ -72,4 +78,3 @@
 .unfinished .top-div {
   background: #009688;
 }
-

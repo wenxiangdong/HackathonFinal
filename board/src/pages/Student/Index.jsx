@@ -71,7 +71,7 @@ class Index extends React.Component<IProp, IState> {
     this.setState({checkCourse: course});
   };
 
-  handleError = (e:HttpResponse) => {
+  handleError = (e: HttpResponse) => {
     this._logger.error(e);
     error(e.message, this);
     this.setState({loading: false});
@@ -96,32 +96,39 @@ class Index extends React.Component<IProp, IState> {
             </Button>
           </div>
         </div>
-        <Grid container className={"courses-grid"} spacing={2}>
+        <div>
           {ongoingCourse && unfinishedCourse
             ? (ongoingCourse.length === 0 && unfinishedCourse.length === 0)
               ? <EmptyCourseCard/>
               : (
                 <>
                   {
-                    ongoingCourse.map((course, idx) => (
-                      <Grid key={`ongoing-course-${idx}-${course.id}`} item>
-                        <StudentCourseCard course={course} ongoing={true} onClick={() => this.joinCourse(course)}/>
-                      </Grid>
-                    ))
+                    <div className={'courses-flex-box'}>
+                      {
+                        ongoingCourse.map((course, idx) => (
+                          <StudentCourseCard key={`ongoing-course-${idx}-${course.id}`} course={course} ongoing={true}
+                                             onClick={() => this.joinCourse(course)}/>
+                        ))
+                      }
+                    </div>
                   }
                   {
-                    unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
-                      <Grid key={`unfinished-course-${idx}-${course.id}`} item>
-                        <StudentCourseCard course={course} ongoing={false}
-                                           onClick={() => this.showCourseHistory(course)}/>
-                      </Grid>
-                    ))
+                    <div className={'courses-flex-box'}>
+                      {
+                        unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
+                          <StudentCourseCard course={course} ongoing={false}
+                                             key={`unfinished-course-${idx}-${course.id}`}
+                                             onClick={() => this.showCourseHistory(course)}/>
+                        ))
+                      }
+                    </div>
+
                   }
                 </>
               )
             : <SimpleLoading/>
           }
-        </Grid>
+        </div>
       </Container>
     );
 
@@ -136,7 +143,7 @@ class Index extends React.Component<IProp, IState> {
                   <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
                 </Grid>
               ))
-              :  <EmptyCourseCard/>
+              : <EmptyCourseCard/>
             : <SimpleLoading/>
           }
         </Grid>
@@ -148,9 +155,9 @@ class Index extends React.Component<IProp, IState> {
       checkCourse
         ? (
           <CourseDialog onClose={() => this.setState({checkCourse: null})}
-                        title={checkCourse? `课程名称：${checkCourse.name}`: '课程'}
+                        title={checkCourse ? `课程名称：${checkCourse.name}` : '课程'}
                         courseId={checkCourse.id}
-                        content={checkCourse? `主讲：${checkCourse.username}`: null}
+                        content={checkCourse ? `主讲：${checkCourse.username}` : null}
           />
         )
         : null
