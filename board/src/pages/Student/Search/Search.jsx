@@ -48,6 +48,8 @@ class Search extends React.Component<IProp, IState> {
       .catch((e:HttpResponse) => {
         this._logger.error(e);
         error(e.message, this);
+      })
+      .finally(() => {
         this.setState({loading: false});
       })
     ;

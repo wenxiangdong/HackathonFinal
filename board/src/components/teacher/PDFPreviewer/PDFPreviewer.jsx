@@ -7,6 +7,10 @@ import type {PDFFile} from "../PDFLoader/PDFLoader";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
+import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
+import {withSnackbar} from "notistack";
+import type {HttpResponse} from "../../../apis/http";
+import {error} from "../../../utils/snackbar-helper";
 
 interface IProp {
   src: string,
@@ -21,7 +25,8 @@ interface IProp {
 
 interface IState {
   pdf: PDFFile,
-  pageNums: number
+  pageNums: number,
+  loading: boolean
 }
 
 class PDFPreviewer extends React.Component<IProp, IState> {
@@ -38,6 +43,7 @@ class PDFPreviewer extends React.Component<IProp, IState> {
 
   shouldComponentUpdate(nextProps: Readonly<IProp>, nextState: Readonly<S>, nextContext: any): boolean {
     if (nextProps.src !== this.props.src) {
+      this.setState({loading: true});
       // eslint-disable-next-line no-undef
       const task = pdfjsLib.getDocument(nextProps.src);
       task.promise.then(pdf => {
@@ -47,10 +53,10 @@ class PDFPreviewer extends React.Component<IProp, IState> {
           pdf: pdf
         }, () => {
           this.loadPdf(pdf);
+          // this.setState({loading: false})
         });
-      }).catch(e => {
-        this._logger.error(e);
-      });
+      })
+        .catch((e) => this.handleError(e));
     }
     return true;
   }
@@ -79,9 +85,7 @@ class PDFPreviewer extends React.Component<IProp, IState> {
             };
             page.render(renderContext);
           })
-          .catch(e => {
-            this._logger.error(e);
-          })
+          .catch((e) => this.handleError(e))
       )
   }
 
@@ -100,6 +104,12 @@ class PDFPreviewer extends React.Component<IProp, IState> {
     this.handleSelectPages(indexes);
   };
 
+  handleError = (e: HttpResponse) => {
+    this._logger.error(e);
+    error(e.message, this);
+    this.setState({loading: false});
+  };
+
   render(): React.ReactNode {
     const {pageNums} = this.state;
     const canvasList = Array(pageNums).fill("").map((_, index) => (
@@ -113,6 +123,7 @@ class PDFPreviewer extends React.Component<IProp, IState> {
     ));
     return (
       <Card>
+        {this.state.loading ? <FullScreenLoading/> : null}
         <CardContent>
           <Typography variant="h6" gutterBottom>
             PDF预览
@@ -132,4 +143,4 @@ class PDFPreviewer extends React.Component<IProp, IState> {
   }
 }
 
-export default PDFPreviewer;
+export default withSnackbar(PDFPreviewer);

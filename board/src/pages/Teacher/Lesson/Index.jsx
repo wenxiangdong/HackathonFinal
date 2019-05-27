@@ -466,6 +466,7 @@ class Index extends React.Component<IProp, IState> {
     this.cleanCanvas();
     this._logger.info("更新页面", voList);
     drawNoteList(voList, this.ctx);
+    this.setState({loading: false});
   }
 
   // 清空 canvas

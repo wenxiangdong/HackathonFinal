@@ -92,7 +92,7 @@ class Index extends React.Component<IProp, IState> {
             return;
           }
         }
-        error("该课程已结束，请刷新重试", this);
+        error("老师还没来，请稍等", this);
         this.setState({loading: false});
       })
       .catch(e => this.handleError(e));

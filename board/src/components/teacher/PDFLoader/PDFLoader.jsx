@@ -13,13 +13,15 @@ import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 import {Http} from "../../../apis/http";
 import {withSnackbar} from "notistack";
+import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
 
 export interface PDFFile extends File {
   url: string
 }
 
 interface IState {
-  files: PDFFile[]
+  files: PDFFile[],
+  loading: boolean
 }
 
 interface IProp {
@@ -30,13 +32,13 @@ interface IProp {
 class PDFLoader extends React.Component<IProp, IState> {
 
   state = {
-    files: []
+    files: [],
+    loading: false
   };
 
   _logger = Logger.getLogger(PDFLoader.name);
   _upload: HTMLInputElement = null;
   _uploadId = "input-upload";
-
 
   handleClickPDF = (file: File) => {
     this._logger.info(file);
@@ -59,10 +61,12 @@ class PDFLoader extends React.Component<IProp, IState> {
     const file = e.target.files[0];
     if (file) {
       try {
+        this.setState({loading: true});
         const path = await Http.uploadFile(file);
         file.url = path;
         this.setState((pre) => ({
-          files: [...pre.files, file]
+          files: [...pre.files, file],
+          loading: false
         }));
       } catch (e) {
         this.props.enqueueSnackbar(`上传文件【${file.name}】失败`, {variant: "error"});
@@ -83,33 +87,36 @@ class PDFLoader extends React.Component<IProp, IState> {
     ));
 
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            PDF列表
-          </Typography>
-          <List>
-            {fileComponents}
-          </List>
-        </CardContent>
-        <CardActions>
-          <Button
-            size="small"
-            color="primary"
-            onClick={this.handleClickUpload}>
-            <UploadIcon/>
-            <span style={{width: "8px"}}/>
-            <Typography variant="button">上传</Typography>
-            <input
-              id={this._uploadId}
-              type="file"
-              accept="application/pdf"
-              hidden={true}
-              onChange={this.handleUploadChange}
-            />
-          </Button>
-        </CardActions>
-      </Card>
+      <>
+      {this.state.loading ? <FullScreenLoading/> : null}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              PDF列表
+            </Typography>
+            <List>
+              {fileComponents}
+            </List>
+          </CardContent>
+          <CardActions>
+            <Button
+              size="small"
+              color="primary"
+              onClick={this.handleClickUpload}>
+              <UploadIcon/>
+              <span style={{width: "8px"}}/>
+              <Typography variant="button">上传</Typography>
+              <input
+                id={this._uploadId}
+                type="file"
+                accept="application/pdf"
+                hidden={true}
+                onChange={this.handleUploadChange}
+              />
+            </Button>
+          </CardActions>
+        </Card>
+      </>
     );
   }
 }
