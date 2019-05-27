@@ -79,7 +79,7 @@ class Index extends React.Component<IProp, IState> {
   }
 
   showCourseHistory = (course) => {
-    this.setState({checkCourse:course});
+    this.setState({checkCourse: course});
   };
 
   handleEndCourse = () => {
@@ -104,7 +104,7 @@ class Index extends React.Component<IProp, IState> {
   createCourse = (name) => {
     this.setState({loading: true});
 
-    let course:CourseVO = {
+    let course: CourseVO = {
       id: -1,
       name,
       finished: false,
@@ -113,7 +113,11 @@ class Index extends React.Component<IProp, IState> {
     };
     this._teacherApi.createCourse(course)
       .then((course) => {
-        this.setState({loading: false, addCourse: false, unfinishedCourses: [course, ...this.state.unfinishedCourses]}, () => {
+        this.setState({
+          loading: false,
+          addCourse: false,
+          unfinishedCourses: [course, ...this.state.unfinishedCourses]
+        }, () => {
           success(`课程 ${name} 已成功创建`, this);
         });
       })
@@ -121,7 +125,7 @@ class Index extends React.Component<IProp, IState> {
     ;
   };
 
-  handleError = (e:HttpResponse) => {
+  handleError = (e: HttpResponse) => {
     this._logger.error(e);
     error(e.message, this);
     this.setState({loading: false});
@@ -136,23 +140,23 @@ class Index extends React.Component<IProp, IState> {
         <div className={"my-courses"}>
           <SimpleTitleBar title={"进行中课程"}/>
           <span className={"spacer"}/>
-          <Button variant="contained" color="primary" onClick={() => this.setState({addCourse: true})}>
-            创建新课程
-            <AddIcon/>
-          </Button>
+          <div className={"search-button-box"}>
+            <Button variant="contained" color="primary" onClick={() => this.setState({addCourse: true})}>
+              创建新课程
+              <AddIcon/>
+            </Button>
+          </div>
         </div>
-        <Grid container className={"courses-grid"} spacing={2}>
+        <div className={'courses-flex-box'}>
           {unfinishedCourses
             ? unfinishedCourses.length > 0
               ? unfinishedCourses.map((course, idx) => (
-                <Grid key={`unfinished-course-${idx}-${course.id}`} item>
-                  <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
-                </Grid>
+                  <StudentCourseCard key={`unfinished-course-${idx}-${course.id}`} course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
               ))
               : <EmptyCourseCard/>
             : <SimpleLoading/>
           }
-        </Grid>
+        </div>
       </Container>
     );
 
@@ -187,7 +191,7 @@ class Index extends React.Component<IProp, IState> {
       checkCourse
         ? (
           <CourseDialog onClose={() => this.setState({checkCourse: null})}
-                        title={checkCourse? `课程名称：${checkCourse.name}`: '课程'}
+                        title={checkCourse ? `课程名称：${checkCourse.name}` : '课程'}
                         courseId={checkCourse.id}
                         finished={checkCourse.finished}
                         onEndCourse={() => this.handleEndCourse()}
@@ -198,7 +202,7 @@ class Index extends React.Component<IProp, IState> {
 
     return (
       <Container style={{paddingTop: "20px"}}>
-        {this.state.loading? <FullScreenLoading/>: null}
+        {this.state.loading ? <FullScreenLoading/> : null}
         {unfinishedCourseFragment}
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {finishedCourseFragment}
