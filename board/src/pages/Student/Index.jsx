@@ -87,12 +87,14 @@ class Index extends React.Component<IProp, IState> {
         <div className={"my-courses"}>
           <SimpleTitleBar title={"我的课程"}/>
           <span className={"spacer"}/>
-          <Button variant="contained" color="primary" onClick={() => {
-            this.props.history.push(`/Student/Search/`);
-          }}>
-            搜索并创建新课程
-            <SearchIcon/>
-          </Button>
+          <div className={"search-button-box"}>
+            <Button fullWidth variant="contained" color="primary" onClick={() => {
+              this.props.history.push(`/Student/Search/`);
+            }}>
+              搜索并创建新课程
+              <SearchIcon/>
+            </Button>
+          </div>
         </div>
         <Grid container className={"courses-grid"} spacing={2}>
           {ongoingCourse && unfinishedCourse

@@ -1,12 +1,13 @@
 .courses-wrapper {
     /*max-width: 100%;*/
     /*overflow: scroll;*/
-  margin-bottom: 20px;
+  /*margin-bottom: 20px;*/
 }
 
 .my-courses {
   display: flex;
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .my-course-title{
@@ -16,4 +17,16 @@
 .spacer {
   display: inline-block;
   width: 20px;
+}
+
+.search-button-box {
+  margin-top: -10px;
+  margin-bottom: 10px;
+  width: 200px;
+}
+
+@media (max-width: 400px) {
+  .search-button-box {
+    width: 100%;
+  }
 }
