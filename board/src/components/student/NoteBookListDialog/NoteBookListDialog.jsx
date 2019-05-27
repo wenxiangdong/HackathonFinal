@@ -99,7 +99,7 @@ class NoteBookListDialog extends React.Component<IProp, IState> {
     return (
       <Dialog
         open={this.state.open}
-        onClose={() => this.handleClose()}
+        onClose={this.props.onClose}
         aria-labelledby="alert-dialog-title"
       >
         <DialogTitle id="alert-dialog-title">共享笔记</DialogTitle>

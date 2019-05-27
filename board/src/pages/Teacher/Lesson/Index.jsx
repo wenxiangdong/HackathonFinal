@@ -1,9 +1,9 @@
 import React from "react";
 
-import "./../../CanvasCommon.css"
+import "../../CanvasCommon.css"
 import "./Index.css";
 import Logger from "../../../utils/logger";
-import type {TeacherNoteBookVO, TeacherNoteItemVO, UserVO} from "../../../vo/vo";
+import type {TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
 import Drawer from "@material-ui/core/Drawer/Drawer";
 import Divider from "@material-ui/core/Divider/Divider";
 

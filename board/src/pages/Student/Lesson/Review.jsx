@@ -7,21 +7,21 @@ import type {IStudentApi} from "../../../apis/student-api";
 import type {ICommonApi} from "../../../apis/common-api";
 import Fab from "@material-ui/core/Fab/Fab";
 import EditIcon from "@material-ui/icons/Edit";
-import Dialog from "@material-ui/core/Dialog/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions/DialogActions";
-import Button from "@material-ui/core/Button/Button";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
+import NoteBookListDialog from "../../../components/student/NoteBookListDialog/NoteBookListDialog";
+import localStorageHelper from "../../../utils/local-storage-helper";
+import IconButton from "../../Teacher/Lesson";
+import TextField from "@material-ui/core/TextField";
+
+import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 import {withSnackbar} from "notistack";
-import withToolBar from "../../hocs/withToolBar";
 
 interface IState {
   lessonEnded: boolean,
   showPickDialog: boolean,
-  hide: boolean
+  pages: TeacherNoteItemVO[][],
+  pageIndex: number;
+  noteBook: StudentNoteBookVO
 }
 
 interface IProp {
@@ -56,12 +56,18 @@ class Review extends React.Component<IProp, IState> {
     this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
     this._commonApi = apiHub.commonApi;
-    this.state = {lessonEnded: false, showPickDialog: false, hide: false}
+    this.state = {
+      lessonEnded: false,
+      showPickDialog: false,
+      pages: [],
+      noteBook: undefined,
+      pageIndex: 0
+    }
   }
 
   render(): React.ReactNode {
 
-    const {showPickDialog} = this.state;
+    const {pages, pageIndex} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
@@ -81,62 +87,56 @@ class Review extends React.Component<IProp, IState> {
       </div>
     );
 
-    const availableStudentNotebook = this.studentNoteBookVOList
-      ? this.studentNoteBookVOList.map(
-        (item) => (
-          <div onClick={() => this.onSelectNotebookVO(item)}>
-            <ListItem key={item.id}>
-              <ListItemText
-                primary={item.studentId}
-                secondary={'todo 可用笔记'}/>
-              {/*<ListItemSecondaryAction>*/}
-              {/*<IconButton onClick={() => onSelectItem(item)} edge="end" aria-label="Delete">*/}
-              {/*<AddIcon />*/}
-              {/*</IconButton>*/}
-              {/*</ListItemSecondaryAction>*/}
-            </ListItem>
-          </div>
-        ))
-      : null;
-
-
     const dialog = (
-      <Dialog
-        open={showPickDialog}
-        onClose={() => this.returnHomePage()}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">选取作为参照的课堂笔记</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            可用列表
-          </DialogContentText>
-          {availableStudentNotebook}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => this.returnHomePage()} color="primary">
-            返回主页
-          </Button>
-          <Button onClick={() => this.jumpToReviewPage()} color="primary" autoFocus>
-            继续复习
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <NoteBookListDialog
+        lessonId={localStorageHelper.getLesson().lessonId}
+        onClose={() => this.setState({showPickDialog: false})}
+        onClone={this.logger.info}
+      />
     );
+
+    const pageButtons = (
+      <div className={"page-button-wrapper"}>
+        <IconButton disabled={this.state.pageIndex <= 0} onClick={() => this.handleClickSwitchPage(-1)}>
+          <LeftIcon/>
+        </IconButton>
+        <span>
+          <TextField
+            type="number"
+            style={{width: "40px", textAlign: "center"}}
+            value={this.state.pageIndex}
+            onChange={this.handleChangePageIndex}/>
+        </span>
+        <IconButton disabled={pageIndex >= pages.length} onClick={() => this.handleClickSwitchPage(1)}>
+          <RightIcon/>
+        </IconButton>
+      </div>
+    );
+
+
     return (
       <div>
         {canvasView}
         {fab}
-        {dialog}
+        {this.state.showPickDialog ? dialog : null}
+        {pages.length ? pageButtons : null}
       </div>
     );
   }
 
   componentDidMount() {
-    this._commonApi.getTeacherNoteBook(this.lessonId).then(
+    this._commonApi.getTeacherNoteBook(localStorageHelper.getLesson().id).then(
       (res: TeacherNoteBookVO) => {
-        this.teacherNoteVOList = res.items;
+        let noteItemVOS = res.items;
+        let pages = noteItemVOS.reduce((pre: TeacherNoteItemVO[][], cur: TeacherNoteItemVO) => {
+          const index = cur.page;
+          pre[index] = [...pre[index], cur];
+          return pre;
+        }, []);
+        this.logger.info(pages);
+        this.setState({
+          pages
+        });
         this.reRenderTeacherNoteVOList();
       }
     );
@@ -157,16 +157,11 @@ class Review extends React.Component<IProp, IState> {
 
   openDialog() {
     this.setState({showPickDialog: true});
-    this._studentApi.getSharedNoteBook(this.lessonId).then(
+    this._studentApi.getSharedNoteBook(localStorageHelper.getLesson().id).then(
       (res: StudentNoteBookVO[]) => {
         this.studentNoteBookVOList = res;
       }
     )
-  }
-
-  onSelectNotebookVO(vo: StudentNoteBookVO) {
-    this.setState({showPickDialog: false})
-    // todo 选择了某个学生的笔记
   }
 
 
@@ -181,23 +176,6 @@ class Review extends React.Component<IProp, IState> {
   //   }
   // }
 
-  deleteTeacherNoteItem(vo: TeacherNoteItemVO) {
-    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
-      if (this.teacherNoteVOList[i].id === vo.id) {
-        this.teacherNoteVOList.splice(i, 1);
-        break;
-      }
-    }
-  }
-
-  updateTeacherNoteItem(vo: TeacherNoteItemVO) {
-    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
-      if (this.teacherNoteVOList[i].id === vo.id) {
-        this.teacherNoteVOList[i] = vo;
-        break;
-      }
-    }
-  }
 
   // 重新渲染列表里的笔画
   reRenderTeacherNoteVOList() {
