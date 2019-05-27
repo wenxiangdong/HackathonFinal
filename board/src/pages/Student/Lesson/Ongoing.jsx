@@ -126,7 +126,7 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
           <StudentNoteList
             onSelect={this.handleSelectNote}
             onDelete={this.handleDeleteNote}
-            onEdit={this.handleEditNote}
+            onUpdate={this.handleEditNote}
             dataSets={this.getDataSet()}
             footer={footer}/>
         </div>
@@ -142,14 +142,29 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
   }
 
   handleDeleteNote = (note: StudentNoteItemVO) => {
-
+    const {noteList} = this.state;
+    noteList.splice(
+      noteList.findIndex(item => note.id == item.id),
+      1
+    );
+    this.setState({
+      noteList
+    });
   };
 
   handleEditNote = (note: StudentNoteItemVO) => {
-
+    const {noteList} = this.state;
+    this.logger.info("更新", note);
+    noteList.splice(
+      noteList.findIndex(item => note.id == item.id),
+      1,
+      note
+    );
+    this.setState({
+      noteList
+    });
   };
   handleSelectNote = (note: StudentNoteItemVO) => {
-
   };
 
 
