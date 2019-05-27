@@ -70,7 +70,7 @@ export class Http {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
-        url: "/uploadFile"
+        url: this._baseUrl + "/uploadFile"
       });
       const url = res.data.data;
       return url;
