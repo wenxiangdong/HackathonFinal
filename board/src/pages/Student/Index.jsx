@@ -90,7 +90,7 @@ class Index extends React.Component<IProp, IState> {
           <Button variant="contained" color="primary" onClick={() => {
             this.props.history.push(`/Student/Search/`);
           }}>
-            搜索并创建新课程
+            搜索新课程
             <SearchIcon/>
           </Button>
         </div>
