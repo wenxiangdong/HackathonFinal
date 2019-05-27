@@ -16,9 +16,14 @@ export async function drawNoteList(voList: TeacherNoteItemVO[], ctx: CanvasRende
   for (let vo of pdfItems) {
     await drawTeacherNote(vo, ctx);
   }
-  setTimeout(() => {
+  if (pdfItems.length) {
+    setTimeout(() => {
+      list.forEach(vo => drawTeacherNote(vo, ctx));
+    }, 1000);
+  } else {
     list.forEach(vo => drawTeacherNote(vo, ctx));
-  }, 1000);
+  }
+
 }
 
 export async function drawTeacherNote(vo: TeacherNoteItemVO, ctx: CanvasRenderingContext2D) {

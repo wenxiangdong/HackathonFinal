@@ -55,16 +55,13 @@ class StudentNoteList extends React.Component<IProp, IState> {
     }
   }
 
-  shouldComponentUpdate(nextProps: Readonly<IProp>, nextState: Readonly<S>, nextContext: any): boolean {
+  shouldComponentUpdate(nextProps: Readonly<IProp>, nextState: IState, nextContext: any): boolean {
     if (this.props.dataSets !== nextProps.dataSets) {
       // 更新隐藏设置
       this._logger.info(nextProps);
-      if (nextProps.dataSets.length) {
-        try {
-          nextContext.state.hideBooleans = Array(nextProps.dataSets.length).fill(false);
-        } catch (e) {
-          this._logger.error(e);
-        }
+      const length = nextProps.dataSets.length;
+      if (length) {
+        nextState.hideBooleans = Array(length).fill(false);
       }
     }
     return true;
@@ -136,8 +133,6 @@ class StudentNoteList extends React.Component<IProp, IState> {
     this._logger.info(list);
     return list;
   }
-
-
 }
 
 export default StudentNoteList;

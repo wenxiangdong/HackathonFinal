@@ -1,4 +1,5 @@
 import type {LiveLessonData} from "../vo/vo";
+import Logger from "./logger";
 
 /**
  * 要监听消息的组件可以实现这个接口，或者传一个实现这个接口的对象
@@ -12,6 +13,9 @@ export interface Subscriber {
   onClose: () => void
 }
 
+
+
+const logger = Logger.getLogger("websocket");
 
 /**
  * 某个websocket的通讯流
@@ -50,7 +54,10 @@ export default class WebsocketPublisher {
 
   _handleReceiveMessage = (ev: MessageEvent) => {
     try {
+      logger.info(ev);
+
       const msg = JSON.parse(ev.data);
+      logger.info(msg);
       this.subscribers
         .filter((s: Subscriber) => typeof s.onNext === "function")
         .forEach((subscriber: Subscriber) => {

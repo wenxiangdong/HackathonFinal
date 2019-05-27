@@ -170,6 +170,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       noteList.findIndex(item => note.id === item.id),
       1
     );
+    apiHub.studentApi.deleteStudentNote(localStorageHelper.getBook().id, note.id);
     this.setState({
       noteList
     });
@@ -183,6 +184,8 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       1,
       note
     );
+
+    apiHub.studentApi.updateStudentNote(localStorageHelper.getBook().id, note);
     this.setState({
       noteList
     });
@@ -195,12 +198,13 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
   handleInputSend = async (text: string) => {
     this._logger.info(text);
-    // TODO api
     const vo: StudentNoteItemVO = {
       id: 0,
       content: text,
       teacherNoteItemId: 0,
     };
+    apiHub.studentApi.writeStudentNote(localStorageHelper.getBook().id, vo);
+
     this.setState(pre => ({
       noteList: [...pre.noteList, vo]
     }));
@@ -255,11 +259,11 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   onNext = (res: LiveLessonData) => {
     this._logger.info(res);
     if (res.operationType === "CREATE") {
-      this.addTeacherNoteItem(res.teacherNoteItem);
+      this.addTeacherNoteItem(JSON.parse(res.teacherNoteItem));
     } else if (res.operationType === "DELETE") {
-      this.deleteTeacherNoteItem(res.teacherNoteItem);
+      this.deleteTeacherNoteItem(JSON.parse(res.teacherNoteItem));
     } else if (res.operationType === "UPDATE") {
-      this.updateTeacherNoteItem(res.teacherNoteItem);
+      this.updateTeacherNoteItem(JSON.parse(res.teacherNoteItem));
     } else {
       this.endLesson();
     }
@@ -271,7 +275,9 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       pages.push([]);
     }
     pageIndex = vo.page;
+    this._logger.info(pages, pageIndex, typeof vo);
     pages[pageIndex].push(vo);
+
     this.setState({
       pageIndex,
       pages
@@ -322,7 +328,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
     const {pages, pageIndex} = this.state;
-    drawNoteList(pages[pageIndex]);
+    drawNoteList(pages[pageIndex], this.ctx);
   }
 
   // 清空 canvas
