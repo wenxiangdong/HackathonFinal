@@ -11,18 +11,31 @@ import {apiHub} from "../../../apis/ApiHub";
 import {error} from "../../../utils/snackbar-helper";
 import {withSnackbar} from "notistack";
 import Typography from "@material-ui/core/Typography";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 
+import "./../../common/Dialog.css"
 
 interface IProp {
   lessonId: number,
   onClone: (book: StudentNoteBookVO) => void;
+  onClose: () => void;
   enqueueSnackbar?: () => void;
 }
 
 interface IState {
-  noteBookList: StudentNoteBookVO[]
+  noteBookList: StudentNoteBookVO[];
+  open: boolean;
 }
-class NoteBookList extends React.Component<IProp, IState> {
+class NoteBookListDialog extends React.Component<IProp, IState> {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: true
+    }
+  }
 
   state = {
     noteBookList: undefined
@@ -47,15 +60,15 @@ class NoteBookList extends React.Component<IProp, IState> {
       });
     } catch (e) {
       error("获取笔记失败", this);
+      this.props.onClose();
     }
   }
 
   render(): React.ReactNode {
-
     const {noteBookList} = this.state;
 
     const noteBookComponents = noteBookList && noteBookList.map((book: StudentNoteBookVO, index) => (
-      <ListItem key={index} button>
+      <ListItem key={index}>
         <ListItemText
           primary={book.id}
           secondary={
@@ -82,19 +95,36 @@ class NoteBookList extends React.Component<IProp, IState> {
         </ListItemSecondaryAction>
       </ListItem>
     ));
+
     return (
-      noteBookList ?
-        <>
-          <Typography variant="h5">同窗笔记</Typography>
-          <div style={{maxHeight: "500px", overflowY: "auto"}}>
-            <List style={{width: "100%"}}>
-              {noteBookComponents}
-            </List>
-          </div>
-        </>
-        : <SimpleLoading/>
+      <Dialog
+        open={this.state.open}
+        onClose={() => this.handleClose()}
+        aria-labelledby="alert-dialog-title"
+      >
+        <DialogTitle id="alert-dialog-title">共享笔记</DialogTitle>
+        <DialogContent>
+          {
+            noteBookList
+              ? (
+                (noteBookList.length > 0)
+                  ? (
+                    <>
+                      <div style={{maxHeight: "500px", overflowY: "auto"}}>
+                        <List style={{width: "100%"}}>
+                          {noteBookComponents}
+                        </List>
+                      </div>
+                    </>
+                  )
+                  : <Typography variant="subtitle1">暂时没找到分享笔记</Typography>
+              )
+              : <SimpleLoading/>
+          }
+        </DialogContent>
+      </Dialog>
     );
   }
 }
 
-export default withSnackbar(NoteBookList);
+export default withSnackbar(NoteBookListDialog);

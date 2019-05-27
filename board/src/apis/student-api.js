@@ -177,7 +177,7 @@ export class MockStudentApi implements IStudentApi {
       studentId: Math.random(),
       items: [{...item}, {...item}, {...item}]
     } ;
-    return Array(4).fill(JSON.parse(JSON.stringify(book)));
+    return HttpMock.success(Array(10).fill(JSON.parse(JSON.stringify(book))));
   }
 
   cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void> {
