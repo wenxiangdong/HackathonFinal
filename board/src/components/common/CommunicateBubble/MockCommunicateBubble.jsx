@@ -30,7 +30,6 @@ export default class MockCommunicateBubble extends React.Component<any, IState> 
   }
 
   componentWillUnmount(): void {
-    super.componentWillUnmount();
     this.clear(this.timeoutOne);
   }
 

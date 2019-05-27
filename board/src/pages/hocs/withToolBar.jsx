@@ -30,7 +30,6 @@ export default function withToolBar(WrappedComponent) {
           <div className={"tool-bar"}>
             <div className={"click-able"} onClick={() => this.handleClick(pathname)}>
               <div className={'tool-bar-title'} style={{fontSize: '24px', fontWeight: 'bold'}}>板书</div>
-              {/*<HomeIcon/>*/}
             </div>
            { exclude ? null : <div className={"right"}>
               <Button size="small" variant="outlined" color={"secondary"}>

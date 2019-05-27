@@ -14,10 +14,7 @@ import {withSnackbar} from "notistack";
 import {withRouter} from "react-router-dom";
 import type {HttpResponse} from "../../../apis/http";
 import {error} from "../../../utils/snackbar-helper";
-import { createPathStateConfig,
-  STUDENT_LESSON_ONGOING,
-  STUDENT_LESSON_REVIEW
-} from "../../../utils/router-helper";
+import {STUDENT_LESSON_ONGOING,STUDENT_LESSON_REVIEW} from "../../../utils/router-helper";
 import localStorageHelper from "../../../utils/local-storage-helper";
 
 interface IProp {

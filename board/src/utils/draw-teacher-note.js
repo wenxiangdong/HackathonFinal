@@ -65,5 +65,7 @@ export async function drawTeacherNote(vo: TeacherNoteItemVO, ctx: CanvasRenderin
         console.error(e);
       }
       break;
+    default:
+      console.error("mode default");
   }
 }
