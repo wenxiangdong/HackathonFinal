@@ -202,7 +202,7 @@ class Index extends React.Component<IProp, IState> {
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}
         {checkCourseDialog}
-        </Container>
+      </Container>
     );
   }
 }

@@ -218,6 +218,12 @@ class Index extends React.Component<IProp, IState> {
           </Typography>
           <div className={"tool-item-wrapper"}><ColorPicker selectColor={this.state.selectedColor} onColorSelect={this.handleSelectColor}/></div>
           <Divider/>
+          <div className={"button-flex"}>
+            <Button variant="contained" color={mode === "erase" ? "primary": "secondary"} fullWidth onClick={() => this.changeMode("erase")}>橡皮擦</Button>
+            <span className={"spacer"}/>
+            <Button variant="contained" color={mode === "paint" ? "primary": "secondary"} fullWidth onClick={() => this.changeMode("paint")}>笔</Button>
+          </div>
+          <Divider/>
           <div className={"tool-item-wrapper"}><PDFLoader onSelectPDF={(pdf) => this.setState({selectedPdfUrl: pdf.url})}/></div>
           <div className={"tool-item-wrapper"}><PDFPreviewer src={this.state.selectedPdfUrl} onImportPages={this.handleImportPages}/></div>
           <Divider/>

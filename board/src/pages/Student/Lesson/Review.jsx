@@ -118,9 +118,9 @@ class Review extends React.Component<IProp, IState> {
 
     const expand = 200;
 
-    let [top, right, bottom, left] = [0, 3200, 1800, 0];
+    let [top, right, bottom, left] = [0, 0, 1800, 3200];
     for (let point of list) {
-      if (top > point.y) {
+      if (top < point.y) {
         top = point.y
       }
       if (right < point.x) {
@@ -129,23 +129,26 @@ class Review extends React.Component<IProp, IState> {
       if (left > point.x) {
         left = point.x
       }
-      if (bottom < point.y) {
+      if (bottom > point.y) {
         bottom = point.y
       }
     }
 
     // 用left top width height，然后扩大相应的方框
     let width = right - left + expand;
-    let height = bottom - top + expand;
-    top = top - expand / 2;
+    let height = top - bottom + expand;
+    bottom = bottom - expand / 2;
     left = left - expand / 2;
 
 
     // ctx绘制一个半透明的矩形
     // 一段时间后删除重绘
     // 绘制矩形参考：
-    this.ctx.fillStyle = 'rgba(30,136,229,.2)';
-    this.ctx.fillRect(left, top, width, height)
+    this.ctx.fillStyle = 'rgba(255, 235, 59, .5)';
+    this.ctx.fillRect(left, bottom, width, height);
+    setTimeout (() => {
+      this.reRenderTeacherNoteVOList();
+    }, 2000)
   }
 
   render(): React.ReactNode {

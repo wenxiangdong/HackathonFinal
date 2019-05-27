@@ -170,6 +170,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       noteList.findIndex(item => note.id === item.id),
       1
     );
+    apiHub.studentApi.deleteStudentNote(localStorageHelper.getBook().id, note.id);
     this.setState({
       noteList
     });
@@ -183,6 +184,8 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       1,
       note
     );
+
+    apiHub.studentApi.updateStudentNote(localStorageHelper.getBook().id, note);
     this.setState({
       noteList
     });
@@ -195,12 +198,13 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
   handleInputSend = async (text: string) => {
     this._logger.info(text);
-    // TODO api
     const vo: StudentNoteItemVO = {
       id: 0,
       content: text,
       teacherNoteItemId: 0,
     };
+    apiHub.studentApi.writeStudentNote(localStorageHelper.getBook().id, vo);
+
     this.setState(pre => ({
       noteList: [...pre.noteList, vo]
     }));
