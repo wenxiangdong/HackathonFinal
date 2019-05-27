@@ -6,6 +6,8 @@
   height: 56px;
   box-sizing: border-box;
   padding: 0 50px;
+  justify-content: space-between;
+  background-color: white;
 
   z-index: 2;
   color: #555555;
@@ -39,4 +41,11 @@
 .click-able {
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+
+
+.link {
+  color: #282c34;
+  text-decoration: none;
 }

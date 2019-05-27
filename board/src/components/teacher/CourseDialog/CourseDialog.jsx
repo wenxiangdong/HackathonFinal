@@ -18,7 +18,7 @@ import {error, success} from "../../../utils/snackbar-helper";
 import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
 import type {ITeacherApi} from "../../../apis/teacher-api";
 import SingleTextFormDialog from "../../common/SingleTextFormDialog/SingleTextFormDialog";
-import {createPathStateConfig, TEACHER_LESSON} from "../../../utils/router-helper";
+import {TEACHER_LESSON} from "../../../utils/router-helper";
 import localStorageHelper from "../../../utils/local-storage-helper";
 
 interface IProp {

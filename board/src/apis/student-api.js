@@ -166,7 +166,18 @@ export class MockStudentApi implements IStudentApi {
   }
 
   getSharedNoteBook(lessonId: Number): Promise<StudentNoteBookVO[]> {
-
+    const item: StudentNoteItemVO = {
+      id: 0,
+      content: Math.random().toString(),
+      teacherNoteItemId: 0
+    };
+    const book: StudentNoteBookVO = {
+      id: 0,
+      lessonId: 0,
+      studentId: Math.random(),
+      items: [{...item}, {...item}, {...item}]
+    } ;
+    return HttpMock.success(Array(10).fill(JSON.parse(JSON.stringify(book))));
   }
 
   cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void> {

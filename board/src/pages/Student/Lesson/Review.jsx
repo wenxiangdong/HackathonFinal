@@ -13,11 +13,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
-import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import AddIcon from "@material-ui/icons/Add";
 import ListItem from "@material-ui/core/ListItem";
 import {withSnackbar} from "notistack";
 import withToolBar from "../../hocs/withToolBar";
@@ -201,11 +197,6 @@ class Review extends React.Component<IProp, IState> {
         break;
       }
     }
-  }
-
-  // todo
-  endLesson() {
-
   }
 
   // 重新渲染列表里的笔画

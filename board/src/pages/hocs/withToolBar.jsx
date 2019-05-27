@@ -2,11 +2,11 @@ import * as React from "react";
 
 import HomeIcon from "@material-ui/icons/Home"
 import "./withToolBar.css"
-import {withRouter} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
+import Button from "@material-ui/core/Button";
 import localStorageHelper from "../../utils/local-storage-helper";
 import {LOGIN, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../../utils/router-helper";
-import type {UserVO} from "../../vo/vo";
-import {UserType} from "../../vo/vo";
+import type {UserVO, UserType} from "../../vo/vo";
 
 /**
  * 顶部工具栏
@@ -15,7 +15,10 @@ import {UserType} from "../../vo/vo";
  */
 export default function withToolBar(WrappedComponent) {
   class WithToolBarComponent extends React.Component {
+    excludes = ["/Login", "/Register"];
     render() {
+      const pathname: string = this.props.history.location.pathname;
+      const exclude = this.excludes.some(reg => pathname.includes(reg));
       return (
         <div>
           <div className={"tool-bar"}>
@@ -23,6 +26,11 @@ export default function withToolBar(WrappedComponent) {
               <div className={'tool-bar-title'} style={{fontSize: '24px', fontWeight: 'bold'}}>板书</div>
               {/*<HomeIcon/>*/}
             </div>
+           { exclude ? null : <div className={"right"}>
+              <Button size="small" variant="outlined">
+                <Link to="/Login" className={"link"}>登出</Link>
+              </Button>
+            </div>}
           </div>
           <div className={"stub"}/>
           <WrappedComponent {...this.props} />

@@ -22,11 +22,12 @@ import localStorageHelper from "./../../../utils/local-storage-helper"
 import StudentNoteList from "../../../components/student/StudentNoteList/StudentNoteList";
 import NoteInput from "../../../components/student/NoteInput/NoteInput";
 import {drawNoteList} from "../../../utils/draw-teacher-note";
-import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import {withSnackbar} from "notistack";
 import withToolBar from "../../hocs/withToolBar";
+import {error} from "../../../utils/snackbar-helper";
+import {withSnackbar} from "notistack";
 
 
 interface IState {
@@ -38,6 +39,7 @@ interface IState {
 }
 
 interface IProp {
+  enqueueSnackbar?: () => void;
 }
 
 /**
@@ -46,7 +48,7 @@ interface IProp {
  */
 class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
-  logger = Logger.getLogger("Ongoing");
+  _logger = Logger.getLogger("Ongoing");
   webSocketUrl;
   webSocketPublisher;
   _studentApi: IStudentApi;
@@ -79,6 +81,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       this._logger.error(e);
     }
   }
+
   getDataSet = () => {
     return [{
       label: "我的笔记",
@@ -166,7 +169,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   handleDeleteNote = (note: StudentNoteItemVO) => {
     const {noteList} = this.state;
     noteList.splice(
-      noteList.findIndex(item => note.id == item.id),
+      noteList.findIndex(item => note.id === item.id),
       1
     );
     this.setState({
@@ -176,9 +179,9 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
   handleEditNote = (note: StudentNoteItemVO) => {
     const {noteList} = this.state;
-    this.logger.info("更新", note);
+    this._logger.info("更新", note);
     noteList.splice(
-      noteList.findIndex(item => note.id == item.id),
+      noteList.findIndex(item => note.id === item.id),
       1,
       note
     );
@@ -186,12 +189,14 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       noteList
     });
   };
+
   handleSelectNote = (note: StudentNoteItemVO) => {
+  //  TODO
   };
 
 
   handleInputSend = async (text: string) => {
-    this.logger.info(text)
+    this._logger.info(text);
     // TODO api
     const vo: StudentNoteItemVO = {
       id: 0,
@@ -220,7 +225,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       this.webSocketPublisher = new WebsocketPublisher(this.webSocketUrl);
       this.webSocketPublisher.subscribe(this);
     } catch (e) {
-      this.logger.error(e);
+      this._logger.error(e);
     }
 
     document.body.addEventListener('resize', this.onWindowResize);
@@ -239,10 +244,10 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
     this.webSocketPublisher && this.webSocketPublisher.unsubscribe(this);
   }
 
-
   // 监听websocket所需的几个方法
   onError = (e) => {
-    this.logger.error(e);
+    this._logger.error(e);
+    error(e.message, this);
   };
 
   onClose = () => {
@@ -250,7 +255,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   };
 
   onNext = (res: LiveLessonData) => {
-    this.logger.info(res);
+    this._logger.info(res);
     if (res.operationType === "CREATE") {
       this.addTeacherNoteItem(res.teacherNoteItem);
     } else if (res.operationType === "DELETE") {
@@ -261,7 +266,6 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       this.endLesson();
     }
   };
-
 
   addTeacherNoteItem(vo: TeacherNoteItemVO) {
     let {pageIndex, pages} = this.state;
@@ -285,7 +289,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       return;
     }
     page.splice(
-      page.findIndex(item => item.id == vo.id),
+      page.findIndex(item => item.id === vo.id),
       1
     );
     pages[vo.page] = page;
@@ -300,7 +304,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
     let {pages} = this.state;
     const page = pages[vo.page];
     page.splice(
-      page.findIndex(item => item.id == vo.id),
+      page.findIndex(item => item.id === vo.id),
       1,
       vo
     );
