@@ -13,7 +13,8 @@ interface IProp {
   title: string,
   label: string,
   onSubmit: (string) => void,
-  buttonText: string
+  buttonText: string,
+  onClose: () => void
 }
 
 interface IState {
@@ -37,7 +38,10 @@ export default class SingleTextFormDialog extends React.Component<IProp, IState>
   render(): React.ReactNode {
     const {title, label, onSubmit, buttonText} = this.props;
     return (
-      <Dialog open={this.state.open} onClose={() => this.setState({open: false})} aria-labelledby="form-dialog-title">
+      <Dialog open={this.state.open} onClose={() => {
+        this.setState({open: false});
+        this.props.onClose();
+      }} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{title}</DialogTitle>
         <DialogContent>
           <TextField

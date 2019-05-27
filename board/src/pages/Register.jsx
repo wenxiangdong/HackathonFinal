@@ -21,6 +21,7 @@ import {error, success} from "../utils/snackbar-helper";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import RadioGroup from "@material-ui/core/RadioGroup/RadioGroup";
 import Radio from "@material-ui/core/Radio/Radio";
+import Background from "../components/background/Background";
 
 interface IState {
   name: string;
@@ -94,12 +95,17 @@ class Register extends React.Component<IProp, IState> {
     this.props.history.goBack();
   }
 
+  hasError(): boolean {
+    const {name, username, password, confirmPassword} = this.state;
+    return !(name && username && password && confirmPassword && password === confirmPassword);
+  }
+
   render(): React.ReactNode {
     const {name, username, password, confirmPassword} = this.state;
     const registerForm = (
-      <div className={"main-card"}>
+      <div className={"main-card register-card"}>
         <CssBaseline/>
-        <div>
+        <div className={'others'}>
           <Typography component="h1" variant="h5">
             注册板书
           </Typography>
@@ -153,19 +159,21 @@ class Register extends React.Component<IProp, IState> {
               value={`${this.state.type}`}
               onChange={(e) => updateState("type", e.target.value, this)}
             >
-              <FormControlLabel
-                value={`${UserType.STUDENT}`}
-                control={<Radio color="primary" />}
-                label="学生"
-              />
-              <FormControlLabel
-                value={`${UserType.TEACHER}`}
-                control={<Radio color="primary" />}
-                label="教师"
-              />
+              <div style={{display: "flex"}}>
+                <FormControlLabel
+                  value={`${UserType.STUDENT}`}
+                  control={<Radio color="primary" />}
+                  label="学生"
+                />
+                <FormControlLabel
+                  value={`${UserType.TEACHER}`}
+                  control={<Radio color="primary" />}
+                  label="教师"
+                />
+              </div>
             </RadioGroup>
             <Button
-              disabled={!(name && username && password && confirmPassword && password === confirmPassword)}
+              disabled={this.hasError()}
               type="submit"
               fullWidth
               variant="contained"
@@ -176,8 +184,8 @@ class Register extends React.Component<IProp, IState> {
             <Button
               onClick={(e) => this.returnToLogin(e)}
               fullWidth
-              variant="contained"
-              color="secondary"
+              variant="outlined"
+              color="primary"
             >
               返回
             </Button>
@@ -189,6 +197,7 @@ class Register extends React.Component<IProp, IState> {
 
     return (
       <div className={"main-box"}>
+        <Background/>
         {this.state.loading? <FullScreenLoading/>: null}
         {registerForm}
       </div>

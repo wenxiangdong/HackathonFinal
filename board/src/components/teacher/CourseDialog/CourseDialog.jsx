@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import LessonList from "../../common/LessonList/LessonList";
-import type {LessonVO} from "../../../vo/vo";
+import type {LessonVO, TeacherNoteBookVO} from "../../../vo/vo";
 import SimpleLoading from "../../common/SimpleLoading";
 import Logger from "../../../utils/logger";
 import type {ICommonApi} from "../../../apis/common-api";
@@ -18,6 +18,8 @@ import {error, success} from "../../../utils/snackbar-helper";
 import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
 import type {ITeacherApi} from "../../../apis/teacher-api";
 import SingleTextFormDialog from "../../common/SingleTextFormDialog/SingleTextFormDialog";
+import {TEACHER_LESSON} from "../../../utils/router-helper";
+import localStorageHelper from "../../../utils/local-storage-helper";
 
 interface IProp {
   onClose: () => void,
@@ -80,15 +82,17 @@ class CourseDialog extends React.Component<IProp, IState> {
   };
 
   handleSelectLesson = (lesson:LessonVO) => {
-    this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+    this.setState({loading: true});
+    this._commonApi.getTeacherNoteBook(lesson.id)
+      .then((book) => {
+        localStorageHelper.setBook(book);
+        this.props.history.push(TEACHER_LESSON);
+      })
+      .catch((e) => this.handlerError(e))
   };
 
   handleStartLesson = () => {
     this.setState({startLesson: true})
-  };
-
-  getTeacherId = () => {
-    return this.props.match.params.id;
   };
 
   startLesson = (name) => {
@@ -98,15 +102,18 @@ class CourseDialog extends React.Component<IProp, IState> {
       courseId: this.props.courseId,
     };
     this._teacherApi.createLesson(lesson)
-      .then((lesson) => {
-        this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+      .then((book:TeacherNoteBookVO) => {
+        localStorageHelper.setBook(book);
+        this.props.history.push(TEACHER_LESSON);
         success(`课程 ${name} 已成功开启`, this);
       })
-      .catch((e) => {
-        this._logger.error(e);
-        this.setState({loading: false});
-        error(e.message, this);
-      })
+      .catch((e) => this.handlerError(e))
+  };
+
+  handlerError = (e) => {
+    this._logger.error(e);
+    this.setState({loading: false});
+    error(e.message, this);
   };
 
   render(): React.ReactNode {
@@ -136,7 +143,7 @@ class CourseDialog extends React.Component<IProp, IState> {
 
     let lessonNameDialog = (
       this.state.startLesson
-        ? <SingleTextFormDialog title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.startLesson(name)} buttonText={"开始上课"}/>
+        ? <SingleTextFormDialog onClose={() => this.setState({startLesson: false})} title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.startLesson(name)} buttonText={"开始上课"}/>
         : null
     );
 

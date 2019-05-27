@@ -70,11 +70,11 @@ export class StudentApi implements IStudentApi {
   }
 
   joinCourse(courseId: Number): Promise<void> {
-    return Http.post("/studentGetOngoingCourses", {courseId});
+    return Http.post("/joinCourse", {}, {courseId});
   }
 
   joinLesson(lessonId: Number): Promise<String> {
-    return Http.post("/joinLesson", {lessonId});
+    return Http.post("/joinLesson", {}, {lessonId});
   }
 
   getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO> {
@@ -82,29 +82,29 @@ export class StudentApi implements IStudentApi {
   }
 
   writeStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
-    return Http.post("/writeStudentNote", {bookId, studentNoteItem});
+    return Http.post("/writeStudentNote", studentNoteItem, {bookId});
   }
 
   updateStudentNote(bookId:number, studentNoteItem: StudentNoteItemVO): Promise<StudentNoteItemVO> {
-    return Http.post("/updateStudentNote", {bookId, studentNoteItem});
+    return Http.post("/updateStudentNote", studentNoteItem, {bookId});
   }
 
   // 学生删除笔记
   // post:
   deleteStudentNote(bookId:number, studentNoteId:number): Promise<void> {
-    return Http.post("/deleteStudentNote", {bookId, studentNoteId});
+    return Http.post("/deleteStudentNote", {}, {bookId, studentNoteId});
   }
 
   // 学生拿这节课所有的分享笔记
   // get:
   getSharedNoteBook(lessonId: Number): Promise<StudentNoteBookVO[]> {
-    return Http.post("/getSharedNoteBook", {lessonId});
+    return Http.post("/getSharedNoteBook", {}, {lessonId});
   }
 
   // 学生clone笔记
   // post:
   cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void> {
-    return Http.post("/cloneNoteBook", {bookId, cloneNoteBookId});
+    return Http.post("/cloneNoteBook", {}, {bookId, cloneNoteBookId});
   }
 }
 
@@ -146,7 +146,7 @@ export class MockStudentApi implements IStudentApi {
   }
 
   joinLesson(lessonId: Number): Promise<String> {
-    return HttpMock.success("ws://127.0.0.1");
+    return HttpMock.success("");
   }
 
   getStudentNoteBook(lessonId: Number): Promise<StudentNoteBookVO> {
@@ -177,7 +177,7 @@ export class MockStudentApi implements IStudentApi {
       studentId: Math.random(),
       items: [{...item}, {...item}, {...item}]
     } ;
-    return Array(4).fill(JSON.parse(JSON.stringify(book)));
+    return HttpMock.success(Array(10).fill(JSON.parse(JSON.stringify(book))));
   }
 
   cloneNoteBook(bookId:number, cloneNoteBookId:number): Promise<void> {

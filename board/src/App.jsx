@@ -7,6 +7,14 @@ import Dev from "./pages/Dev";
 import {blue, grey, red} from "@material-ui/core/colors";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {SnackbarProvider} from "notistack";
+import {
+  DEV,
+  LOGIN,
+  REGISTER, STUDENT_HOME_PAGE,
+  STUDENT_LESSON_ONGOING, STUDENT_LESSON_REVIEW, STUDENT_SEARCH,
+  TEACHER_HOME_PAGE,
+  TEACHER_LESSON
+} from "./utils/router-helper";
 declare var pdfjsLib;
 
 
@@ -42,15 +50,15 @@ function App() {
     <ThemeProvider theme={theme}>
       <HashRouter>
         <Switch>
-          <Route path="/Teacher/Lesson/:id" component={TeacherLesson}/>
-          <Route path="/Teacher/:id" component={TeacherHomepage}/>
-          <Route path="/Student/LessonOnGoing/:id" component={StudentLessonOngoing}/>
-          <Route path="/Student/LessonReview/:id" component={StudentLessonReview}/>
-          <Route path="/Student/Search" component={StudentSearchPage}/>
-          <Route path="/Student/:id" component={StudentHomepage}/>
-          <Route path="/Register" component={Register}/>
-          <Route path="/Login" component={Login}/>
-          <Route path="/dev" component={Dev}/>
+          <Route path={TEACHER_LESSON} component={TeacherLesson}/>
+          <Route path={TEACHER_HOME_PAGE} component={TeacherHomepage}/>
+          <Route path={STUDENT_LESSON_ONGOING} component={StudentLessonOngoing}/>
+          <Route path={STUDENT_LESSON_REVIEW} component={StudentLessonReview}/>
+          <Route path={STUDENT_SEARCH} component={StudentSearchPage}/>
+          <Route path={STUDENT_HOME_PAGE} component={StudentHomepage}/>
+          <Route path={REGISTER} component={Register}/>
+          <Route path={LOGIN} component={Login}/>
+          <Route path={DEV} component={Dev}/>
           <Route component={Login}/>
         </Switch>
       </HashRouter>

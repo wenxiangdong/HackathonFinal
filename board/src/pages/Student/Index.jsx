@@ -1,5 +1,5 @@
 import React from "react";
-import type {CourseVO} from "../../vo/vo";
+import type {CourseVO, LessonVO, UserVO} from "../../vo/vo";
 import Logger from "../../utils/logger";
 import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
@@ -20,12 +20,17 @@ import type {HttpResponse} from "../../apis/http";
 import {error} from "../../utils/snackbar-helper";
 import {withSnackbar} from "notistack";
 import withToolBar from "../hocs/withToolBar";
+import {STUDENT_LESSON_ONGOING} from "../../utils/router-helper";
+import type {ICommonApi} from "../../apis/common-api";
+import FullScreenLoading from "../../components/common/FullScreenLoading/FullScreenLoading";
+import localStorageHelper from "../../utils/local-storage-helper";
 
 interface IState {
   ongoingCourse: CourseVO[];
   unfinishedCourse: CourseVO[];
   finishedCourse: CourseVO[];
   checkCourse: CourseVO;
+  loading: boolean;
 }
 
 interface IProp {
@@ -40,12 +45,24 @@ class Index extends React.Component<IProp, IState> {
 
   _logger: Logger;
   _studentApi: IStudentApi;
+  _commonApi: ICommonApi;
 
   constructor(props) {
     super(props);
     this._logger = Logger.getLogger("StudentHomepage");
     this._studentApi = apiHub.studentApi;
-    this.state = {};
+    this._commonApi = apiHub.commonApi;
+    this.state = {
+      loading: false
+    };
+  }
+
+  getUser():UserVO {
+    try {
+      return localStorageHelper.getUser();
+    } catch (e) {
+      this._logger.error(e);
+    }
   }
 
   componentDidMount(): void {
@@ -64,14 +81,28 @@ class Index extends React.Component<IProp, IState> {
   }
 
   joinCourse = (course: CourseVO) => {
-    this.props.history.push(`/Student/LessonOnGoing/${course.id}`);
+    this.setState({loading: true});
+    this._commonApi.getLessons(course.id)
+      .then((lessons:LessonVO[]) => {
+        for (let lesson of lessons) {
+          if (lesson.endTime === 0) {
+            this.setState({loading: false});
+            localStorageHelper.setLesson(lesson);
+            this.props.history.push(STUDENT_LESSON_ONGOING);
+            return;
+          }
+        }
+        error("该课程已结束，请刷新重试", this);
+        this.setState({loading: false});
+      })
+      .catch(e => this.handleError(e));
   };
 
   showCourseHistory = (course) => {
     this.setState({checkCourse: course});
   };
 
-  handleError = (e:HttpResponse) => {
+  handleError = (e: HttpResponse) => {
     this._logger.error(e);
     error(e.message, this);
     this.setState({loading: false});
@@ -87,39 +118,48 @@ class Index extends React.Component<IProp, IState> {
         <div className={"my-courses"}>
           <SimpleTitleBar title={"我的课程"}/>
           <span className={"spacer"}/>
-          <Button variant="contained" color="primary" onClick={() => {
-            this.props.history.push(`/Student/Search/`);
-          }}>
-            搜索新课程
-            <SearchIcon/>
-          </Button>
+          <div className={"search-button-box"}>
+            <Button fullWidth variant="contained" color="primary" onClick={() => {
+              this.props.history.push(`/Student/Search/`);
+            }}>
+              探索新课程
+              <SearchIcon/>
+            </Button>
+          </div>
         </div>
-        <Grid container className={"courses-grid"} spacing={2}>
+        <div>
           {ongoingCourse && unfinishedCourse
             ? (ongoingCourse.length === 0 && unfinishedCourse.length === 0)
               ? <EmptyCourseCard/>
               : (
                 <>
                   {
-                    ongoingCourse.map((course, idx) => (
-                      <Grid key={`ongoing-course-${idx}-${course.id}`} item>
-                        <StudentCourseCard course={course} ongoing={true} onClick={() => this.joinCourse(course)}/>
-                      </Grid>
-                    ))
+                    <div className={'courses-flex-box'}>
+                      {
+                        ongoingCourse.map((course, idx) => (
+                          <StudentCourseCard key={`ongoing-course-${idx}-${course.id}`} course={course} ongoing={true}
+                                             onClick={() => this.joinCourse(course)}/>
+                        ))
+                      }
+                    </div>
                   }
                   {
-                    unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
-                      <Grid key={`unfinished-course-${idx}-${course.id}`} item>
-                        <StudentCourseCard course={course} ongoing={false}
-                                           onClick={() => this.showCourseHistory(course)}/>
-                      </Grid>
-                    ))
+                    <div className={'courses-flex-box'}>
+                      {
+                        unfinishedCourse.filter((course) => ongoingCourse.map((c) => c.id).indexOf(course.id) < 0).map((course, idx) => (
+                          <StudentCourseCard course={course} ongoing={false}
+                                             key={`unfinished-course-${idx}-${course.id}`}
+                                             onClick={() => this.showCourseHistory(course)}/>
+                        ))
+                      }
+                    </div>
+
                   }
                 </>
               )
             : <SimpleLoading/>
           }
-        </Grid>
+        </div>
       </Container>
     );
 
@@ -134,7 +174,7 @@ class Index extends React.Component<IProp, IState> {
                   <StudentCourseCard course={course} ongoing={false} onClick={() => this.showCourseHistory(course)}/>
                 </Grid>
               ))
-              :  <EmptyCourseCard/>
+              : <EmptyCourseCard/>
             : <SimpleLoading/>
           }
         </Grid>
@@ -146,9 +186,9 @@ class Index extends React.Component<IProp, IState> {
       checkCourse
         ? (
           <CourseDialog onClose={() => this.setState({checkCourse: null})}
-                        title={checkCourse? `课程名称：${checkCourse.name}`: '课程'}
+                        title={checkCourse ? `课程名称：${checkCourse.name}` : '课程'}
                         courseId={checkCourse.id}
-                        content={checkCourse? `主讲：${checkCourse.username}`: null}
+                        content={checkCourse ? `主讲：${checkCourse.username}` : null}
           />
         )
         : null
@@ -156,6 +196,7 @@ class Index extends React.Component<IProp, IState> {
 
     return (
       <Container style={{paddingTop: "20px"}}>
+        {this.state.loading? <FullScreenLoading/>: null}
         {myCourseFragment}
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}

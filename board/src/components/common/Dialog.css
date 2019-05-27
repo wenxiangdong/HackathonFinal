@@ -1,3 +1,8 @@
 .MuiDialog-paper {
     width: 400px;
+    min-height: 300px;
+}
+
+.MuiDialogContent-root {
+    padding: 0 !important;
 }

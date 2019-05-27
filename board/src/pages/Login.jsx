@@ -17,6 +17,9 @@ import type {HttpResponse} from "../apis/http";
 import {error} from "../utils/snackbar-helper";
 import type {UserVO} from "../vo/vo";
 import updateState from "../utils/state-helper";
+import {STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../utils/router-helper";
+import localStorageHelper from "../utils/local-storage-helper";
+import Background from "../components/background/Background";
 
 interface IState {
   username: string;
@@ -49,10 +52,10 @@ class Login extends React.Component<IProp, IState> {
     }
   };
 
-  login(e:Event) {
+  login(e: Event) {
     e.preventDefault();
     this.setState({loading: true});
-    let user:UserVO = {
+    let user: UserVO = {
       id: -1,
       username: this.state.username,
       password: this.state.password,
@@ -63,19 +66,17 @@ class Login extends React.Component<IProp, IState> {
     this._commonApi.login(user)
       .then((user) => {
         if (user.type === UserType.STUDENT) {
-          this.props.history.push(`/Student/${user.id}`);
-          localStorage.setItem('user-type', "student");
-          localStorage.setItem("user-id", user.id.toString())
+          localStorageHelper.setUser(user);
+          this.props.history.push(STUDENT_HOME_PAGE);
         } else if (user.type === UserType.TEACHER) {
-          this.props.history.push(`/Teacher/${user.id}`);
-          localStorage.setItem('user-type', "teacher");
-          localStorage.setItem("user-id", user.id.toString())
+          localStorageHelper.setUser(user);
+          this.props.history.push(TEACHER_HOME_PAGE);
         } else {
           this.setState({loading: false});
           error("无法识别的用户类型", this);
         }
       })
-      .catch((e:HttpResponse) => {
+      .catch((e: HttpResponse) => {
         this._logger.error(e);
         this.setState({loading: false});
         error(e.message, this);
@@ -91,14 +92,13 @@ class Login extends React.Component<IProp, IState> {
     const loginForm = (
       <div className={"main-card"}>
         <CssBaseline/>
-        {this.state.loading? <FullScreenLoading/>: null}
-        <div>
+        {this.state.loading ? <FullScreenLoading/> : null}
+        <div className={'others'}>
           <Typography component="h1" variant="h5">
             登录板书
           </Typography>
           <form className={"login-form"} noValidate onSubmit={(e) => this.login(e)}>
             <TextField
-              error={!this.state.username}
               margin="normal"
               required
               fullWidth
@@ -110,7 +110,6 @@ class Login extends React.Component<IProp, IState> {
               autoFocus
             />
             <TextField
-              error={!this.state.password}
               margin="normal"
               required
               fullWidth
@@ -123,10 +122,10 @@ class Login extends React.Component<IProp, IState> {
               // autoComplete="current-password"
             />
             {/*<div className={'form-control-label'}>*/}
-              {/*<FormControlLabel className={'remember-password'}*/}
-                                {/*control={<Checkbox value="remember" color="primary"/>}*/}
-                                {/*label="记住密码"*/}
-              {/*/>*/}
+            {/*<FormControlLabel className={'remember-password'}*/}
+            {/*control={<Checkbox value="remember" color="primary"/>}*/}
+            {/*label="记住密码"*/}
+            {/*/>*/}
             {/*</div>*/}
             <Button
               type="submit"
@@ -143,11 +142,11 @@ class Login extends React.Component<IProp, IState> {
           </form>
         </div>
       </div>
-
     );
 
     return (
       <div className={"main-box"}>
+        <Background/>
         {loginForm}
       </div>
     )

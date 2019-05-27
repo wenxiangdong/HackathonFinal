@@ -3,14 +3,9 @@ import React from "react";
 import "./../../CanvasCommon.css"
 import "./Index.css";
 import Logger from "../../../utils/logger";
-import type {TeacherNoteItemVO} from "../../../vo/vo";
-import {Point} from "../../../vo/vo";
+import type {TeacherNoteBookVO, TeacherNoteItemVO, UserVO} from "../../../vo/vo";
 import Drawer from "@material-ui/core/Drawer/Drawer";
 import Divider from "@material-ui/core/Divider/Divider";
-import List from "@material-ui/core/List/List";
-import ListItem from "@material-ui/core/ListItem/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 
 import ToolIcon from "@material-ui/icons/Build"
 import Fab from "@material-ui/core/Fab/Fab";
@@ -30,6 +25,11 @@ import TextField from "@material-ui/core/TextField";
 import {withSnackbar} from "notistack";
 import Button from "@material-ui/core/Button";
 
+import localStorageHelper from "./../../../utils/local-storage-helper"
+import FullScreenLoading from "../../../components/common/FullScreenLoading/FullScreenLoading";
+import type {HttpResponse} from "../../../apis/http";
+import {error} from "../../../utils/snackbar-helper";
+
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
   actualSettingWidthRate: string,
@@ -46,6 +46,8 @@ interface IState {
   pages: TeacherNoteItemVO[][];
   pageIndex: number;
   selectedColor: string;
+
+  loading: boolean;
 }
 
 interface IProp {
@@ -59,14 +61,13 @@ interface IProp {
  */
 class Index extends React.Component<IProp, IState> {
 
-  logger = Logger.getLogger(Index.name);
+  _logger = Logger.getLogger(Index.name);
 
   // 这里是指 canvas 在 HTML 中实际的尺寸，会受到 CSS 宽度的限制，但是实际点坐标什么的都以这个为准
   canvasWidth = 3200;
   canvasHeight = 1800;
 
   teacherNoteVOList: TeacherNoteItemVO[] = [];
-
 
   ctx;
 
@@ -79,7 +80,8 @@ class Index extends React.Component<IProp, IState> {
       selectedPdfUrl: "",
       pages: [[]],
       pageIndex: 0,
-      selectedColor: "#bf291c"
+      selectedColor: "#bf291c",
+      loading: false
     };
 
     if (this.props.initTeacherNoteItemVOs) {
@@ -87,6 +89,22 @@ class Index extends React.Component<IProp, IState> {
       this.teacherNoteVOList = JSON.parse(JSON.stringify(this.props.initTeacherNoteItemVOs));
     }
   }
+
+  getBook(): TeacherNoteBookVO {
+    try {
+      return localStorageHelper.getBook();
+    } catch (e) {
+      this._logger.error(e);
+    }
+  }
+
+  getBookId = () => {
+    return this.getBook().id;
+  };
+
+  getLessonId = () => {
+    return this.getBook().lessonId;
+  };
 
   handleSelectColor = (color) => {
     this.setState({
@@ -96,7 +114,8 @@ class Index extends React.Component<IProp, IState> {
 
   // 处理PDFPreviewer的导出事件
   handleImportPages = (pdf, indexes: number[]) => {
-    this.logger.info(pdf, indexes);
+    this._logger.info(pdf, indexes);
+    this.setState({loading: true});
     const {selectedPdfUrl} = this.state;
     // 请求api
     const promises = indexes.map(index => {
@@ -108,12 +127,12 @@ class Index extends React.Component<IProp, IState> {
         coordinates: [{x: 0, y: 0}],
         createTime: 123
       };
-      this.logger.info("vo", vo);
-      return apiHub.teacherApi.sendTeacherNote(vo);
+      this._logger.info("vo", vo);
+      return apiHub.teacherApi.sendTeacherNote(this.getBookId(), vo);
     });
     Promise.all(promises)
       .then(vos => {
-        this.logger.info("get vos", vos);
+        this._logger.info("get vos", vos);
         // 插多几页
         let {pages, pageIndex} = this.state;
         pages = [...pages, ...vos.map(vo => [vo])];
@@ -125,13 +144,11 @@ class Index extends React.Component<IProp, IState> {
           this.reRenderPage(pages[pageIndex]);
         });
       })
-      .catch(e => {
-        this.logger.error(e);
-      })
+      .catch((e) => this.handleError(e));
   };
 
   handleClickSwitchPage = (offset) => {
-    this.logger.info(offset);
+    this._logger.info(offset);
     let {pageIndex, pages} = this.state;
     pageIndex += offset;
     if (pageIndex >= pages.length) {
@@ -170,9 +187,18 @@ class Index extends React.Component<IProp, IState> {
   }
 
   handleClickOver = () => {
-    // TODO 调用api
-    // apiHub.teacherApi.endLesson()
-    this.props.history.goBack();
+    this.setState({loading: true});
+    apiHub.teacherApi.endLesson(this.getLessonId())
+      .then(() => {
+        this.props.history.goBack();
+      })
+      .catch((e) => this.handleError(e));
+  };
+
+  handleError = (e: HttpResponse) => {
+    this._logger.error(e);
+    error(e.message, this);
+    this.setState({loading: false});
   };
 
   render(): React.ReactNode {
@@ -233,7 +259,7 @@ class Index extends React.Component<IProp, IState> {
         <span>
           <TextField
             type="number"
-            style={{width: "24px", textAlign: "center"}}
+            style={{width: "40px", textAlign: "center"}}
             value={this.state.pageIndex}
             onChange={this.handleChangePageIndex}/>
           {/*{this.state.pageIndex}*/}
@@ -246,6 +272,7 @@ class Index extends React.Component<IProp, IState> {
 
     return (
       <div className={"main-box"}>
+        {this.state.loading ? <FullScreenLoading/> : null}
         {canvasView}
         {drawer}
         {pageButtons}
@@ -255,7 +282,7 @@ class Index extends React.Component<IProp, IState> {
   }
 
   openDrawer() {
-    this.logger.info(123);
+    this._logger.info(123);
     this.setState({open: true})
   }
 
@@ -268,7 +295,7 @@ class Index extends React.Component<IProp, IState> {
   };
 
   componentDidMount() {
-    document.body.addEventListener('resize', this.onWindowResize)
+    document.body.addEventListener('resize', this.onWindowResize);
     this.onWindowResize();
     this.initCanvas();
     document.body.addEventListener('touchmove', this.stopScroll, {
@@ -401,7 +428,6 @@ class Index extends React.Component<IProp, IState> {
 
   // 结束绘画（添加新内容等等）
   finishDraw(paint) {
-    // todo
     const noteVO = {
       id: 0,
       page: this.state.pageIndex,
@@ -410,12 +436,12 @@ class Index extends React.Component<IProp, IState> {
       coordinates: paint,
       createTime: 123
     };
-    apiHub.teacherApi.sendTeacherNote(noteVO)
+    apiHub.teacherApi.sendTeacherNote(this.getBookId(), noteVO)
       .then(res => {
         const {pageIndex, pages} = this.state;
         pages[pageIndex].push(res);
       })
-      .catch();
+      .catch((e) => this.handleError(e));
   }
 
   // 重新渲染列表里的笔画
@@ -437,7 +463,7 @@ class Index extends React.Component<IProp, IState> {
 
   reRenderPage(voList: TeacherNoteItemVO[]) {
     this.cleanCanvas();
-    this.logger.info("更新页面", voList);
+    this._logger.info("更新页面", voList);
     drawNoteList(voList, this.ctx);
   }
 
@@ -475,7 +501,7 @@ class Index extends React.Component<IProp, IState> {
   checkIsNearBy(x1, y1, x2, y2) {
     const distance = 40;
     const actual = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    // this.logger.info(actual);
+    // this._logger.info(actual);
     return actual < distance;
   }
 

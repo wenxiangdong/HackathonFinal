@@ -3,9 +3,8 @@ import React from "react";
 import WebsocketPublisher from "../utils/websocket-publisher";
 import Logger from "../utils/logger";
 // import PDFLoader from "../components/teacher/PDFLoader/PDFLoader";
-import StudentNoteList from "../components/student/StudentNoteList/StudentNoteList";
 import NoteInput from "../components/student/NoteInput/NoteInput";
-import NoteBookList from "../components/student/NoteBookLis/NoteBookList";
+import NoteBookListDialog from "../components/student/NoteBookListDialog/NoteBookListDialog";
 
 export default class Dev extends React.Component {
   state = {pdf: {}};
@@ -132,11 +131,11 @@ export default class Dev extends React.Component {
   ];
 
   componentDidMount(): void {
-    new WebsocketPublisher("ws://127.0.0.1:4300").subscribe({
-      onError: (e) => {
-        this._logger.error(e)
-      }
-    });
+    // new WebsocketPublisher("ws://127.0.0.1:4300").subscribe({
+    //   onError: (e) => {
+    //     this._logger.error(e)
+    //   }
+    // });
   }
 
   handleSelectPDF = (pdf) => {
@@ -182,7 +181,7 @@ export default class Dev extends React.Component {
           {/*onSelect={this._logger.info}*/}
           {/*onDelete={this._logger.info}*/}
           {/*onUpdate={this._logger.info}/>*/}
-          <NoteBookList onClone={this._logger.info}/>
+          <NoteBookListDialog lessonId={"1"} onClone={this._logger.info}/>
       </div>
     );
   }

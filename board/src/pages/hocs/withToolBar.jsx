@@ -4,6 +4,9 @@ import HomeIcon from "@material-ui/icons/Home"
 import "./withToolBar.css"
 import {Link, withRouter} from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import localStorageHelper from "../../utils/local-storage-helper";
+import {LOGIN, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../../utils/router-helper";
+import type {UserVO, UserType} from "../../vo/vo";
 
 /**
  * 顶部工具栏
@@ -36,15 +39,17 @@ export default function withToolBar(WrappedComponent) {
     }
 
     handleClick = () => {
-      const userType = localStorage.getItem("user-type");
-      const userId = localStorage.getItem("user-id");
-      if (userType === "student") {
-        this.props.history.push(`/Student/${userId}`);
-      } else if (userType === "teacher") {
-        this.props.history.push(`/Teacher/${userId}`);
-      } else {
-        this.props.history.push(`/Login`);
+      const user:UserVO = localStorageHelper.getUser();
+      if (user) {
+        if (user.type === UserType.TEACHER) {
+          this.props.history.push(TEACHER_HOME_PAGE);
+          return;
+        } else if (user.type === UserType.STUDENT) {
+          this.props.history.push(STUDENT_HOME_PAGE);
+          return;
+        }
       }
+      this.props.history.push(LOGIN);
     }
   }
 

@@ -47,7 +47,6 @@ export class CommonApi implements ICommonApi {
   }
 }
 
-
 export class MockCommonApi implements ICommonApi {
   // 注册
   // post:

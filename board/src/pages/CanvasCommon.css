@@ -26,3 +26,9 @@ canvas {
   right: 16px;
   bottom: 16px;
 }
+
+.left-fab-box {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+}
