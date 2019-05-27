@@ -27,8 +27,6 @@ import Typography from "@material-ui/core/Typography";
 import {withSnackbar} from "notistack";
 import withToolBar from "../../hocs/withToolBar";
 import {error} from "../../../utils/snackbar-helper";
-import {withSnackbar} from "notistack";
-
 
 interface IState {
   lessonEnded: boolean;
