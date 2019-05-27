@@ -9,12 +9,13 @@ import Fab from "@material-ui/core/Fab/Fab";
 import EditIcon from "@material-ui/icons/Edit";
 import NoteBookListDialog from "../../../components/student/NoteBookListDialog/NoteBookListDialog";
 import localStorageHelper from "../../../utils/local-storage-helper";
-import IconButton from "../../Teacher/Lesson";
 import TextField from "@material-ui/core/TextField";
 
 import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 import {withSnackbar} from "notistack";
+import withToolBar from "../../hocs/withToolBar";
+import IconButton from "@material-ui/core/IconButton/IconButton";
 
 interface IState {
   lessonEnded: boolean,
