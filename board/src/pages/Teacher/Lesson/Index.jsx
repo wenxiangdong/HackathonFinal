@@ -1,9 +1,9 @@
 import React from "react";
 
-import "./../../CanvasCommon.css"
+import "../../CanvasCommon.css"
 import "./Index.css";
 import Logger from "../../../utils/logger";
-import type {TeacherNoteBookVO, TeacherNoteItemVO, UserVO} from "../../../vo/vo";
+import type {TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
 import Drawer from "@material-ui/core/Drawer/Drawer";
 import Divider from "@material-ui/core/Divider/Divider";
 
@@ -217,6 +217,12 @@ class Index extends React.Component<IProp, IState> {
             选择颜色
           </Typography>
           <div className={"tool-item-wrapper"}><ColorPicker selectColor={this.state.selectedColor} onColorSelect={this.handleSelectColor}/></div>
+          <Divider/>
+          <div className={"button-flex"}>
+            <Button variant="contained" color={mode === "erase" ? "primary": "secondary"} fullWidth onClick={() => this.changeMode("erase")}>橡皮擦</Button>
+            <span className={"spacer"}/>
+            <Button variant="contained" color={mode === "paint" ? "primary": "secondary"} fullWidth onClick={() => this.changeMode("paint")}>笔</Button>
+          </div>
           <Divider/>
           <div className={"tool-item-wrapper"}><PDFLoader onSelectPDF={(pdf) => this.setState({selectedPdfUrl: pdf.url})}/></div>
           <div className={"tool-item-wrapper"}><PDFPreviewer src={this.state.selectedPdfUrl} onImportPages={this.handleImportPages}/></div>

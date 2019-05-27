@@ -11,6 +11,7 @@ import {
   STUDENT_LESSON_REVIEW,
   TEACHER_HOME_PAGE, TEACHER_LESSON
 } from "../../utils/router-helper";
+import {LOGIN, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../../utils/router-helper";
 import type {UserVO} from "../../vo/vo";
 
 /**
@@ -32,8 +33,8 @@ export default function withToolBar(WrappedComponent) {
               {/*<HomeIcon/>*/}
             </div>
            { exclude ? null : <div className={"right"}>
-              <Button size="small" variant="outlined">
-                <Link to="/Login" className={"link"}>登出</Link>
+              <Button size="small" variant="outlined" color={"secondary"}>
+                <Link to="/Login" className={"link"}><span style={{color: "white"}}>登出</span></Link>
               </Button>
             </div>}
           </div>
