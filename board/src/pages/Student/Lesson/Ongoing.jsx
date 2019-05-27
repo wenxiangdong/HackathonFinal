@@ -2,7 +2,7 @@ import React from "react";
 
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
-import type {LiveLessonData, TeacherNoteItemVO} from "../../../vo/vo";
+import type {LessonVO, LiveLessonData, TeacherNoteItemVO, UserVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
 import WebsocketPublisher from "../../../utils/websocket-publisher";
@@ -15,6 +15,9 @@ import Button from "@material-ui/core/Button/Button";
 
 import "./../../../components/common/Dialog.css"
 import type {Subscriber} from "../../../utils/websocket-publisher";
+import {STUDENT_LESSON_REVIEW} from "../../../utils/router-helper";
+
+import localStorageHelper from "./../../../utils/local-storage-helper"
 
 
 interface IState {
@@ -31,7 +34,6 @@ interface IProp {
 export default class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
   logger = Logger.getLogger("Ongoing");
-  lessonId;
   webSocketUrl;
   webSocketPublisher;
   _studentApi: IStudentApi;
@@ -47,10 +49,17 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
 
   constructor(props) {
     super(props);
-    this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
     this.state = {
       lessonEnded: false
+    }
+  }
+
+  getLesson():LessonVO {
+    try {
+      return localStorageHelper.getLesson();
+    } catch (e) {
+      this._logger.error(e);
     }
   }
 
@@ -111,12 +120,12 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
 
   jumpToReviewPage = () => {
     this.props.history.goBack();
-    this.props.history.push(`/Student/LessonOnGoing/${this.lessonId}`);
+    this.props.history.push(STUDENT_LESSON_REVIEW);
   };
 
   async componentDidMount() {
     try {
-      const res = await this._studentApi.joinLesson(this.lessonId);
+      const res = await this._studentApi.joinLesson(this.getLesson().id);
       this.webSocketUrl = res;
       this.webSocketPublisher = new WebsocketPublisher(this.webSocketUrl);
       this.webSocketPublisher.subscribe(this);

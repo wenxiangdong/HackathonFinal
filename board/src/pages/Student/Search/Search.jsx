@@ -43,7 +43,6 @@ class Search extends React.Component<IProp, IState> {
     this.setState({loading: true});
     this._studentApi.joinCourse(course.id)
       .then(() => {
-        this.joinCourse(course.id);
         success(`课程 ${course.name} 已成功加入`, this);
       })
       .catch((e:HttpResponse) => {
@@ -53,10 +52,6 @@ class Search extends React.Component<IProp, IState> {
       })
     ;
   }
-
-  joinCourse = (id: number) => {
-    this.props.history.push(`/Student/LessonOnGoing/${id}`);
-  };
 
   render(): React.ReactNode {
     return (

@@ -17,6 +17,8 @@ import type {HttpResponse} from "../apis/http";
 import {error} from "../utils/snackbar-helper";
 import type {UserVO} from "../vo/vo";
 import updateState from "../utils/state-helper";
+import {createPathStateConfig, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../utils/router-helper";
+import localStorageHelper from "../utils/local-storage-helper";
 
 interface IState {
   username: string;
@@ -63,13 +65,11 @@ class Login extends React.Component<IProp, IState> {
     this._commonApi.login(user)
       .then((user) => {
         if (user.type === UserType.STUDENT) {
-          this.props.history.push(`/Student/${user.id}`);
-          localStorage.setItem('user-type', "student");
-          localStorage.setItem("user-id", user.id.toString())
+          localStorageHelper.setUser(user);
+          this.props.history.push(STUDENT_HOME_PAGE);
         } else if (user.type === UserType.TEACHER) {
-          this.props.history.push(`/Teacher/${user.id}`);
-          localStorage.setItem('user-type', "teacher");
-          localStorage.setItem("user-id", user.id.toString())
+          localStorageHelper.setUser(user);
+          this.props.history.push(TEACHER_HOME_PAGE);
         } else {
           this.setState({loading: false});
           error("无法识别的用户类型", this);

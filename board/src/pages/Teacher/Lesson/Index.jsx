@@ -3,7 +3,7 @@ import React from "react";
 import "./../../CanvasCommon.css"
 import "./Index.css";
 import Logger from "../../../utils/logger";
-import type {TeacherNoteItemVO} from "../../../vo/vo";
+import type {TeacherNoteBookVO, TeacherNoteItemVO, UserVO} from "../../../vo/vo";
 import {Point} from "../../../vo/vo";
 import Drawer from "@material-ui/core/Drawer/Drawer";
 import Divider from "@material-ui/core/Divider/Divider";
@@ -29,6 +29,8 @@ import ColorPicker from "../../../components/common/ColorPicker/ColorPicker";
 import TextField from "@material-ui/core/TextField";
 import {withSnackbar} from "notistack";
 import Button from "@material-ui/core/Button";
+
+import localStorageHelper from "./../../../utils/local-storage-helper"
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -67,7 +69,6 @@ class Index extends React.Component<IProp, IState> {
 
   teacherNoteVOList: TeacherNoteItemVO[] = [];
 
-
   ctx;
 
   constructor(props) {
@@ -87,6 +88,22 @@ class Index extends React.Component<IProp, IState> {
       this.teacherNoteVOList = JSON.parse(JSON.stringify(this.props.initTeacherNoteItemVOs));
     }
   }
+
+  getBook(): TeacherNoteBookVO {
+    try {
+      return localStorageHelper.getBook();
+    } catch (e) {
+      this._logger.error(e);
+    }
+  }
+
+  getBookId = () => {
+    return this.getBook().id;
+  };
+
+  getLessonId = () => {
+    return this.getBook().lessonId;
+  };
 
   handleSelectColor = (color) => {
     this.setState({
@@ -128,10 +145,6 @@ class Index extends React.Component<IProp, IState> {
       .catch(e => {
         this.logger.error(e);
       })
-  };
-
-  getBookId = () => {
-    return this.props.match.params.id;
   };
 
   handleClickSwitchPage = (offset) => {
@@ -272,7 +285,7 @@ class Index extends React.Component<IProp, IState> {
   };
 
   componentDidMount() {
-    document.body.addEventListener('resize', this.onWindowResize)
+    document.body.addEventListener('resize', this.onWindowResize);
     this.onWindowResize();
     this.initCanvas();
     document.body.addEventListener('touchmove', this.stopScroll, {

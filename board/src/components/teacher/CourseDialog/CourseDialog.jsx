@@ -18,6 +18,8 @@ import {error, success} from "../../../utils/snackbar-helper";
 import FullScreenLoading from "../../common/FullScreenLoading/FullScreenLoading";
 import type {ITeacherApi} from "../../../apis/teacher-api";
 import SingleTextFormDialog from "../../common/SingleTextFormDialog/SingleTextFormDialog";
+import {createPathStateConfig, TEACHER_LESSON} from "../../../utils/router-helper";
+import localStorageHelper from "../../../utils/local-storage-helper";
 
 interface IProp {
   onClose: () => void,
@@ -80,7 +82,13 @@ class CourseDialog extends React.Component<IProp, IState> {
   };
 
   handleSelectLesson = (lesson:LessonVO) => {
-    this.props.history.push(`/Teacher/Lesson/${lesson.id}`);
+    this.setState({loading: true});
+    this._commonApi.getTeacherNoteBook(lesson.id)
+      .then((book) => {
+        localStorageHelper.setBook(book);
+        this.props.history.push(TEACHER_LESSON);
+      })
+      .catch((e) => this.handlerError(e))
   };
 
   handleStartLesson = () => {
@@ -95,14 +103,17 @@ class CourseDialog extends React.Component<IProp, IState> {
     };
     this._teacherApi.createLesson(lesson)
       .then((book:TeacherNoteBookVO) => {
-        this.props.history.push(`/Teacher/Lesson/${book.id}`);
+        localStorageHelper.setBook(book);
+        this.props.history.push(TEACHER_LESSON);
         success(`课程 ${name} 已成功开启`, this);
       })
-      .catch((e) => {
-        this._logger.error(e);
-        this.setState({loading: false});
-        error(e.message, this);
-      })
+      .catch((e) => this.handlerError(e))
+  };
+
+  handlerError = (e) => {
+    this._logger.error(e);
+    this.setState({loading: false});
+    error(e.message, this);
   };
 
   render(): React.ReactNode {
@@ -132,7 +143,7 @@ class CourseDialog extends React.Component<IProp, IState> {
 
     let lessonNameDialog = (
       this.state.startLesson
-        ? <SingleTextFormDialog title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.startLesson(name)} buttonText={"开始上课"}/>
+        ? <SingleTextFormDialog onClose={() => this.setState({startLesson: false})} title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.startLesson(name)} buttonText={"开始上课"}/>
         : null
     );
 

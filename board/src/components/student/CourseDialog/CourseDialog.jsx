@@ -14,6 +14,11 @@ import {withSnackbar} from "notistack";
 import {withRouter} from "react-router-dom";
 import type {HttpResponse} from "../../../apis/http";
 import {error} from "../../../utils/snackbar-helper";
+import { createPathStateConfig,
+  STUDENT_LESSON_ONGOING,
+  STUDENT_LESSON_REVIEW
+} from "../../../utils/router-helper";
+import localStorageHelper from "../../../utils/local-storage-helper";
 
 interface IProp {
   onClose: () => void,
@@ -69,10 +74,11 @@ class CourseDialog extends React.Component<IProp, IState> {
   };
 
   handleSelectLesson = (lesson:LessonVO) => {
+    localStorageHelper.setLesson(lesson);
     if (lesson.endTime) {
-      this.props.history.push(`/Student/LessonReview/${lesson.id}`);
+      this.props.history.push(STUDENT_LESSON_REVIEW);
     } else {
-      this.props.history.push(`/Student/LessonOnGoing/${lesson.id}`);
+      this.props.history.push(STUDENT_LESSON_ONGOING);
     }
   };
 

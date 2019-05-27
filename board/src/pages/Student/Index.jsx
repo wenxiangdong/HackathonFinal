@@ -1,5 +1,5 @@
 import React from "react";
-import type {CourseVO} from "../../vo/vo";
+import type {CourseVO, LessonVO, UserVO} from "../../vo/vo";
 import Logger from "../../utils/logger";
 import type {IStudentApi} from "../../apis/student-api";
 import {apiHub} from "../../apis/ApiHub";
@@ -20,12 +20,17 @@ import type {HttpResponse} from "../../apis/http";
 import {error} from "../../utils/snackbar-helper";
 import {withSnackbar} from "notistack";
 import withToolBar from "../hocs/withToolBar";
+import {STUDENT_LESSON_ONGOING} from "../../utils/router-helper";
+import type {ICommonApi} from "../../apis/common-api";
+import FullScreenLoading from "../../components/common/FullScreenLoading/FullScreenLoading";
+import localStorageHelper from "../../utils/local-storage-helper";
 
 interface IState {
   ongoingCourse: CourseVO[];
   unfinishedCourse: CourseVO[];
   finishedCourse: CourseVO[];
   checkCourse: CourseVO;
+  loading: boolean;
 }
 
 interface IProp {
@@ -40,12 +45,24 @@ class Index extends React.Component<IProp, IState> {
 
   _logger: Logger;
   _studentApi: IStudentApi;
+  _commonApi: ICommonApi;
 
   constructor(props) {
     super(props);
     this._logger = Logger.getLogger("StudentHomepage");
     this._studentApi = apiHub.studentApi;
-    this.state = {};
+    this._commonApi = apiHub.commonApi;
+    this.state = {
+      loading: false
+    };
+  }
+
+  getUser():UserVO {
+    try {
+      return localStorageHelper.getUser();
+    } catch (e) {
+      this._logger.error(e);
+    }
   }
 
   componentDidMount(): void {
@@ -64,7 +81,21 @@ class Index extends React.Component<IProp, IState> {
   }
 
   joinCourse = (course: CourseVO) => {
-    this.props.history.push(`/Student/LessonOnGoing/${course.id}`);
+    this.setState({loading: true});
+    this._commonApi.getLessons(course.id)
+      .then((lessons:LessonVO[]) => {
+        for (let lesson of lessons) {
+          if (lesson.endTime === 0) {
+            this.setState({loading: false});
+            localStorageHelper.setLesson(lesson);
+            this.props.history.push(STUDENT_LESSON_ONGOING);
+            return;
+          }
+        }
+        error("该课程已结束，请刷新重试", this);
+        this.setState({loading: false});
+      })
+      .catch(e => this.handleError(e));
   };
 
   showCourseHistory = (course) => {
@@ -156,6 +187,7 @@ class Index extends React.Component<IProp, IState> {
 
     return (
       <Container style={{paddingTop: "20px"}}>
+        {this.state.loading? <FullScreenLoading/>: null}
         {myCourseFragment}
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}

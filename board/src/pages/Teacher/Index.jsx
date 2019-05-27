@@ -2,7 +2,7 @@ import React from "react";
 import Logger from "../../utils/logger";
 import type {ITeacherApi} from "../../apis/teacher-api";
 import {apiHub} from "../../apis/ApiHub";
-import type {CourseVO} from "../../vo/vo";
+import type {CourseVO, UserVO} from "../../vo/vo";
 import Container from "@material-ui/core/Container/Container";
 import SimpleTitleBar from "../../components/common/SimpleTitleBar/SimpleTitleBar";
 import Grid from "@material-ui/core/Grid/Grid";
@@ -21,6 +21,8 @@ import SingleTextFormDialog from "../../components/common/SingleTextFormDialog/S
 import {withSnackbar} from "notistack";
 import SimpleLine from "../../components/common/SimpleLine";
 import withToolBar from "../hocs/withToolBar";
+
+import localStorageHelper from "./../../utils/local-storage-helper"
 
 interface IState {
   unfinishedCourses: CourseVO[];
@@ -52,6 +54,18 @@ class Index extends React.Component<IProp, IState> {
       addCourse: false
     };
   }
+
+  getUser(): UserVO {
+    try {
+      return localStorageHelper.getUser();
+    } catch (e) {
+      this._logger.error(e);
+    }
+  }
+
+  getTeacherId = () => {
+    return this.getUser().id;
+  };
 
   componentDidMount(): void {
     this._teacherApi.teacherGetRunningCourses()
@@ -107,10 +121,6 @@ class Index extends React.Component<IProp, IState> {
     ;
   };
 
-  getTeacherId = () => {
-    return this.props.match.params.id;
-  };
-
   handleError = (e:HttpResponse) => {
     this._logger.error(e);
     error(e.message, this);
@@ -148,7 +158,9 @@ class Index extends React.Component<IProp, IState> {
 
     let addCourseDialog = (
       this.state.addCourse
-        ? <SingleTextFormDialog title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.createCourse(name)} buttonText={"创建课程"}/>
+        ? <SingleTextFormDialog onClose={() => {
+          this.setState({addCourse: false})
+        }} title={"课程名称"} label={"课程名称"} onSubmit={(name) => this.createCourse(name)} buttonText={"创建课程"}/>
         : null
     );
 
