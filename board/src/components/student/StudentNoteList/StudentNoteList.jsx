@@ -59,7 +59,13 @@ class StudentNoteList extends React.Component<IProp, IState> {
     if (this.props.dataSets !== nextProps.dataSets) {
       // 更新隐藏设置
       this._logger.info(nextProps);
-      nextContext.state.hideBooleans = Array(nextProps.dataSets.length).fill(false);
+      if (nextProps.dataSets.length) {
+        try {
+          nextContext.state.hideBooleans = Array(nextProps.dataSets.length).fill(false);
+        } catch (e) {
+          this._logger.error(e);
+        }
+      }
     }
     return true;
   }

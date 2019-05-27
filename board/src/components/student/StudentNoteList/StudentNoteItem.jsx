@@ -19,7 +19,7 @@ class StudentNoteItem extends React.Component<IProp> {
   render(): React.ReactNode {
     const {noteVO, backgroundColor, onClick} = this.props;
     return (
-      <ButtonBase style={{padding: "0", margin: "8px",}}>
+      <ButtonBase style={{padding: "0", margin: "8px auto", width: "100%",  boxSizing: "border-box"}}>
         <div
           onClick={() => onClick && onClick(noteVO)}
           style={{
@@ -30,7 +30,9 @@ class StudentNoteItem extends React.Component<IProp> {
             wordBreak: "break-all",
             wordWrap: "break-word",
             color: "white",
-            textAlign: "left"
+            textAlign: "left",
+            boxSizing: "border-box",
+            width: "100%"
           }}>
           {noteVO.content}
           <div style={{textAlign: "right", fontSize: "14px", position: "relative", top: "14px"}}>
