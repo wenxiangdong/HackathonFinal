@@ -1,4 +1,4 @@
-import type {LessonVO, TeacherNoteBookVO, TeacherNoteItemVO, UserVO} from "../vo/vo";
+import type {LessonVO, TeacherNoteBookVO, UserVO} from "../vo/vo";
 import {Http, HttpMock} from "./http";
 import {UserType} from "../vo/vo";
 
@@ -91,13 +91,13 @@ export class MockCommonApi implements ICommonApi {
   }
 
   getTeacherNoteBook(lessonId: Number): Promise<TeacherNoteBookVO> {
-    const item: TeacherNoteItemVO = {
-      id: 0,
-      content: "xxxxxxx?type=TEXT",
-      color: "",
-      coordinates: [],
-      page: Math.round(Math.random())
-    };
+    // const item: TeacherNoteItemVO = {
+    //   id: 0,
+    //   content: "xxxxxxx?type=TEXT",
+    //   color: "",
+    //   coordinates: [],
+    //   page: Math.round(Math.random())
+    // };
     const book: TeacherNoteBookVO = {
       id: 0,
       items: JSON.parse('[{"id":0,"page":0,"color":"red","content":"?type=HANDWRITING","coordinates":[{"x":1235.2941176470588,"y":449.4117512422449},{"x":1235.2941176470588,"y":449.4117512422449},{"x":1267.6470588235293,"y":446.4705747716567},{"x":1302.941176470588,"y":446.4705747716567},{"x":1400,"y":455.2941041834214},{"x":1476.470588235294,"y":469.99998653636254},{"x":1514.705882352941,"y":484.70586888930376},{"x":1588.2352941176468,"y":514.1176335951861},{"x":1664.705882352941,"y":549.4117512422449},{"x":1752.941176470588,"y":814.117633595186},{"x":1729.4117647058822,"y":846.4705747716566},{"x":1691.1764705882351,"y":878.8235159481272},{"x":1558.8235294117646,"y":937.647045359892},{"x":1520.5882352941176,"y":955.2941041834214},{"x":1464.705882352941,"y":967.0588100657743},{"x":1341.1764705882351,"y":987.6470453598919},{"x":1308.8235294117646,"y":987.6470453598919},{"x":1291.1764705882351,"y":987.6470453598919},{"x":1270.5882352941176,"y":984.7058688893037},{"x":1252.941176470588,"y":975.882339477539},{"x":1238.235294117647,"y":972.9411630069508},{"x":1232.3529411764705,"y":961.1764571245978},{"x":1223.5294117647059,"y":943.5293983010685}],"createTime":123}]')

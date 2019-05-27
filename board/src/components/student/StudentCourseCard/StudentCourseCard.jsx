@@ -2,7 +2,6 @@ import React from "react";
 import type {CourseVO} from "../../../vo/vo";
 
 import './StudentCourseCard.css'
-import Card from "@material-ui/core/Card/Card";
 
 interface IProp {
   course: CourseVO,

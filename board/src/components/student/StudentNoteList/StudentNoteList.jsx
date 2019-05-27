@@ -6,10 +6,6 @@ import MarkFillIcon from "@material-ui/icons/Bookmark";
 import MarkIcon from "@material-ui/icons/BookmarkBorder";
 import Logger from "../../../utils/logger";
 import Typography from "@material-ui/core/Typography";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import SendIcon from "@material-ui/icons/Send";
-import IconButton from "@material-ui/core/IconButton";
 
 interface NoteItemVODataSet {
   data: StudentNoteItemVO[];
