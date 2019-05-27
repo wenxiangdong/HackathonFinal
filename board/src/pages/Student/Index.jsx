@@ -24,6 +24,7 @@ import {STUDENT_LESSON_ONGOING} from "../../utils/router-helper";
 import type {ICommonApi} from "../../apis/common-api";
 import FullScreenLoading from "../../components/common/FullScreenLoading/FullScreenLoading";
 import localStorageHelper from "../../utils/local-storage-helper";
+import CommunicateBubble from "../../components/common/CommunicateBubble/CommunicateBubble";
 
 interface IState {
   ongoingCourse: CourseVO[];
@@ -201,7 +202,7 @@ class Index extends React.Component<IProp, IState> {
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>
         {historyCourseFragment}
         {checkCourseDialog}
-      </Container>
+        </Container>
     );
   }
 }
