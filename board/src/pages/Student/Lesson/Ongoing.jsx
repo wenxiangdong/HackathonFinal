@@ -14,6 +14,7 @@ import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import Button from "@material-ui/core/Button/Button";
 
 import "./../../../components/common/Dialog.css"
+import type {Subscriber} from "../../../utils/websocket-publisher";
 
 
 interface IState {
@@ -27,7 +28,7 @@ interface IProp {
  * Ongoing
  * @create 2019/5/26 14:21
  */
-export default class Ongoing extends React.Component<IProp, IState> {
+export default class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
   logger = Logger.getLogger();
   lessonId;
@@ -118,7 +119,7 @@ export default class Ongoing extends React.Component<IProp, IState> {
       const res = await this._studentApi.joinLesson(this.lessonId);
       this.webSocketUrl = res;
       this.webSocketPublisher = new WebsocketPublisher(this.webSocketUrl);
-      this.webSocketPublisher.subscribe(this.messageHandler);
+      this.webSocketPublisher.subscribe(this);
     } catch (e) {
       this.logger.error(e);
     }
@@ -137,10 +138,21 @@ export default class Ongoing extends React.Component<IProp, IState> {
       passive: true
     });
 
-    this.webSocketPublisher && this.webSocketPublisher.unsubscribe(this.messageHandler);
+    this.webSocketPublisher && this.webSocketPublisher.unsubscribe(this);
   }
 
-  messageHandler = (res: LiveLessonData) => {
+
+  // 监听websocket所需的几个方法
+  onError = (e) => {
+    this.logger.error(e);
+  };
+
+  onClose = () => {
+    this.webSocketPublisher.unsubscribe(this);
+  };
+
+  onNext = (res: LiveLessonData) => {
+    this.logger.info(res);
     if (res.operationType === "CREATE") {
       this.teacherNoteVOList.push(res.teacherNoteItem);
       this.reRenderTeacherNoteVOList();
@@ -155,16 +167,6 @@ export default class Ongoing extends React.Component<IProp, IState> {
     }
   }
 
-  // click () {
-  //   var de = document.documentElement;
-  //   if (de.requestFullscreen) {
-  //     de.requestFullscreen();
-  //   } else if (de.mozRequestFullScreen) {
-  //     de.mozRequestFullScreen();
-  //   } else if (de.webkitRequestFullScreen) {
-  //     de.webkitRequestFullScreen();
-  //   }
-  // }
 
   deleteTeacherNoteItem(vo: TeacherNoteItemVO) {
     for (let i = 0; i < this.teacherNoteVOList.length; i++) {
