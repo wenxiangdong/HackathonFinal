@@ -39,9 +39,11 @@ class NoteInput extends React.Component<IProp> {
         value={inputText}
         onChange={(e) => this.setState({inputText: e.target.value})}
         onKeyUp={this.handleKeyUp}
+        variant={"outlined"}
         style={{
           boxSizing: "border-box",
-          padding: "8px"
+          padding: "8px",
+          background: "#f7f7f7"
         }} endAdornment={
         <InputAdornment position={"end"}>
           <IconButton color={"primary"} onClick={this.handleClickSend}>

@@ -17,6 +17,7 @@ import TextField from "@material-ui/core/TextField";
 import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 import FullScreenLoading from "../../../components/common/FullScreenLoading/FullScreenLoading";
+import {withSnackbar} from "notistack";
 
 interface IState {
   lessonEnded: boolean,
@@ -35,7 +36,7 @@ interface IProp {
  * Review
  * @create 2019/5/26 14:22
  */
-export default class Review extends React.Component<IProp, IState> {
+class Review extends React.Component<IProp, IState> {
 
   logger = Logger.getLogger();
   lessonId;
@@ -221,3 +222,5 @@ export default class Review extends React.Component<IProp, IState> {
     e.preventDefault();
   }
 }
+
+export default withSnackbar(withToolBar(Review));

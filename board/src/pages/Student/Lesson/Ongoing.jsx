@@ -24,15 +24,16 @@ import NoteInput from "../../../components/student/NoteInput/NoteInput";
 import {drawNoteList} from "../../../utils/draw-teacher-note";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
-import {error} from "../../../utils/snackbar-helper";
 import {withSnackbar} from "notistack";
-
+import withToolBar from "../../hocs/withToolBar";
+import {error} from "../../../utils/snackbar-helper";
 
 interface IState {
   lessonEnded: boolean;
   pages: TeacherNoteItemVO[][];
   pageIndex: number;
-  noteList: StudentNoteItemVO[]
+  noteList: StudentNoteItemVO[];
+  hide: boolean;
 }
 
 interface IProp {
@@ -66,7 +67,8 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       lessonEnded: false,
       pages: [[]],
       pageIndex: 0,
-      noteList: []
+      noteList: [],
+      hide: false
     }
   }
 
@@ -86,6 +88,8 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   };
 
   render(): React.ReactNode {
+
+    const {hide} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
@@ -133,7 +137,8 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       <div>
         {lessonEndedDialog}
         {canvasView}
-        <div className="Ongoing__note-list-wrapper">
+        <div className={`Ongoing__note-list-wrapper ${hide? `Ongoing__note-list-wrapper-hide`:``}`}>
+          <div className={'hide-area'}  onClick={this.handleNoteClick}>点击此处{hide? "显示": "隐藏"}笔记</div>
           <StudentNoteList
             onSelect={this.handleSelectNote}
             onDelete={this.handleDeleteNote}
@@ -141,7 +146,7 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
             dataSets={this.getDataSet()}
             footer={footer}/>
         </div>
-        <div style={{position: "fixed", bottom: "8px", left: "0", right: "0", textAlign: "center"}}>
+        <div style={{position: "fixed", bottom: "8px", margin:"0 auto", width: "100px", left: "0", right: "0", textAlign: "center"}}>
           <Fab size={"small"} disableRipple={true}>
             <Typography variant="button">
               {this.state.pageIndex}
@@ -151,6 +156,13 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
       </div>
     );
   }
+
+  handleNoteClick = (e) => {
+    e.persist();
+    e.stopPropagation();
+    const {hide} = this.state;
+    this.setState({hide: !hide})
+  };
 
   handleDeleteNote = (note: StudentNoteItemVO) => {
     const {noteList} = this.state;
@@ -336,4 +348,4 @@ class Ongoing extends React.Component<IProp, IState> implements Subscriber {
   }
 }
 
-export default withSnackbar(Ongoing);
+export default withSnackbar(withToolBar(Ongoing));

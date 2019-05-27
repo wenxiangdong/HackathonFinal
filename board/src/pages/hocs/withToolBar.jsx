@@ -6,7 +6,8 @@ import {Link, withRouter} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import localStorageHelper from "../../utils/local-storage-helper";
 import {LOGIN, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../../utils/router-helper";
-import type {UserVO, UserType} from "../../vo/vo";
+import type {UserVO} from "../../vo/vo";
+import {UserType} from "../../vo/vo";
 
 /**
  * 顶部工具栏
@@ -23,12 +24,12 @@ export default function withToolBar(WrappedComponent) {
         <div>
           <div className={"tool-bar"}>
             <div className={"click-able"} onClick={this.handleClick}>
-              <div className={'title'}>板书</div>
+              <div className={'tool-bar-title'} style={{fontSize: '24px', fontWeight: 'bold'}}>板书</div>
               {/*<HomeIcon/>*/}
             </div>
            { exclude ? null : <div className={"right"}>
-              <Button size="small" variant="outlined">
-                <Link to="/Login" className={"link"}>登出</Link>
+              <Button size="small" variant="outlined" color={"secondary"}>
+                <Link to="/Login" className={"link"}><span style={{color: "white"}}>登出</span></Link>
               </Button>
             </div>}
           </div>

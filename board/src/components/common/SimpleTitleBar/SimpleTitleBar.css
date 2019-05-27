@@ -1,6 +1,7 @@
 .title-bar {
   margin-top: -10px;
   height: 80px;
+  position: relative;
 }
 
 .title {
@@ -10,8 +11,9 @@
 
 .bottom-line {
   position: absolute;
-  width: 50px;
-  height: 8px;
-  margin-top: 4px;
+  width: 6px;
+  height: 24px;
+  top: 2px;
+  left: -16px;
   background: #2196F3;
 }

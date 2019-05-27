@@ -57,7 +57,7 @@ class Search extends React.Component<IProp, IState> {
     return (
       <>
         {this.state.loading? <FullScreenLoading/>: null}
-        <Container className={"search-container"}>
+        <Container className={"search-container"} style={{padding: "50px 10vw 50px 10vw"}}>
           <SearchCourse onSelectCourse={(course: CourseVO) => this.handleSearchCourseSelected(course)}/>
         </Container>
       </>

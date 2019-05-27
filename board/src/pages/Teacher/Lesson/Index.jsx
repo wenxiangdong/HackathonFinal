@@ -29,6 +29,7 @@ import localStorageHelper from "./../../../utils/local-storage-helper"
 import FullScreenLoading from "../../../components/common/FullScreenLoading/FullScreenLoading";
 import type {HttpResponse} from "../../../apis/http";
 import {error} from "../../../utils/snackbar-helper";
+import withToolBar from "../../hocs/withToolBar";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -544,4 +545,4 @@ class Index extends React.Component<IProp, IState> {
   }
 }
 
-export default withSnackbar(Index);
+export default withSnackbar(withToolBar(Index));

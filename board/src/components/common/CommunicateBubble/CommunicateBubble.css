@@ -1,0 +1,28 @@
+.animation-outside-box {
+  position: absolute;
+  bottom: 0;
+  right: 40px;
+  animation: lift-off 3s cubic-bezier(0,0,.8,0);
+  animation-fill-mode: forwards;
+}
+
+.animation-item {
+  display: flex;
+  background-color: #cfddf3;
+  color: #777777;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 20px 20px 0 20px;
+}
+
+@keyframes lift-off {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-400px) scale(1.2);
+  }
+}
