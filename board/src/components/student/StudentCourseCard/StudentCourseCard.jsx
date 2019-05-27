@@ -25,12 +25,14 @@ export default class StudentCourseCard extends React.Component<IProp> {
       subTitle = "点击进入课程";
       baseClass = "ongoing";
     } else {
-      subTitle = "点击查看课程历史";
+      // subTitle = "点击查看课程历史";
+      subTitle = "点击查看上课记录";
       if (course.finished) {
-        title = "已结束";
+        title = "已结课";
         baseClass = "finished";
       } else {
-        title = "点击查看课程历史";
+        // title = "点击查看课程历史";
+        title = "未结课";
         baseClass = "unfinished";
       }
     }

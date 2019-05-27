@@ -83,6 +83,10 @@ class Login extends React.Component<IProp, IState> {
     ;
   };
 
+  hasError = () => {
+    return !this.state.password.trim() || !this.state.username.trim()
+  };
+
   render(): React.ReactNode {
     const loginForm = (
       <div className={"main-card"}>
@@ -94,6 +98,7 @@ class Login extends React.Component<IProp, IState> {
           </Typography>
           <form className={"login-form"} noValidate onSubmit={(e) => this.login(e)}>
             <TextField
+              error={!this.state.username}
               margin="normal"
               required
               fullWidth
@@ -105,6 +110,7 @@ class Login extends React.Component<IProp, IState> {
               autoFocus
             />
             <TextField
+              error={!this.state.password}
               margin="normal"
               required
               fullWidth
@@ -127,6 +133,7 @@ class Login extends React.Component<IProp, IState> {
               fullWidth
               variant="contained"
               color="primary"
+              disabled={this.hasError()}
             >
               登录
             </Button>
