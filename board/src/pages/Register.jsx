@@ -103,7 +103,7 @@ class Register extends React.Component<IProp, IState> {
   render(): React.ReactNode {
     const {name, username, password, confirmPassword} = this.state;
     const registerForm = (
-      <div className={"main-card"}>
+      <div className={"main-card register-card"}>
         <CssBaseline/>
         <div className={'others'}>
           <Typography component="h1" variant="h5">
@@ -111,7 +111,6 @@ class Register extends React.Component<IProp, IState> {
           </Typography>
           <form className={"register-form"} noValidate onSubmit={(e) => this.register(e)}>
             <TextField
-              error={!name}
               margin="normal"
               required
               fullWidth
@@ -123,7 +122,6 @@ class Register extends React.Component<IProp, IState> {
               onChange={(e) => updateState("name", e.target.value, this)}
             />
             <TextField
-              error={!username}
               margin="normal"
               required
               fullWidth
@@ -134,7 +132,6 @@ class Register extends React.Component<IProp, IState> {
               onChange={(e) => updateState("username", e.target.value, this)}
             />
             <TextField
-              error={!password}
               margin="normal"
               required
               fullWidth
@@ -146,7 +143,6 @@ class Register extends React.Component<IProp, IState> {
               onChange={(e) => updateState("password", e.target.value, this)}
             />
             <TextField
-              error={!(confirmPassword && confirmPassword === password)}
               margin="normal"
               required
               fullWidth
@@ -188,8 +184,8 @@ class Register extends React.Component<IProp, IState> {
             <Button
               onClick={(e) => this.returnToLogin(e)}
               fullWidth
-              variant="contained"
-              color="secondary"
+              variant="outlined"
+              color="primary"
             >
               返回
             </Button>

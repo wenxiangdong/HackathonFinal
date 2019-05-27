@@ -3,7 +3,7 @@
   flex: 1 1 auto;
 
   width: 240px;
-  max-width: 380px;
+  max-width: 240px;
   min-height: 160px;
 
   margin: 10px 10px;
@@ -17,6 +17,12 @@
   border-radius: 2px;
 
   box-shadow: rgba(0,0,0,.1) 0 0 5px 0;
+}
+
+@media (max-width: 450px) {
+  .base-box {
+    max-width: 450px;
+  }
 }
 
 .top-div {
