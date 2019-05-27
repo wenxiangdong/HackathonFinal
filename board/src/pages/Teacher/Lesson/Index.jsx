@@ -31,6 +31,7 @@ import {withSnackbar} from "notistack";
 import Button from "@material-ui/core/Button";
 
 import localStorageHelper from "./../../../utils/local-storage-helper"
+import withToolBar from "../../hocs/withToolBar";
 
 interface IState {
   // 很重要的参数，一般大于 1 ，是在 canvas 中位置的放缩比例
@@ -535,4 +536,4 @@ class Index extends React.Component<IProp, IState> {
   }
 }
 
-export default withSnackbar(Index);
+export default withSnackbar(withToolBar(Index));

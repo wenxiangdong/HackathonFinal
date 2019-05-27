@@ -20,7 +20,7 @@ export default function withToolBar(WrappedComponent) {
         <div>
           <div className={"tool-bar"}>
             <div className={"click-able"} onClick={this.handleClick}>
-              <div className={'title'}>板书</div>
+              <div className={'tool-bar-title'} style={{fontSize: '24px', fontWeight: 'bold'}}>板书</div>
               {/*<HomeIcon/>*/}
             </div>
           </div>

@@ -19,10 +19,13 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/L
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import ListItem from "@material-ui/core/ListItem";
+import {withSnackbar} from "notistack";
+import withToolBar from "../../hocs/withToolBar";
 
 interface IState {
   lessonEnded: boolean,
-  showPickDialog: boolean
+  showPickDialog: boolean,
+  hide: boolean
 }
 
 interface IProp {
@@ -34,7 +37,7 @@ interface IProp {
  * Review
  * @create 2019/5/26 14:22
  */
-export default class Review extends React.Component<IProp, IState> {
+class Review extends React.Component<IProp, IState> {
 
   logger = Logger.getLogger();
   lessonId;
@@ -57,7 +60,7 @@ export default class Review extends React.Component<IProp, IState> {
     this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
     this._commonApi = apiHub.commonApi;
-    this.state = {lessonEnded: false, showPickDialog: false}
+    this.state = {lessonEnded: false, showPickDialog: false, hide: false}
   }
 
   render(): React.ReactNode {
@@ -245,3 +248,5 @@ export default class Review extends React.Component<IProp, IState> {
     e.preventDefault();
   }
 }
+
+export default withSnackbar(withToolBar(Review));

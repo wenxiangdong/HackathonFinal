@@ -22,7 +22,7 @@
   font-weight: bold;
 }
 
-.title::after {
+.tool-bar-title::after {
   position: absolute;
   left: 50px;
   bottom: 0;

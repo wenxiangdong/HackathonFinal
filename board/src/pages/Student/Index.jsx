@@ -195,7 +195,7 @@ class Index extends React.Component<IProp, IState> {
     );
 
     return (
-      <Container style={{paddingTop: "20px"}}>
+      <Container style={{paddingTop: "50px"}}>
         {this.state.loading? <FullScreenLoading/>: null}
         {myCourseFragment}
         <SimpleLine marginX={"20px"} marginY={"20px"} height={'1px'}/>

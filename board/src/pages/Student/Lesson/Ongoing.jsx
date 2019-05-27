@@ -25,13 +25,16 @@ import {drawNoteList} from "../../../utils/draw-teacher-note";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
+import {withSnackbar} from "notistack";
+import withToolBar from "../../hocs/withToolBar";
 
 
 interface IState {
   lessonEnded: boolean;
   pages: TeacherNoteItemVO[][];
   pageIndex: number;
-  noteList: StudentNoteItemVO[]
+  noteList: StudentNoteItemVO[];
+  hide: boolean;
 }
 
 interface IProp {
@@ -41,7 +44,7 @@ interface IProp {
  * Ongoing
  * @create 2019/5/26 14:21
  */
-export default class Ongoing extends React.Component<IProp, IState> implements Subscriber {
+class Ongoing extends React.Component<IProp, IState> implements Subscriber {
 
   logger = Logger.getLogger("Ongoing");
   webSocketUrl;
@@ -64,7 +67,8 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
       lessonEnded: false,
       pages: [[]],
       pageIndex: 0,
-      noteList: []
+      noteList: [],
+      hide: false
     }
   }
 
@@ -83,6 +87,8 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
   };
 
   render(): React.ReactNode {
+
+    const {hide} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
@@ -130,7 +136,8 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
       <div>
         {lessonEndedDialog}
         {canvasView}
-        <div className="Ongoing__note-list-wrapper">
+        <div className={`Ongoing__note-list-wrapper ${hide? `Ongoing__note-list-wrapper-hide`:``}`}>
+          <div className={'hide-area'}  onClick={this.handleNoteClick}>点击此处{hide? "显示": "隐藏"}笔记</div>
           <StudentNoteList
             onSelect={this.handleSelectNote}
             onDelete={this.handleDeleteNote}
@@ -138,7 +145,7 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
             dataSets={this.getDataSet()}
             footer={footer}/>
         </div>
-        <div style={{position: "fixed", bottom: "8px", left: "0", right: "0", textAlign: "center"}}>
+        <div style={{position: "fixed", bottom: "8px", margin:"0 auto", width: "100px", left: "0", right: "0", textAlign: "center"}}>
           <Fab size={"small"} disableRipple={true}>
             <Typography variant="button">
               {this.state.pageIndex}
@@ -148,6 +155,13 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
       </div>
     );
   }
+
+  handleNoteClick = (e) => {
+    e.persist();
+    e.stopPropagation();
+    const {hide} = this.state;
+    this.setState({hide: !hide})
+  };
 
   handleDeleteNote = (note: StudentNoteItemVO) => {
     const {noteList} = this.state;
@@ -331,3 +345,5 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
     e.preventDefault();
   }
 }
+
+export default withSnackbar(withToolBar(Ongoing));
