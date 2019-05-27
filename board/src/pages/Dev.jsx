@@ -180,7 +180,7 @@ export default class Dev extends React.Component {
           dataSets={this.dataSet}
           onSelect={this._logger.info}
           onDelete={this._logger.info}
-          onEdit={this._logger.info}/>
+          onUpdate={this._logger.info}/>
       </div>
     );
   }

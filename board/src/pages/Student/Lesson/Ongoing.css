@@ -1,0 +1,11 @@
+.Ongoing__note-list-wrapper {
+    position: fixed;
+    width: 400px;
+    box-sizing: border-box;
+    padding: 16px;
+    right: 8px;
+    bottom: 8px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: rgba(0,0,0,0.1) 0 0 5px;
+}

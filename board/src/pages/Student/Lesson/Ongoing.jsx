@@ -1,8 +1,9 @@
 import React from "react";
 
 import "./../../CanvasCommon.css"
+import "./Ongoing.css";
 import Logger from "../../../utils/logger";
-import type {LessonVO, LiveLessonData, TeacherNoteItemVO, UserVO} from "../../../vo/vo";
+import type {LessonVO, TeacherNoteItemVO, LiveLessonData, StudentNoteItemVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
 import WebsocketPublisher from "../../../utils/websocket-publisher";
@@ -18,10 +19,19 @@ import type {Subscriber} from "../../../utils/websocket-publisher";
 import {STUDENT_LESSON_REVIEW} from "../../../utils/router-helper";
 
 import localStorageHelper from "./../../../utils/local-storage-helper"
+import StudentNoteList from "../../../components/student/StudentNoteList/StudentNoteList";
+import NoteInput from "../../../components/student/NoteInput/NoteInput";
+import {drawNoteList} from "../../../utils/draw-teacher-note";
+import IconButton from "@material-ui/core/IconButton";
+import Fab from "@material-ui/core/Fab";
+import Typography from "@material-ui/core/Typography";
 
 
 interface IState {
-  lessonEnded: boolean
+  lessonEnded: boolean;
+  pages: TeacherNoteItemVO[][];
+  pageIndex: number;
+  noteList: StudentNoteItemVO[]
 }
 
 interface IProp {
@@ -51,7 +61,10 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
     super(props);
     this._studentApi = apiHub.studentApi;
     this.state = {
-      lessonEnded: false
+      lessonEnded: false,
+      pages: [[]],
+      pageIndex: 0,
+      noteList: []
     }
   }
 
@@ -62,6 +75,12 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
       this._logger.error(e);
     }
   }
+  getDataSet = () => {
+    return [{
+      label: "我的笔记",
+      data: [...this.state.noteList]
+    }]
+  };
 
   render(): React.ReactNode {
 
@@ -105,13 +124,70 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
       : null
     ;
 
+    const footer = (<NoteInput onSend={this.handleInputSend}/>);
+
     return (
       <div>
         {lessonEndedDialog}
         {canvasView}
+        <div className="Ongoing__note-list-wrapper">
+          <StudentNoteList
+            onSelect={this.handleSelectNote}
+            onDelete={this.handleDeleteNote}
+            onUpdate={this.handleEditNote}
+            dataSets={this.getDataSet()}
+            footer={footer}/>
+        </div>
+        <div style={{position: "fixed", bottom: "8px", left: "0", right: "0", textAlign: "center"}}>
+          <Fab size={"small"} disableRipple={true}>
+            <Typography variant="button">
+              {this.state.pageIndex}
+            </Typography>
+          </Fab>
+        </div>
       </div>
     );
   }
+
+  handleDeleteNote = (note: StudentNoteItemVO) => {
+    const {noteList} = this.state;
+    noteList.splice(
+      noteList.findIndex(item => note.id == item.id),
+      1
+    );
+    this.setState({
+      noteList
+    });
+  };
+
+  handleEditNote = (note: StudentNoteItemVO) => {
+    const {noteList} = this.state;
+    this.logger.info("更新", note);
+    noteList.splice(
+      noteList.findIndex(item => note.id == item.id),
+      1,
+      note
+    );
+    this.setState({
+      noteList
+    });
+  };
+  handleSelectNote = (note: StudentNoteItemVO) => {
+  };
+
+
+  handleInputSend = async (text: string) => {
+    this.logger.info(text)
+    // TODO api
+    const vo: StudentNoteItemVO = {
+      id: 0,
+      content: text,
+      teacherNoteItemId: 0,
+    };
+    this.setState(pre => ({
+      noteList: [...pre.noteList, vo]
+    }));
+  };
 
 
   returnHomePage = () => {
@@ -146,7 +222,6 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
     });
-
     this.webSocketPublisher && this.webSocketPublisher.unsubscribe(this);
   }
 
@@ -163,36 +238,64 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
   onNext = (res: LiveLessonData) => {
     this.logger.info(res);
     if (res.operationType === "CREATE") {
-      this.teacherNoteVOList.push(res.teacherNoteItem);
-      this.reRenderTeacherNoteVOList();
+      this.addTeacherNoteItem(res.teacherNoteItem);
     } else if (res.operationType === "DELETE") {
       this.deleteTeacherNoteItem(res.teacherNoteItem);
-      this.reRenderTeacherNoteVOList();
     } else if (res.operationType === "UPDATE") {
       this.updateTeacherNoteItem(res.teacherNoteItem);
-      this.reRenderTeacherNoteVOList();
     } else {
       this.endLesson();
     }
+  };
+
+
+  addTeacherNoteItem(vo: TeacherNoteItemVO) {
+    let {pageIndex, pages} = this.state;
+    for (let i = pageIndex; i <= vo.page; i++) {
+      pages.push([]);
+    }
+    pageIndex = vo.page;
+    pages[pageIndex].push(vo);
+    this.setState({
+      pageIndex,
+      pages
+    }, () => {
+      this.reRenderTeacherNoteVOList()
+    });
   }
 
-
   deleteTeacherNoteItem(vo: TeacherNoteItemVO) {
-    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
-      if (this.teacherNoteVOList[i].id === vo.id) {
-        this.teacherNoteVOList.splice(i, 1);
-        break;
-      }
+    let {pages} = this.state;
+    const page = pages[vo.page];
+    if (!page) {
+      return;
     }
+    page.splice(
+      page.findIndex(item => item.id == vo.id),
+      1
+    );
+    pages[vo.page] = page;
+    this.setState({
+      pages
+    }, () => {
+      this.reRenderTeacherNoteVOList()
+    });
   }
 
   updateTeacherNoteItem(vo: TeacherNoteItemVO) {
-    for (let i = 0; i < this.teacherNoteVOList.length; i++) {
-      if (this.teacherNoteVOList[i].id === vo.id) {
-        this.teacherNoteVOList[i] = vo;
-        break;
-      }
-    }
+    let {pages} = this.state;
+    const page = pages[vo.page];
+    page.splice(
+      page.findIndex(item => item.id == vo.id),
+      1,
+      vo
+    );
+    pages[vo.page] = page;
+    this.setState({
+      pages
+    }, () => {
+      this.reRenderTeacherNoteVOList()
+    });
   }
 
   endLesson() {
@@ -202,19 +305,8 @@ export default class Ongoing extends React.Component<IProp, IState> implements S
   // 重新渲染列表里的笔画
   reRenderTeacherNoteVOList() {
     this.cleanCanvas();
-
-    for (let vo: TeacherNoteItemVO of this.teacherNoteVOList) {
-      const coordinates = vo.coordinates;
-      if (coordinates.length > 1) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(coordinates[0].x, coordinates[0].y);
-        for (let i = 1; i < coordinates.length; i++) {
-          this.ctx.lineTo(coordinates[i].x, coordinates[i].y);
-        }
-        this.ctx.stroke();
-        this.ctx.closePath();
-      }
-    }
+    const {pages, pageIndex} = this.state;
+    drawNoteList(pages[pageIndex]);
   }
 
   // 清空 canvas

@@ -22,7 +22,7 @@ interface IProp {
   dataSets: NoteItemVODataSet[];
   // 列表高度，默认为500px
   listHeight?: string;
-  onEdit?: (noteVO: StudentNoteItemVO) => void;
+  onUpdate?: (noteVO: StudentNoteItemVO) => void;
   onDelete?: (noteVO: StudentNoteItemVO) => void;
   onSelect?: (noteVO: StudentNoteItemVO) => void;
   footer?: React.ReactNode
@@ -59,7 +59,13 @@ class StudentNoteList extends React.Component<IProp, IState> {
     if (this.props.dataSets !== nextProps.dataSets) {
       // 更新隐藏设置
       this._logger.info(nextProps);
-      nextContext.state.hideBooleans = Array(nextProps.dataSets.length).fill(false);
+      if (nextProps.dataSets.length) {
+        try {
+          nextContext.state.hideBooleans = Array(nextProps.dataSets.length).fill(false);
+        } catch (e) {
+          this._logger.error(e);
+        }
+      }
     }
     return true;
   }
@@ -73,7 +79,7 @@ class StudentNoteList extends React.Component<IProp, IState> {
   };
 
   render(): React.ReactNode {
-    const {dataSets, listHeight = "500px", onEdit, onDelete, onSelect, footer} = this.props;
+    const {dataSets, listHeight = "500px", onUpdate, onDelete, onSelect, footer} = this.props;
     const {hideBooleans} = this.state;
     const noteItems = this.noteItems();
 
@@ -95,7 +101,7 @@ class StudentNoteList extends React.Component<IProp, IState> {
         <div className={"SNL__list"} style={{height: listHeight}}>
           {noteItems.map((note, index) => (
             <StudentNoteItem
-              onEdit={onEdit}
+              onUpdate={onUpdate}
               onDelete={onDelete}
               onClick={onSelect}
               noteVO={note}

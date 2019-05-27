@@ -1,9 +1,11 @@
 .SNL__list-wrapper {
     position: relative;
+    box-sizing: border-box;
 }
 
 .SNL__list {
     overflow-y: auto;
+    box-sizing: border-box;
 }
 .SNL__mark-list {
     width: 100%;
