@@ -1,0 +1,80 @@
+
+
+.outside-shown-box {
+}
+
+.bubble-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100vw;
+  animation: bubble-box-animation 4s cubic-bezier(0,0,0,1) infinite;
+}
+
+.bubble {
+  position: absolute;
+  filter: blur(1px);
+  width: 160px;
+  height: 160px;
+  border-radius: 160px;
+  animation: bubble-animation 4s cubic-bezier(0,0,0,1) infinite;
+}
+
+.color-0 {
+  background-color: rgb(136, 208, 255);
+}
+
+.color-1 {
+  background-color: rgb(138, 195, 140);
+}
+
+.color-2 {
+  background-color: rgb(255, 215, 148);
+}
+
+.color-3 {
+  background-color: rgb(255, 164, 164);
+}
+
+@keyframes bubble-box-animation {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  37% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bubble-animation {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+.outside-shown-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}

@@ -38,30 +38,28 @@ export default class StudentCourseCard extends React.Component<IProp> {
     }
 
     return (
-      <Card>
-        <div className={baseClass + " base-box"} onClick={this.props.onClick}>
-          <div className={"top-div"}>
-            <div>
-              <div className={"title"}>
-                {title}
-              </div>
-              <div className={"sub-title"}>
-                {subTitle}
-              </div>
+      <div className={baseClass + " base-box"} onClick={this.props.onClick}>
+        <div className={"top-div"}>
+          <div>
+            <div className={"title"}>
+              {title}
             </div>
-          </div>
-          <div className={"bottom-div"}>
-            <div>
-              <div className={"course-name"}>
-                课程名称: {course.name}
-              </div>
-              <div className={"course-teacher-name"}>
-                主讲：{course.teacherName}
-              </div>
+            <div className={"sub-title"}>
+              {subTitle}
             </div>
           </div>
         </div>
-      </Card>
+        <div className={"bottom-div"}>
+          <div>
+            <div className={"course-name"}>
+              课程名称: {course.name}
+            </div>
+            <div className={"course-teacher-name"}>
+              主讲：{course.teacherName}
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 }

@@ -1,13 +1,28 @@
 import React from "react";
 import "./../../CanvasCommon.css"
 import Logger from "../../../utils/logger";
-import type {TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
+import type {StudentNoteBookVO, TeacherNoteBookVO, TeacherNoteItemVO} from "../../../vo/vo";
 import {apiHub} from "../../../apis/ApiHub";
 import type {IStudentApi} from "../../../apis/student-api";
 import type {ICommonApi} from "../../../apis/common-api";
+import Fab from "@material-ui/core/Fab/Fab";
+import EditIcon from "@material-ui/icons/Edit";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import Button from "@material-ui/core/Button/Button";
+import List from "@material-ui/core/List";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton/IconButton";
+import AddIcon from "@material-ui/icons/Add";
+import ListItem from "@material-ui/core/ListItem";
 
 interface IState {
-  lessonEnded: boolean
+  lessonEnded: boolean,
+  showPickDialog: boolean
 }
 
 interface IProp {
@@ -26,6 +41,8 @@ export default class Review extends React.Component<IProp, IState> {
   _studentApi: IStudentApi;
   _commonApi: ICommonApi;
 
+  studentNoteBookVOList: StudentNoteBookVO[];
+
 
   // 这里是指 canvas 在 HTML 中实际的尺寸，会受到 CSS 宽度的限制，但是实际点坐标什么的都以这个为准
   canvasWidth = 3200;
@@ -40,9 +57,12 @@ export default class Review extends React.Component<IProp, IState> {
     this.lessonId = props.match.params.id;
     this._studentApi = apiHub.studentApi;
     this._commonApi = apiHub.commonApi;
+    this.state = {lessonEnded: false, showPickDialog: false}
   }
 
   render(): React.ReactNode {
+
+    const {showPickDialog} = this.state;
 
     const canvasView = (
       <div className={"canvas-padding"}>
@@ -54,9 +74,62 @@ export default class Review extends React.Component<IProp, IState> {
       </div>
     );
 
+    const fab = (
+      <div className={"left-fab-box"}>
+        <Fab color="primary" aria-label="note" onClick={() => this.openDialog()}>
+          <EditIcon/>
+        </Fab>
+      </div>
+    );
+
+    const availableStudentNotebook = this.studentNoteBookVOList
+      ? this.studentNoteBookVOList.map(
+        (item) => (
+          <div onClick={() => this.onSelectNotebookVO(item)}>
+            <ListItem key={item.id}>
+              <ListItemText
+                primary={item.studentId}
+                secondary={'todo 可用笔记'}/>
+              {/*<ListItemSecondaryAction>*/}
+              {/*<IconButton onClick={() => onSelectItem(item)} edge="end" aria-label="Delete">*/}
+              {/*<AddIcon />*/}
+              {/*</IconButton>*/}
+              {/*</ListItemSecondaryAction>*/}
+            </ListItem>
+          </div>
+        ))
+      : null;
+
+
+    const dialog = (
+      <Dialog
+        open={showPickDialog}
+        onClose={() => this.returnHomePage()}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">选取作为参照的课堂笔记</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            可用列表
+          </DialogContentText>
+          {availableStudentNotebook}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => this.returnHomePage()} color="primary">
+            返回主页
+          </Button>
+          <Button onClick={() => this.jumpToReviewPage()} color="primary" autoFocus>
+            继续复习
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
     return (
       <div>
         {canvasView}
+        {fab}
+        {dialog}
       </div>
     );
   }
@@ -81,6 +154,20 @@ export default class Review extends React.Component<IProp, IState> {
     document.body.removeEventListener('touchmove', this.stopScroll, {
       passive: true
     });
+  }
+
+  openDialog() {
+    this.setState({showPickDialog: true});
+    this._studentApi.getSharedNoteBook(this.lessonId).then(
+      (res: StudentNoteBookVO[]) => {
+        this.studentNoteBookVOList = res;
+      }
+    )
+  }
+
+  onSelectNotebookVO(vo: StudentNoteBookVO) {
+    this.setState({showPickDialog: false})
+    // todo 选择了某个学生的笔记
   }
 
 

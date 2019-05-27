@@ -21,6 +21,7 @@ import {error, success} from "../utils/snackbar-helper";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import RadioGroup from "@material-ui/core/RadioGroup/RadioGroup";
 import Radio from "@material-ui/core/Radio/Radio";
+import Background from "../components/background/Background";
 
 interface IState {
   name: string;
@@ -104,7 +105,7 @@ class Register extends React.Component<IProp, IState> {
     const registerForm = (
       <div className={"main-card"}>
         <CssBaseline/>
-        <div>
+        <div className={'others'}>
           <Typography component="h1" variant="h5">
             注册板书
           </Typography>
@@ -162,16 +163,18 @@ class Register extends React.Component<IProp, IState> {
               value={`${this.state.type}`}
               onChange={(e) => updateState("type", e.target.value, this)}
             >
-              <FormControlLabel
-                value={`${UserType.STUDENT}`}
-                control={<Radio color="primary" />}
-                label="学生"
-              />
-              <FormControlLabel
-                value={`${UserType.TEACHER}`}
-                control={<Radio color="primary" />}
-                label="教师"
-              />
+              <div style={{display: "flex"}}>
+                <FormControlLabel
+                  value={`${UserType.STUDENT}`}
+                  control={<Radio color="primary" />}
+                  label="学生"
+                />
+                <FormControlLabel
+                  value={`${UserType.TEACHER}`}
+                  control={<Radio color="primary" />}
+                  label="教师"
+                />
+              </div>
             </RadioGroup>
             <Button
               disabled={this.hasError()}
@@ -198,6 +201,7 @@ class Register extends React.Component<IProp, IState> {
 
     return (
       <div className={"main-box"}>
+        <Background/>
         {this.state.loading? <FullScreenLoading/>: null}
         {registerForm}
       </div>
