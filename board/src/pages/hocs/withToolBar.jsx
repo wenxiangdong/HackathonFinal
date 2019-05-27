@@ -9,9 +9,9 @@ import {
   STUDENT_HOME_PAGE,
   STUDENT_LESSON_ONGOING,
   STUDENT_LESSON_REVIEW,
-  TEACHER_HOME_PAGE, TEACHER_LESSON
+  TEACHER_HOME_PAGE,
+  TEACHER_LESSON
 } from "../../utils/router-helper";
-import {LOGIN, STUDENT_HOME_PAGE, TEACHER_HOME_PAGE} from "../../utils/router-helper";
 import type {UserVO} from "../../vo/vo";
 
 /**
